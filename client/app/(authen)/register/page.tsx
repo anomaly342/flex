@@ -29,10 +29,10 @@ export default function RegisterPage() {
     setErrorMsg("");
   };
 
-  //   const handleShowPassword = (type: "password" | "confirm") => {
-  //     if (type === "password") setShowPassword((prev) => !prev);
-  //     else setShowConfirmPassword((prev) => !prev);
-  //   };
+    const handleShowPassword = (type: "password" | "confirm") => {
+      if (type === "password") setShowPassword((prev) => !prev);
+      else setShowConfirmPassword((prev) => !prev);
+    };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -109,7 +109,7 @@ export default function RegisterPage() {
               <button
                 type="button"
                 className="show-btn"
-                onFocus={() => setShowPassword(true)} 
+                onFocus={() => handleShowPassword("password")} 
                 onBlur={() => setShowPassword(false)} 
               >
                 {showPassword ? "Hide" : "Show"}
@@ -130,7 +130,7 @@ export default function RegisterPage() {
               <button
                 type="button"
                 className="show-btn"
-                onFocus={() => setShowConfirmPassword(true)} 
+                onFocus={() => handleShowPassword("confirm")} 
                 onBlur={() => setShowConfirmPassword(false)}
               >
                 {showConfirmPassword ? "Hide" : "Show"}
