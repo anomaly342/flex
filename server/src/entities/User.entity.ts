@@ -5,7 +5,7 @@ export type UserRoleType = 'admin' | 'user' | 'member';
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
-  id: number;
+  user_id: number;
 
   @Column({ unique: true })
   username: string;

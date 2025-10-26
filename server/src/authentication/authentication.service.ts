@@ -24,7 +24,7 @@ export class AuthenticationService {
     user.password = userDto.password;
     await this.usersRepository.save(user);
 
-    return { id: user.id, username: user.username };
+    return { id: user.user_id, username: user.username };
   }
 
   async login(userDto: UserDto) {
@@ -42,7 +42,7 @@ export class AuthenticationService {
           secret: Buffer.from(process.env.SALT as string),
         })
       ) {
-        return { id: user.id, username: user.username };
+        return { id: user.user_id, username: user.username };
       } else {
         return null;
       }
