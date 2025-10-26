@@ -6,11 +6,20 @@
   background-color: #f4f4f4;
   font-family: Arial, sans-serif;
   padding: 20px 10px;
+  max-width: 96vw;
+}
+
+.login-logo {
+  min-width: 120px;
+  width: 40%;
+  max-width: 240px;
+  aspect-ratio: 3 / 2;
 }
 
 .login-logo img {
-  width: 242px;
-  height: 143px;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
   border: 1px solid black;
 }
 
@@ -18,21 +27,58 @@
   display: flex;
   flex-direction: column;
   background-color: #fff;
-  margin-top: 80px;
-  padding: 20px 30px;
+  margin-top: 40px;
+  padding: 20px 40px;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  max-width: 100%;
 }
 
-.login-form label {
-  margin-bottom: 20px;
+.form-data {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.password,
+.confirm-password,
+.username,
+.email {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.input-wrapper {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+}
+
+.input-wrapper input {
+  flex-grow: 1;
+  margin: 0;
+}
+
+.input-wrapper .show-btn {
+  flex-shrink: 0;
+  margin: 0;
+  margin-left: 5px;
+}
+
+.show-btn:hover {
+  color: #000;
 }
 
 .login-form input {
   padding: 8px;
-  margin-top: 4px;
   border: 1px solid #ccc;
   border-radius: 4px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .btn {
@@ -40,6 +86,8 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  text-align: center;
+  margin-top: 20px;
 }
 
 .login-form button {
@@ -56,6 +104,7 @@
 
 .login-form button:hover {
   background-color: #0acc27;
+  color: #000;
 }
 
 .alt-register {
@@ -86,7 +135,11 @@
   text-decoration: underline;
 }
 
-@media (min-width: 1024px) {
+.msg-error {
+  color: red;
+}
+
+@media (min-width: 430px) {
   body {
     display: flex;
     flex-direction: column;
@@ -96,17 +149,25 @@
 
   .login-container {
     padding: 80px 60px;
-    max-width: 1024px;
+    min-width: 90%;
     min-height: 100vh;
   }
 
-  .login-logo img {
-    width: 320px;
-    height: 180px;
-    border: 1px solid black;
+  .login-form {
+    min-width: 60%;
+    max-width: 1024px;
+  }
+
+  .form-data {
+    min-width: 40%;
+    max-width: 920px;
+  }
+
+  .login-logo {
+    max-width: 480px;
   }
 
   .login-form input {
-    width: 260px;
+    width: 100%;
   }
 }
