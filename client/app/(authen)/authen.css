@@ -1,13 +1,37 @@
 .authen-container {
+  width: 100%;
   max-width: 430px;
-  min-height: 100vh;
+  height: 100vh;
+  max-height: 100vh;
   padding: 16px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
-@media (min-width: 1024px) {
+label,
+input,
+p {
+  font-size: small;
+}
+
+button {
+  font-size: x-small;
+}
+
+@media (min-width: 430px) {
   .authen-container {
-    max-width: 100vw;
-    min-height: 100vh;
+    width: 100%;
+    max-width: 1024px;
+    height: 100vh;
     padding: 32px;
+  }
+
+  label,
+  input,
+  p,
+  button {
+    font-size: medium;
   }
 }

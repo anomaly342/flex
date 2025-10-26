@@ -1,0 +1,177 @@
+.register-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #f4f4f4;
+  font-family: Arial, sans-serif;
+  padding: 20px 10px;
+  max-width: 96vw;
+}
+
+.register-logo {
+  min-width: 120px;
+  width: 40%;
+  max-width: 240px;
+  aspect-ratio: 3 / 2;
+}
+
+.register-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border: 1px solid black;
+}
+
+.register-form {
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+  margin-top: 40px;
+  padding: 20px 40px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  max-width: 100%;
+}
+
+.form-data {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.password,
+.confirm-password,
+.username,
+.email {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.input-wrapper {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+}
+
+.input-wrapper input {
+  flex-grow: 1;
+  margin: 0;
+}
+
+.input-wrapper .show-btn {
+  flex-shrink: 0;
+  margin: 0;
+  margin-left: 5px;
+}
+
+.show-btn:hover {
+  color: #000;
+}
+
+.btn {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.register-form input {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.btn {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.register-form button {
+  margin-top: 15px;
+  padding: 10px;
+  border: none;
+  background-color: #b7b7b8;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 4px;
+  width: fit-content;
+}
+
+.register-form button:hover {
+  background-color: #0acc27;
+  color: #000;
+}
+
+.alt-register {
+  margin-top: 30px;
+  text-align: center;
+}
+
+.alt-line {
+  display: flex;
+  align-items: center;
+  margin: 20px 0;
+}
+
+.line {
+  flex-grow: 1;
+  height: 1px;
+  background-color: #ccc;
+  margin: 0 1px;
+}
+
+.p-or {
+  font-size: 0.9em;
+  color: #888;
+  padding: 0 10px;
+}
+
+.alt-register a {
+  text-decoration: underline;
+}
+
+.msg-error {
+  color: red;
+}
+
+@media (min-width: 430px) {
+  body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .register-container {
+    padding: 80px 60px;
+    min-width: 90%;
+    min-height: 100vh;
+  }
+
+  .register-form {
+    min-width: 60%;
+    max-width: 1024px;
+  }
+
+  .form-data {
+    min-width: 40%;
+    max-width: 920px;
+  }
+
+  .register-logo {
+    max-width: 480px;
+  }
+
+  .register-form input {
+    width: 100%;
+  }
+}
