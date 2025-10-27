@@ -18,6 +18,7 @@ import { QR } from './entities/QR.entity';
 import { Room } from './entities/Room.entity';
 import { User } from './entities/User.entity';
 import { Zone } from './entities/Zone.entity';
+import { RoomsModule } from './rooms/rooms.module';
 const ENV = process.env.NODE_ENV;
 @Module({
   imports: [
@@ -41,6 +42,7 @@ const ENV = process.env.NODE_ENV;
     }),
     AuthenticationModule,
     SeederModule,
+    RoomsModule,
   ],
   controllers: [AppController],
   providers: [AppService, SeederService],
@@ -55,6 +57,8 @@ export class AppModule implements NestModule, OnApplicationBootstrap {
   }
 
   async onApplicationBootstrap() {
-    await this.seederService.populate();
+    if (process.env.POPULATE === 'yes') {
+      await this.seederService.populate();
+    }
   }
 }

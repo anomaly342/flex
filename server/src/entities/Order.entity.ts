@@ -14,7 +14,7 @@ export class Order {
   @PrimaryGeneratedColumn()
   order_id: number;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { nullable: false })
   @JoinColumn({ name: 'user_id' })
   user: User;
 
@@ -26,14 +26,14 @@ export class Order {
   @JoinColumn({ name: 'zone_id' })
   zone: Zone | null;
 
-  @ManyToOne(() => QR)
+  @ManyToOne(() => QR, { nullable: false })
   @JoinColumn({ name: 'qr_id' })
   qr: QR;
 
-  @Column()
+  @Column({ type: 'timestamptz' })
   start_time: Date;
 
-  @Column()
+  @Column({ type: 'timestamptz' })
   end_time: Date;
 
   @Column()
