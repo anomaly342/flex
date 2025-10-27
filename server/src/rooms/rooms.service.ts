@@ -18,7 +18,7 @@ export class RoomsService {
     const { date, floor } = queries;
     const _date = new Date(date).toISOString().split('T')[0];
 
-    const query = this.roomsRepository
+    const query = await this.roomsRepository
       .createQueryBuilder('r')
       .leftJoin(
         (qb) => {
@@ -59,6 +59,38 @@ export class RoomsService {
     return room;
   }
 
+  async remainingSlot(id: number, _date: Date) {
+    if (this.roomInfo(id) === null) {
+      return null;
+    }
+
+    const result = await this.ordersRepository
+      .createQueryBuilder('o')
+      .select(['o.start_time', 'o.end_time'])
+      .where('o.room_id = :roomId', { roomId: id })
+      .andWhere('o.start_time::date = :_date', { _date: _date }) // cast to date
+      .getMany();
+
+    if (result.length === 0) {
+      return { table: Array(14).fill(0) };
+    }
+
+    const slots = Array(14).fill(0);
+
+    result.forEach(({ start_time, end_time }) => {
+      const startHour = start_time.getUTCHours();
+      const endHour = end_time.getUTCHours();
+
+      let startIndex = startHour - 1;
+      let endIndex = endHour - 1;
+
+      for (let i = startIndex; i < endIndex; i++) {
+        slots[i] = 1;
+      }
+    });
+
+    return { table: slots };
+  }
   async roomOrder(roomOrder: RoomOrder, room_id: number, user_id: number) {
     const { start_time, end_time } = roomOrder;
     const Isoverlapped = await this.ordersRepository.findOne({

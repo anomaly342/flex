@@ -3,6 +3,13 @@ import { IsDate, IsInt, IsNotEmpty } from 'class-validator';
 
 export type RoomID = number;
 
+export class RemainingQueries {
+  @IsNotEmpty()
+  @Type(() => Date)
+  @IsDate()
+  date: Date;
+}
+
 export class RoomQueries {
   @IsNotEmpty()
   @Type(() => Date)

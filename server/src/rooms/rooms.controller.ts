@@ -12,7 +12,7 @@ import {
   Res,
 } from '@nestjs/common';
 import express from 'express';
-import { RoomOrder, RoomQueries } from './rooms.dto';
+import { RemainingQueries, RoomOrder, RoomQueries } from './rooms.dto';
 import { RoomsOrderPipe } from './rooms.pipe';
 import { RoomsService } from './rooms.service';
 
@@ -34,6 +34,21 @@ export class RoomsController {
   @Get(':id')
   async roomInfo(@Param('id', ParseIntPipe) id: number) {
     const result = await this.roomsService.roomInfo(id);
+
+    if (result) {
+      return result;
+    } else {
+      throw new NotFoundException();
+    }
+  }
+
+  @Get(':id/remaining')
+  async remainingSlot(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() date: RemainingQueries,
+  ) {
+    const _date = date.date;
+    const result = await this.roomsService.remainingSlot(id, _date);
 
     if (result) {
       return result;
