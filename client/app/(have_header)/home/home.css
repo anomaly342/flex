@@ -1,0 +1,15 @@
+@import "tailwindcss";
+@media (prefers-color-scheme: dark) {
+    :root {
+        --background: #ffff;
+        --foreground: #0000;
+    }
+}
+.maindiv {
+    color: black;
+}
+.rolename {
+    @apply text-yellow-600 font-bold;
+}
+@media (max-width: 430px) {
+}
