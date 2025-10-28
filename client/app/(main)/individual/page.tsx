@@ -38,32 +38,38 @@ export default function Profile() {
         <div className="maindiv">
             <main className="space-y-4">
                 <div className="flex flex-row justify-center space-x-5 ">
-                    <div className="border-1 p-2">
-                        <button onClick={() => changeDate(-1)}>&lt;</button>
-                    </div>
+                    <button
+                        onClick={() => changeDate(-1)}
+                        className="border-1 p-2"
+                    >
+                        &lt;
+                    </button>
                     <div className="border-1 p-2">
                         <p>{formatted}</p>
                     </div>
-                    <div className="border-1 p-2">
-                        <button onClick={() => changeDate(1)}>&gt;</button>
-                    </div>
+                    <button
+                        onClick={() => changeDate(1)}
+                        className="border-1 p-2"
+                    >
+                        &gt;
+                    </button>
                 </div>
 
                 <div className="flex flex-wrap justify-center gap-5">
                     {[...Array(9)].map((_, i) => (
-                        <button key={i} type="button" className="border p-5">
-                            <Link
-                                href={{
-                                    pathname: "/individual/details",
-                                    query: {
-                                        room: `${i + 1}`,
-                                        floor: `${i + 1}`,
-                                    },
-                                }}
-                            >
-                                Zone {i + 1}
-                            </Link>
-                        </button>
+                        <Link
+                            href={{
+                                pathname: "/individual/details",
+                                query: {
+                                    room: `${i + 1}`,
+                                    floor: `${i + 1}`,
+                                    date: formatted,
+                                },
+                            }}
+                            className="border p-5"
+                        >
+                            Zone {i + 1}
+                        </Link>
                     ))}
                 </div>
                 <div>

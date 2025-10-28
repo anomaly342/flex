@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Navbar from "../_navbar/page";
+// import Navbar from "../_navbar/page";
 
 export const metadata: Metadata = {
     title: "Zone Booking",
@@ -12,7 +12,7 @@ export default function ProfileLayout({
 }) {
     return (
         <>
-            <Navbar />
+            {/* <Navbar /> */}
             <main>{children}</main>
         </>
     );
