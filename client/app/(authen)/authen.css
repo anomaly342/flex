@@ -1,13 +1,11 @@
+* {
+  box-sizing: border-box;
+}
+
 .authen-container {
   width: 100%;
   max-width: 430px;
   height: 100vh;
-  max-height: 100vh;
-  padding: 16px;
-  margin: 0 auto;
-  box-sizing: border-box;
-  overflow-y: auto;
-  overflow-x: hidden;
 }
 
 label,
@@ -25,7 +23,6 @@ button {
     width: 100%;
     max-width: 1024px;
     height: 100vh;
-    padding: 32px;
   }
 
   label,
