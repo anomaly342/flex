@@ -61,7 +61,7 @@ export default function Profile() {
                             href={{
                                 pathname: "/individual/details",
                                 query: {
-                                    room: `${i + 1}`,
+                                    zone: `${i + 1}`,
                                     floor: `${i + 1}`,
                                     date: formatted,
                                 },
