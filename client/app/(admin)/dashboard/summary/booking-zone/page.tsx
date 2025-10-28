@@ -50,7 +50,6 @@ export default function BookingZonePage() {
 //     fetchData();
 //   }, []);
 
-  // mock data
   useEffect(() => {
     const mockData: Booking[] = Array.from({ length: 378 }, (_, i) => {
       const startDate = new Date(
