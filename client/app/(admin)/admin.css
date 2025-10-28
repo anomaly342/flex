@@ -5,12 +5,7 @@
 .admin-container {
   width: 100%;
   max-width: 430px;
-  min-height: 100vh;
-  padding: 16px;
-  margin: 0 auto;
-  box-sizing: border-box;
-  /* overflow-y: auto;
-  overflow-x: hidden; */
+  height: 100vh;
 }
 
 label,
@@ -23,11 +18,10 @@ button {
   font-size: x-small;
 }
 
-@media (min-width: 430px) {
+@media (min-width: 431px) {
   .admin-container {
     width: 100%;
     max-width: 1024px;
-    padding: 32px;
   }
 
   label,
