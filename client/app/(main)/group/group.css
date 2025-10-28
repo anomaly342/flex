@@ -1,0 +1,10 @@
+@import "tailwindcss";
+@media (prefers-color-scheme: dark) {
+    :root {
+        --background: #ffff;
+        --foreground: #0000;
+    }
+}
+.maindiv {
+    color: black;
+}
