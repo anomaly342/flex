@@ -7,6 +7,7 @@ export default function Profile() {
     const sp = useSearchParams();
     const room = sp.get("room") ?? "N/A";
     const floor = sp.get("floor") ?? "N/A";
+    const get_date = sp.get("date") ?? "N/A";
 
     const [showModal, setShowModal] = useState(false);
     const [selectedTime, setSelectedTime] = useState<string | null>(null);
@@ -40,7 +41,7 @@ export default function Profile() {
     });
 
     const confirmBooking = () => {
-        alert(`✅ Booked on ${formattedDate} at ${selectedTime}`);
+        alert(`✅ Booked on ${get_date} at ${selectedTime}`);
         setShowModal(false);
     };
 
