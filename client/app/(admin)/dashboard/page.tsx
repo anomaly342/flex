@@ -90,7 +90,7 @@ export default function DashboardPage() {
         </p>
         <p>Booking Zone</p>
       </div>
-      <div className="booking-status">
+      <div className="booking-status" onClick={goTo("/dashboard/summary/booking-status")}>
         <p>
           <strong>
             {((bookingAccount / totalAccount) * 100).toFixed(2)}%
