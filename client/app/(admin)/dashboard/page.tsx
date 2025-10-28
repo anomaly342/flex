@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 interface DashboardData {
   bookingAccount: number;
@@ -18,6 +19,8 @@ export default function DashboardPage() {
   const [totalRoom, setTotalRoom] = useState<number>(0);
   const [bookingZone, setBookingZone] = useState<number>(0);
   const [totalZone, setTotalZone] = useState<number>(0);
+
+  const router = useRouter();
 
   const fetchDashboardData = async () => {
     try {
@@ -60,9 +63,13 @@ export default function DashboardPage() {
     demoFetchDashboardData();
   }, []);
 
+  const handleClickBookingAccount = () => {
+    router.push("/dashboard/summary/booking-account");
+  };
+
   return (
     <div className="dashboard-container">
-      <div className="booking-account">
+      <div className="booking-account" onClick={handleClickBookingAccount}>
         <p>
           <strong>
             {bookingAccount}/{totalAccount}
