@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import Link from "next/link";
 import "./group.css";
 
 export default function Profile() {
@@ -71,19 +72,54 @@ export default function Profile() {
                 </div>
                 <div className="space-x-5 space-y-5 block">
                     <button type="button" className="border-1 p-5">
-                        <a>Room 1</a>
+                        <Link
+                            href={{
+                                pathname: "/group/details",
+                                query: { room: "1", floor: floor },
+                            }}
+                        >
+                            Room 1
+                        </Link>
                     </button>
                     <button type="button" className="border-1 p-5">
-                        <a>Room 2</a>
+                        <Link
+                            href={{
+                                pathname: "/group/details",
+                                query: { room: "2", floor: floor },
+                            }}
+                        >
+                            Room 2
+                        </Link>
                     </button>
                     <button type="button" className="border-1 p-5">
-                        <a>Room 3</a>
+                        <Link
+                            href={{
+                                pathname: "/group/details",
+                                query: { room: "3", floor: floor },
+                            }}
+                        >
+                            Room 3
+                        </Link>
                     </button>
                     <button type="button" className="border-1 p-5">
-                        <a>Room 4</a>
+                        <Link
+                            href={{
+                                pathname: "/group/details",
+                                query: { room: "4", floor: floor },
+                            }}
+                        >
+                            Room 4
+                        </Link>
                     </button>
                     <button type="button" className="border-1 p-5">
-                        <a>Room 5</a>
+                        <Link
+                            href={{
+                                pathname: "/group/details",
+                                query: { room: "5", floor: floor },
+                            }}
+                        >
+                            Room 5
+                        </Link>
                     </button>
                 </div>
                 <div>
