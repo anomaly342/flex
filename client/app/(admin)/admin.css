@@ -23,7 +23,7 @@ button {
   font-size: x-small;
 }
 
-@media (min-width: 430px) {
+@media (min-width: 431px) {
   .admin-container {
     width: 100%;
     max-width: 1024px;
