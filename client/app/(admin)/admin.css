@@ -1,0 +1,39 @@
+* {
+  box-sizing: border-box;
+}
+
+.admin-container {
+  width: 100%;
+  max-width: 430px;
+  min-height: 100vh;
+  padding: 16px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  /* overflow-y: auto;
+  overflow-x: hidden; */
+}
+
+label,
+input,
+p {
+  font-size: small;
+}
+
+button {
+  font-size: x-small;
+}
+
+@media (min-width: 430px) {
+  .admin-container {
+    width: 100%;
+    max-width: 1024px;
+    padding: 32px;
+  }
+
+  label,
+  input,
+  p,
+  button {
+    font-size: medium;
+  }
+}
