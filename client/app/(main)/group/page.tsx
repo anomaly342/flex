@@ -4,7 +4,6 @@ import Link from "next/link";
 import "./group.css";
 
 export default function Profile() {
-    const today = new Date();
     const maxfloor = 20;
 
     const [floor, setFloor] = useState(1);
@@ -21,14 +20,23 @@ export default function Profile() {
         }
     }
 
+    const [selectedDate, setSelectedDate] = useState(new Date());
+    const changeDate = (days: number) => {
+        setSelectedDate((prev) => {
+            const newDate = new Date(prev);
+            newDate.setDate(prev.getDate() + days);
+            return newDate;
+        });
+    };
+
     const [lastUpdate, setLastUpdate] = useState(new Date());
     const handleRefresh = () => {
         setLastUpdate(new Date());
     };
 
-    const formatted = today.toLocaleDateString("en-US", {
+    const formatted = selectedDate.toLocaleDateString("en-GB", {
         year: "numeric",
-        month: "long",
+        month: "short",
         day: "numeric",
     });
 
@@ -45,82 +53,49 @@ export default function Profile() {
         <div className="maindiv">
             <main className="space-y-4">
                 <div className="flex flex-row justify-center space-x-5 ">
+                    <button
+                        className="border-1 p-2"
+                        onClick={() => changeDate(-1)}
+                    >
+                        &lt;
+                    </button>
                     <div className="border-1 p-2">
-                        <p>&lt;</p>
+                        <p>{formatted}</p>
                     </div>
-                    <div className="border-1 p-2">
-                        <p>{`${formatted}`}</p>
-                    </div>
-                    <div className="border-1 p-2">
-                        <p>&gt;</p>
-                    </div>
+                    <button
+                        className="border-1 p-2"
+                        onClick={() => changeDate(1)}
+                    >
+                        &gt;
+                    </button>
                 </div>
-                <div className="flex flex-row justify-center space-x-14">
-                    <div className="border-1 p-2">
-                        <button type="button" onClick={lowerfloor}>
-                            &lt;
-                        </button>
-                    </div>
+                <div className="flex flex-row justify-center space-x-9">
+                    <button className="border-1 p-2" onClick={lowerfloor}>
+                        &lt;
+                    </button>
                     <div className="border-1 p-2">
                         <p>{`Floor ${floor}`}</p>
                     </div>
-                    <div className="border-1 p-2">
-                        <button type="button" onClick={upperfloor}>
-                            &gt;
-                        </button>
-                    </div>
+                    <button className="border-1 p-2" onClick={upperfloor}>
+                        &gt;
+                    </button>
                 </div>
-                <div className="space-x-5 space-y-5 block">
-                    <button type="button" className="border-1 p-5">
+                <div className="flex flex-wrap justify-center gap-5">
+                    {[...Array(5)].map((_, i) => (
                         <Link
                             href={{
                                 pathname: "/group/details",
-                                query: { room: "1", floor: floor },
+                                query: {
+                                    room: `${i + 1}`,
+                                    floor: floor,
+                                    date: formatted,
+                                },
                             }}
+                            className="border p-5"
                         >
-                            Room 1
+                            Room {i + 1}
                         </Link>
-                    </button>
-                    <button type="button" className="border-1 p-5">
-                        <Link
-                            href={{
-                                pathname: "/group/details",
-                                query: { room: "2", floor: floor },
-                            }}
-                        >
-                            Room 2
-                        </Link>
-                    </button>
-                    <button type="button" className="border-1 p-5">
-                        <Link
-                            href={{
-                                pathname: "/group/details",
-                                query: { room: "3", floor: floor },
-                            }}
-                        >
-                            Room 3
-                        </Link>
-                    </button>
-                    <button type="button" className="border-1 p-5">
-                        <Link
-                            href={{
-                                pathname: "/group/details",
-                                query: { room: "4", floor: floor },
-                            }}
-                        >
-                            Room 4
-                        </Link>
-                    </button>
-                    <button type="button" className="border-1 p-5">
-                        <Link
-                            href={{
-                                pathname: "/group/details",
-                                query: { room: "5", floor: floor },
-                            }}
-                        >
-                            Room 5
-                        </Link>
-                    </button>
+                    ))}
                 </div>
                 <div>
                     <h2>Last update:</h2>
