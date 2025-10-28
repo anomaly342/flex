@@ -156,6 +156,8 @@ body {
 
   .login-logo {
     grid-area: logo;
+    min-width: 240px;
+    max-width: 320px;
   }
 
   .login-form {
@@ -173,11 +175,6 @@ body {
   .form-data {
     min-width: 40%;
     max-width: 920px;
-  }
-
-  .login-logo {
-    min-width: 240px;
-    max-width: 320px;
   }
 
   .login-form input {

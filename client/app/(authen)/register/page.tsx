@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 
 interface RegisterData {
   username: string;
-  email: string;
   password: string;
   confirm: string;
 }
@@ -15,7 +14,6 @@ export default function RegisterPage() {
 
   const [formData, setFormData] = useState<RegisterData>({
     username: "",
-    email: "",
     password: "",
     confirm: "",
   });
@@ -29,16 +27,16 @@ export default function RegisterPage() {
     setErrorMsg("");
   };
 
-  //   const handleShowPassword = (type: "password" | "confirm") => {
-  //     if (type === "password") setShowPassword((prev) => !prev);
-  //     else setShowConfirmPassword((prev) => !prev);
-  //   };
+    const handleShowPassword = (type: "password" | "confirm") => {
+      if (type === "password") setShowPassword((prev) => !prev);
+      else setShowConfirmPassword((prev) => !prev);
+    };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const { username, email, password, confirm } = formData;
-    if (!username || !email || !password || !confirm) {
+    const { username, password, confirm } = formData;
+    if (!username || !password || !confirm) {
       setErrorMsg("Incomplete information filled out");
       return;
     }
@@ -85,17 +83,6 @@ export default function RegisterPage() {
             />
           </div>
 
-          <div className="email">
-            <label>Email:</label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="Enter email"
-            />
-          </div>
-
           <div className="password">
             <label>Password:</label>
             <div className="input-wrapper">
@@ -109,7 +96,7 @@ export default function RegisterPage() {
               <button
                 type="button"
                 className="show-btn"
-                onFocus={() => setShowPassword(true)} 
+                onFocus={() => handleShowPassword("password")} 
                 onBlur={() => setShowPassword(false)} 
               >
                 {showPassword ? "Hide" : "Show"}
@@ -130,7 +117,7 @@ export default function RegisterPage() {
               <button
                 type="button"
                 className="show-btn"
-                onFocus={() => setShowConfirmPassword(true)} 
+                onFocus={() => handleShowPassword("confirm")} 
                 onBlur={() => setShowConfirmPassword(false)}
               >
                 {showConfirmPassword ? "Hide" : "Show"}
@@ -146,7 +133,7 @@ export default function RegisterPage() {
         </div>
       </form>
 
-      <div className="alt-register">
+      <div className="alt-login">
         <div className="alt-line">
           <div className="line"></div>
           <p className="p-or">OR</p>
