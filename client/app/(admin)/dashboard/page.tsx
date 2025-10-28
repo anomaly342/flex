@@ -21,6 +21,7 @@ export default function DashboardPage() {
   const [totalZone, setTotalZone] = useState<number>(0);
 
   const router = useRouter();
+  const goTo = (path: string) => () => router.push(path);
 
   const fetchDashboardData = async () => {
     try {
@@ -63,13 +64,9 @@ export default function DashboardPage() {
     demoFetchDashboardData();
   }, []);
 
-  const handleClickBookingAccount = () => {
-    router.push("/dashboard/summary/booking-account");
-  };
-
   return (
     <div className="dashboard-container">
-      <div className="booking-account" onClick={handleClickBookingAccount}>
+      <div className="booking-account" onClick={goTo("/dashboard/summary/booking-account")}>
         <p>
           <strong>
             {bookingAccount}/{totalAccount}
@@ -77,7 +74,7 @@ export default function DashboardPage() {
         </p>
         <p>Booking Account</p>
       </div>
-      <div className="booking-room">
+      <div className="booking-room" onClick={goTo("/dashboard/summary/booking-room")}>
         <p>
           <strong>
             {bookingRoom}/{totalRoom}
@@ -85,7 +82,7 @@ export default function DashboardPage() {
         </p>
         <p>Booking Room</p>
       </div>
-      <div className="booking-zone">
+      <div className="booking-zone" onClick={goTo("/dashboard/summary/booking-zone")}>
         <p>
           <strong>
             {bookingZone}/{totalZone}
