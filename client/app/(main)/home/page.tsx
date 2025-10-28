@@ -15,10 +15,10 @@ export default function Home() {
             <main>
                 <div className="flex flex-col">
                     <button type="button" className="border-1 m-3 p-3">
-                        Group
+                        <a href="/group">Group</a>
                     </button>
                     <button type="button" className="border-1 m-3 p-3">
-                        Individual
+                        <a href="/individual">Individual</a>
                     </button>
                 </div>
                 <div className="border-2 m-5">
