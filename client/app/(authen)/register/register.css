@@ -1,12 +1,18 @@
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .register-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: #f4f4f4;
   font-family: Arial, sans-serif;
-  padding: 20px 10px;
   max-width: 96vw;
+  min-height: 100%;
+  padding: 20px;
 }
 
 .register-logo {
@@ -27,7 +33,7 @@
   display: flex;
   flex-direction: column;
   background-color: #fff;
-  margin-top: 40px;
+  margin-top: 20px;
   padding: 20px 40px;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -44,8 +50,7 @@
 
 .password,
 .confirm-password,
-.username,
-.email {
+.username {
   display: flex;
   flex-direction: column;
   gap: 5px;
@@ -111,7 +116,7 @@
   color: #000;
 }
 
-.alt-register {
+.alt-login {
   margin-top: 30px;
   text-align: center;
 }
@@ -135,7 +140,7 @@
   padding: 0 10px;
 }
 
-.alt-register a {
+.alt-login a {
   text-decoration: underline;
 }
 
@@ -143,23 +148,32 @@
   color: red;
 }
 
-@media (min-width: 430px) {
-  body {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+@media (min-width: 431px) {
+  .register-container {
+    max-width: 100%;
+    max-height: 100vh;
+    display: grid;
+    grid-template-areas:
+      "logo form"
+      "logo alt";
   }
 
-  .register-container {
-    padding: 80px 60px;
-    min-width: 90%;
-    min-height: 100vh;
+  .register-logo {
+    grid-area: logo;
+    min-width: 240px;
+    max-width: 320px;
   }
 
   .register-form {
-    min-width: 60%;
-    max-width: 1024px;
+    grid-area: form;
+    margin-top: 40px;
+    margin-left: 80px;
+  }
+
+  .alt-login {
+    grid-area: alt;
+    margin-left: 80px;
+    margin-top: 0px;
   }
 
   .form-data {
@@ -167,11 +181,8 @@
     max-width: 920px;
   }
 
-  .register-logo {
-    max-width: 480px;
-  }
-
   .register-form input {
-    width: 100%;
+    min-width: 240px;
+    max-width: 320px;
   }
 }
