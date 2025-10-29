@@ -12,6 +12,26 @@ export default function Profile() {
   const [isEditing, setIsEditing] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
 
+    // useEffect(() => {
+  //   async function fetchData() {
+  //     try {
+  //       const res = await fetch(
+  //         `http://localhost:3000/edit/room?room=${room}&floor=${floor}`,
+  //         { method: "GET" }
+  //       );
+
+  //       const json = await res.json();
+  //       setData(json);
+  //       setEditData(json); // เก็บสำเนาไว้แก้ไข
+  //     } catch (err) {
+  //       console.error("Fetch failed:", err);
+  //     }
+  //   }
+  //   if (room !== "N/A" && floor !== "N/A") {
+  //     fetchData();
+  //   }
+  // }, [room, floor]);
+
   // ✅ mock fetch
   useEffect(() => {
     const mockJson = {
