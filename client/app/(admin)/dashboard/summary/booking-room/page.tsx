@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import "./booking_room.css";
 
 interface Booking {
   id: number;
@@ -24,34 +23,37 @@ export default function BookingRoomPage() {
     "all"
   );
 
+  const [totalAmount, setTotalAmount] = useState<number | null>(null);
+  const [selectedMonth, setSelectedMonth] = useState<string>("all");
+  const [selectedDay, setSelectedDay] = useState<string>("");
+
   const calculatePeriod = (start: string, end: string): number => {
     const diffMs = new Date(end).getTime() - new Date(start).getTime();
     return parseFloat((diffMs / (1000 * 60 * 60)).toFixed(2));
   };
 
-//     useEffect(() => {
-//     const fetchData = async () => {
-//       try {
-//         const res = await fetch("http://localhost:3000/booking_account", {
-//           method: "GET",
-//           credentials: "include",
-//         });
+  //     useEffect(() => {
+  //     const fetchData = async () => {
+  //       try {
+  //         const res = await fetch("http://localhost:3000/booking_account", {
+  //           method: "GET",
+  //           credentials: "include",
+  //         });
 
-//         if (!res.ok) throw new Error("Failed to fetch booking data");
+  //         if (!res.ok) throw new Error("Failed to fetch booking data");
 
-//         const data: Booking[] = await res.json();
-//         setBookings(data);
-//       } catch (err: any) {
-//         setError(err.message);
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
+  //         const data: Booking[] = await res.json();
+  //         setBookings(data);
+  //       } catch (err: any) {
+  //         setError(err.message);
+  //       } finally {
+  //         setLoading(false);
+  //       }
+  //     };
 
-//     fetchData();
-//   }, []);
+  //     fetchData();
+  //   }, []);
 
-  // mock data
   useEffect(() => {
     const mockData: Booking[] = Array.from({ length: 112 }, (_, i) => {
       const startDate = new Date(
@@ -83,11 +85,20 @@ export default function BookingRoomPage() {
     setLoading(false);
   }, []);
 
-  // filter bookings by type
-  const filteredBookings =
-    selectedType === "all"
-      ? bookings
-      : bookings.filter((b) => b.type === selectedType);
+  const filteredBookings = bookings.filter((b) => {
+    const bookingDate = new Date(b.start);
+    const matchType = selectedType === "all" || b.type === selectedType;
+
+    const matchMonth =
+      selectedMonth === "all" ||
+      bookingDate.getMonth() + 1 === Number(selectedMonth);
+
+    const matchDay =
+      selectedDay === "" ||
+      bookingDate.toISOString().slice(0, 10) === selectedDay;
+
+    return matchType && matchMonth && matchDay;
+  });
 
   const totalPages = Math.ceil(filteredBookings.length / rowsPerPage);
   const startIndex = (currentPage - 1) * rowsPerPage;
@@ -108,6 +119,10 @@ export default function BookingRoomPage() {
     setSelectedType(e.target.value as any);
     setCurrentPage(1);
   };
+  const handleCalculateTotal = () => {
+    const total = filteredBookings.reduce((sum, b) => sum + b.price, 0);
+    setTotalAmount(total);
+  };
 
   if (loading) return <p className="loading">Loading...</p>;
   if (error) return <p className="error">{error}</p>;
@@ -118,17 +133,27 @@ export default function BookingRoomPage() {
 
       <div className="table-controls">
         <div className="rows-select">
-          <label htmlFor="rows">Rows per page:</label>
-          <select className="select-rows" id="rows" value={rowsPerPage} onChange={handleRowsChange}>
+          <label>Rows per page:</label>
+          <select
+            className="select-rows"
+            id="rows"
+            value={rowsPerPage}
+            onChange={handleRowsChange}
+          >
             <option value={25}>25</option>
             <option value={50}>50</option>
             <option value={100}>100</option>
           </select>
         </div>
 
-        <div className="type-select">
-          <label htmlFor="type">Type:</label>
-          <select className="select-types" id="type" value={selectedType} onChange={handleTypeChange}>
+        <div className="type">
+          <label>Type:</label>
+          <select
+            className="select-types"
+            id="type"
+            value={selectedType}
+            onChange={handleTypeChange}
+          >
             <option value="all">All</option>
             <option value="small">Small</option>
             <option value="medium">Medium</option>
@@ -136,11 +161,53 @@ export default function BookingRoomPage() {
           </select>
         </div>
 
-        <p className="showing-text">
-          Showing {startIndex + 1} -{" "}
-          {Math.min(endIndex, filteredBookings.length)} of{" "}
-          {filteredBookings.length}
-        </p>
+        <div className="month">
+          <label>Month:</label>
+          <select
+            id="month"
+            value={selectedMonth}
+            onChange={(e) => setSelectedMonth(e.target.value)}
+            className="select-month"
+          >
+            <option value="all">All</option>
+            {Array.from({ length: 12 }, (_, i) => (
+              <option key={i + 1} value={i + 1}>
+                {new Date(0, i).toLocaleString("en", { month: "long" })}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="date">
+          <label>Date:</label>
+          <input
+            id="day"
+            type="date"
+            value={selectedDay}
+            onChange={(e) => setSelectedDay(e.target.value)}
+            className="select-day"
+          />
+        </div>
+
+        <div className="show-text">
+          <p className="showing-text">
+            Showing {startIndex + 1} -{" "}
+            {Math.min(endIndex, filteredBookings.length)} of{" "}
+            {filteredBookings.length}
+          </p>
+        </div>
+
+        <div className="cal-price">
+          <button onClick={handleCalculateTotal} className="calc-btn">
+            Calculate Total
+          </button>
+
+          {totalAmount !== null && (
+            <p className="total-amount">
+              Total: ฿{totalAmount.toLocaleString()}
+            </p>
+          )}
+        </div>
       </div>
 
       <div className="table-wrapper">

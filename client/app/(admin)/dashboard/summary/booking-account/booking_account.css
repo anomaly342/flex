@@ -13,10 +13,39 @@
 }
 
 .table-controls {
-  display: flex;
+  display: grid;
+  grid-template-areas:
+    "rows-select rows-select type"
+    "month month date"
+    "cal-price cal-price show-text";
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 15px;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.rows-select {
+  grid-area: rows-select;
+}
+
+.show-text {
+  grid-area: show-text;
+}
+
+.type {
+  grid-area: type;
+}
+
+.month {
+  grid-area: month;
+}
+
+.date {
+  grid-area: date;
+}
+
+.cal-price {
+  grid-area: cal-price;
 }
 
 .rows-select label {
@@ -37,6 +66,7 @@
   overflow-x: auto;
   border: 1px solid #ccc;
   border-radius: 6px;
+  margin-top: 10px;
 }
 
 .booking-table {
@@ -107,30 +137,45 @@
   color: red;
 }
 
-.select-rows {
-    border: 1px solid gray;
-    border-radius: 4px;
+.select-rows,
+.select-types,
+.cal-price button,
+.month select,
+.date input {
+  border: 1px solid gray;
+  border-radius: 4px;
+  padding: 2px 4px;
 }
 
-.select-rows:hover {
-    cursor: pointer;
+.select-rows:hover,
+.select-types:hover,
+.cal-price button:hover,
+.month select:hover,
+.date input:hover {
+  cursor: pointer;
+}
+
+.cal-price {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 @media (max-width: 431px) {
-    .booking-container {
-        padding: 0;
-        max-width: 420px
-    }
+  .booking-container {
+    padding: 0;
+    max-width: 420px;
+  }
 
-    .page-title {
-        font-size: small;
-    }
+  .page-title {
+    font-size: small;
+  }
 
-    .showing-text {
-        font-size: x-small;
-    }
+  .showing-text {
+    font-size: x-small;
+  }
 
-    .booking-table {
-        font-size: xx-small;
-    }
+  .booking-table {
+    font-size: xx-small;
+  }
 }
