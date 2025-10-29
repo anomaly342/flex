@@ -40,11 +40,6 @@ export default function BookingZone() {
 
   const upperfloor = () => floor < maxfloor && setFloor(floor + 1);
   const lowerfloor = () => floor > 1 && setFloor(floor - 1);
-  const changeDate = (days: number) => {
-    const newDate = new Date(selectedDate);
-    newDate.setDate(selectedDate.getDate() + days);
-    setSelectedDate(newDate);
-  };
 
   const formatted = selectedDate.toLocaleDateString("en-GB", {
     year: "numeric",
@@ -57,16 +52,6 @@ export default function BookingZone() {
   return (
     <div className="booking-container">
       <main className="booking-main">
-        <div className="selector-row">
-          <button className="btn small" onClick={() => changeDate(-1)}>
-            &lt;
-          </button>
-          <div className="selector-box">{formatted}</div>
-          <button className="btn small" onClick={() => changeDate(1)}>
-            &gt;
-          </button>
-        </div>
-
         <div className="selector-row">
           <button className="btn small" onClick={lowerfloor}>
             &lt;
