@@ -1,0 +1,104 @@
+.export-container {
+  width: 100%;
+  max-width: 430px;
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 16px;
+  font-family: "Inter", sans-serif;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-sizing: border-box;
+}
+
+.export-top,
+.export-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.filter-checkboxes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.filter-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.export-preview {
+  border: 2px solid #000;
+  border-radius: 8px;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.chart-wrapper { 
+  width: 100%;
+  height: 300px; 
+}
+
+.chart-container {
+  width: 100%;
+  height: 300px;
+}
+
+.export-top select,
+.export-bottom select {
+  border: 2px solid #000;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 14px;
+}
+
+.btn-confirm,
+.btn-clear {
+  border: 1px solid #000;
+  border-radius: 6px;
+  padding: 6px 10px;
+  background-color: #fff;
+  transition: 0.2s;
+}
+
+.btn-confirm:hover,
+.btn-clear:hover {
+  cursor: pointer;
+  background-color: #f0f0f0;
+}
+
+.range-text {
+  font-size: 14px;
+  text-align: center;
+  color: #444;
+}
+
+@media (min-width: 431px) {
+  .export-container {
+    max-width: 1024px;
+    padding: 24px;
+    gap: 24px;
+  }
+
+  .export-top,
+  .export-bottom {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .chart-container {
+    height: 400px;
+  }
+
+  .btn-confirm {
+    padding: 8px 14px;
+    font-size: 15px;
+  }
+}
