@@ -1,26 +1,49 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 
 export default function BookingRoom() {
-  const maxfloor = 20;
+  const [rooms, setRooms] = useState<{ room: string; floor: number }[]>([]);
   const [floor, setFloor] = useState(1);
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const maxfloor = 20;
 
-  const upperfloor = () => {
-    if (floor < maxfloor) setFloor(floor + 1);
-  };
+//   useEffect(() => {
+//     const fetchRooms = async () => {
+//       try {
+//         setLoading(true);
+//         const res = await fetch("http://localhost:3000/edit/room");
+//         if (!res.ok) throw new Error(`HTTP error: ${res.status}`);
+//         const data = await res.json();
+//         setRooms(data);
+//       } catch (err: any) {
+//         setError(err.message);
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+//     fetchRooms();
+//   }, []);
 
-  const lowerfloor = () => {
-    if (floor > 1) setFloor(floor - 1);
-  };
+  useEffect(() => {
+    setLoading(false);
+    const mockData = [
+      { room: "A", floor: 1 },
+      { room: "B", floor: 1 },
+      { room: "C", floor: 2 },
+      { room: "D", floor: 3 },
+    ];
+    setRooms(mockData);
+  }, []);
 
+  const upperfloor = () => floor < maxfloor && setFloor(floor + 1);
+  const lowerfloor = () => floor > 1 && setFloor(floor - 1);
   const changeDate = (days: number) => {
-    setSelectedDate((prev) => {
-      const newDate = new Date(prev);
-      newDate.setDate(prev.getDate() + days);
-      return newDate;
-    });
+    const newDate = new Date(selectedDate);
+    newDate.setDate(selectedDate.getDate() + days);
+    setSelectedDate(newDate);
   };
 
   const formatted = selectedDate.toLocaleDateString("en-GB", {
@@ -28,6 +51,8 @@ export default function BookingRoom() {
     month: "short",
     day: "numeric",
   });
+
+  const filteredRooms = rooms.filter((r) => r.floor === floor);
 
   return (
     <div className="booking-container">
@@ -52,24 +77,30 @@ export default function BookingRoom() {
           </button>
         </div>
 
-        <div className="room-grid">
-          {[...Array(5)].map((_, i) => (
-            <Link
-              key={i}
-              href={{
-                pathname: "/edit/booking-room/detail",
-                query: {
-                  room: `${i + 1}`,
-                  floor: floor,
-                  date: formatted,
-                },
-              }}
-              className="room-box"
-            >
-              Room {i + 1}
-            </Link>
-          ))}
-        </div>
+        {loading ? (
+          <p className="loading-text">Loading rooms...</p>
+        ) : error ? (
+          <p className="error-text">Error: {error}</p>
+        ) : (
+          <div className="room-grid">
+            {filteredRooms.length > 0 ? (
+              filteredRooms.map((r, i) => (
+                <Link
+                  key={i}
+                  href={{
+                    pathname: "/edit/booking-room/detail",
+                    query: { room: r.room, floor: floor, date: formatted },
+                  }}
+                  className="room-box"
+                >
+                  Room {r.room}
+                </Link>
+              ))
+            ) : (
+              <p className="no-room">No rooms on this floor</p>
+            )}
+          </div>
+        )}
       </main>
     </div>
   );
