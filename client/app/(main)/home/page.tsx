@@ -1,5 +1,6 @@
 "use client";
 import Image from "next/image";
+import Link from "next/link";
 import "./home.css";
 
 export default function Home() {
@@ -12,16 +13,22 @@ export default function Home() {
 
     return (
         <div className="maindiv">
-            <main>
-                <div className="flex flex-col">
-                    <button type="button" className="border-1 m-3 p-3">
-                        <a href="/group">Group</a>
-                    </button>
-                    <button type="button" className="border-1 m-3 p-3">
-                        <a href="/individual">Individual</a>
-                    </button>
+            <main className="min-[431px]:flex min-[431px]:flex-row min-[431px]:justify-center ">
+                <div className="flex flex-col min-[431px]:justify-center">
+                    <Link
+                        href="/group"
+                        className="border m-3 p-3 text-center flex justify-center items-center min-[431px]:w-100 min-[431px]:h-40 min-[431px]:text-xl "
+                    >
+                        Group
+                    </Link>
+                    <Link
+                        href="/individual"
+                        className="border m-3 p-3 text-center flex items-center justify-center min-[431px]:w-100 min-[431px]:h-40 min-[431px]:text-xl"
+                    >
+                        Individual
+                    </Link>
                 </div>
-                <div className="border-2 m-5">
+                <div className="border-2 m-5 min-[431px]:max-w-140">
                     <div className="block p-3">
                         <h1>Welcome,</h1>
                         <div className="flex flex-row space-x-5 justify-start mt-3">
@@ -42,7 +49,7 @@ export default function Home() {
                     </div>
                     <div className="block pb-3 pl-3 pr-3">
                         <h1>Today</h1>
-                        <div className="border-1 flex flex-row justify-start p-3 space-x-5">
+                        <div className="border flex flex-row justify-start p-3 space-x-5">
                             <div className="text-center">
                                 <p>08:00</p>
                                 <p>to</p>
@@ -56,7 +63,7 @@ export default function Home() {
                     </div>
                     <div className="block pb-3 pl-3 pr-3">
                         <h1>Friday</h1>
-                        <div className="border-1 flex flex-row justify-start p-3 space-x-5">
+                        <div className="border flex flex-row justify-start p-3 space-x-5">
                             <div className="text-center">
                                 <p>13:00</p>
                                 <p>to</p>
@@ -70,7 +77,7 @@ export default function Home() {
                     </div>
                     <div className="block pb-3 pl-3 pr-3">
                         <h1>Sunday</h1>
-                        <div className="border-1 flex flex-row justify-start p-3 space-x-5">
+                        <div className="border flex flex-row justify-start p-3 space-x-5">
                             <div className="text-center">
                                 <p>09:00</p>
                                 <p>to</p>
