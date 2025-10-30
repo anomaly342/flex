@@ -1,5 +1,6 @@
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
@@ -36,4 +37,7 @@ export class Order {
 
   @Column()
   price: number;
+
+  @CreateDateColumn()
+  createdAt: Date;
 }

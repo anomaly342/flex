@@ -22,6 +22,7 @@ import { Room } from './entities/Room.entity';
 import { Transaction } from './entities/Transaction.entity';
 import { User } from './entities/User.entity';
 import { Zone } from './entities/Zone.entity';
+import { OrdersModule } from './orders/orders.module';
 import { RoomsModule } from './rooms/rooms.module';
 import { TransactionModule } from './transaction/transaction.module';
 import { ZonesModule } from './zones/zones.module';
@@ -52,6 +53,7 @@ const ENV = process.env.NODE_ENV;
     TransactionModule,
     CouponsModule,
     ZonesModule,
+    OrdersModule,
   ],
   controllers: [AppController],
   providers: [AppService, SeederService],
@@ -62,7 +64,8 @@ export class AppModule implements NestModule, OnApplicationBootstrap {
     consumer
       .apply(cookieParser(), AuthMiddleware)
       .exclude(
-        { path: 'authentication/(.*)', method: RequestMethod.ALL },
+        { path: 'authentication/login', method: RequestMethod.ALL },
+        { path: 'authentication/register', method: RequestMethod.ALL },
         { path: 'transaction/stripe', method: RequestMethod.ALL }, // exclude Stripe webhook
       )
       .forRoutes('*');

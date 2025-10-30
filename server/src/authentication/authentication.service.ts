@@ -50,4 +50,13 @@ export class AuthenticationService {
       return null;
     }
   }
+
+  async userInfo(user_id: number) {
+    const user = await this.usersRepository.findOne({
+      where: { user_id: user_id },
+      select: ['username', 'user_id', 'role', 'point', 'exp_date'],
+    });
+
+    return user;
+  }
 }
