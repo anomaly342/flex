@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import "./details.css";
 
-export default function Profile() {
+export default function ZoneDetail() {
     const sp = useSearchParams();
     const zone = sp.get("zone") ?? "N/A";
     const floor = sp.get("floor") ?? "N/A";
@@ -47,26 +47,24 @@ export default function Profile() {
 
     return (
         <div className="maindiv">
-            <main className="space-y-4">
-                <div className="flex flex-col items-center">
-                    <h1 className="font-bold">Zone {zone}</h1>
-                    <h2>Floor {floor}</h2>
+            <main>
+                <div className="zone-name">
+                    <p className="zone-text">Zone {zone}</p>
+                    <p className="floor-text">Floor {floor}</p>
                 </div>
                 <hr />
-                <div className="flex flex-col justify-center items-center space-y-4">
-                    <div className="border-1 ">
+                <div className="zone-detail">
+                    <div className="pics">
                         <p className="p-20">Photo</p>
                     </div>
-                    <div>
-                        <p className="font-semibold mb-1">
-                            Japanese-Themed Office
-                        </p>
+                    <div className="detail-text">
+                        <p className="detail-header">Japanese-Themed Office</p>
 
                         <p>
                             A serene, private workspace inspired by traditional
                             Japanese design. The office features:
                         </p>
-                        <ul className="list-disc list-inside mt-2">
+                        <ul className="detail-list">
                             <li>
                                 Minimalist wooden desk and ergonomic seating
                             </li>
@@ -86,17 +84,14 @@ export default function Profile() {
                         </p>
                     </div>
                 </div>
-                <button
-                    onClick={() => setShowModal(true)}
-                    className="px-6 py-2 border rounded hover:bg-gray-100"
-                >
+                <button onClick={() => setShowModal(true)} className="book-btn">
                     Book
                 </button>
                 {showModal && (
-                    <div className="fixed inset-0 bg-black/70 flex items-center justify-center">
-                        <div className="bg-white rounded-xl p-6 w-72 shadow-lg">
+                    <div className="booking-section">
+                        <div className="booking-section2">
                             {/* Time list */}
-                            <div className="max-h-60 overflow-y-auto mb-4 border rounded">
+                            <div className="time-mapping">
                                 {times.map((time) => (
                                     <div
                                         key={time}
@@ -113,27 +108,27 @@ export default function Profile() {
                             </div>
 
                             {/* Date selector */}
-                            <div className="flex items-center justify-center gap-2 mb-4">
+                            <div className="date-section">
                                 <button
                                     onClick={() => changeDate(-1)}
-                                    className="px-2 py-1 border rounded"
+                                    className="date-btn"
                                 >
                                     &lt;
                                 </button>
-                                <p className="font-semibold">{formattedDate}</p>
+                                <p className="date-text">{formattedDate}</p>
                                 <button
                                     onClick={() => changeDate(1)}
-                                    className="px-2 py-1 border rounded"
+                                    className="date-btn"
                                 >
                                     &gt;
                                 </button>
                             </div>
 
                             {/* Buttons */}
-                            <div className="flex justify-between">
+                            <div className="button-section">
                                 <button
                                     onClick={() => setShowModal(false)}
-                                    className="px-3 py-2 bg-gray-800 text-white rounded"
+                                    className="cancel-btn"
                                 >
                                     Cancel
                                 </button>
