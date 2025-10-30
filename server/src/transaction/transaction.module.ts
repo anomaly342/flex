@@ -6,11 +6,14 @@ import { Order } from 'src/entities/Order.entity';
 import { Room } from 'src/entities/Room.entity';
 import { Transaction } from 'src/entities/Transaction.entity';
 import { User } from 'src/entities/User.entity';
+import { Zone } from 'src/entities/Zone.entity';
 import { TransactionController } from './transaction.controller';
 import { TransactionService } from './transaction.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Room, Order, Transaction, Coupon, User])],
+  imports: [
+    TypeOrmModule.forFeature([Room, Order, Transaction, Coupon, User, Zone]),
+  ],
   providers: [TransactionService, S3Client],
   controllers: [TransactionController],
 })

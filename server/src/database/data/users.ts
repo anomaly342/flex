@@ -9,7 +9,7 @@ export const users: Array<{
 }> = [
   { username: 'alice', password: 'password123', role: 'user', point: 10 },
   { username: 'bob', password: 'qwerty456', role: 'member', point: 50 },
-  { username: 'charlie', password: 'abc123', role: 'user', point: 20 },
+  { username: 'charlie', password: 'abc123', role: 'admin', point: 20 },
   { username: 'dave', password: 'pass789', role: 'user', point: 5 },
   { username: 'eve', password: 'mypassword', role: 'member', point: 30 },
   { username: 'frank', password: 'letmein', role: 'user', point: 15 },

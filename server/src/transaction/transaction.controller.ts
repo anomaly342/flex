@@ -91,7 +91,6 @@ export class TransactionController {
       request.rawBody as Buffer<ArrayBufferLike>,
       signature,
     );
-    console.log('test');
     if (result) {
       return response.sendStatus(200);
     } else {

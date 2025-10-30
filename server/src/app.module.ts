@@ -24,6 +24,7 @@ import { User } from './entities/User.entity';
 import { Zone } from './entities/Zone.entity';
 import { RoomsModule } from './rooms/rooms.module';
 import { TransactionModule } from './transaction/transaction.module';
+import { ZonesModule } from './zones/zones.module';
 const ENV = process.env.NODE_ENV;
 @Module({
   imports: [
@@ -50,6 +51,7 @@ const ENV = process.env.NODE_ENV;
     RoomsModule,
     TransactionModule,
     CouponsModule,
+    ZonesModule,
   ],
   controllers: [AppController],
   providers: [AppService, SeederService],

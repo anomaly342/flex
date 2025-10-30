@@ -8,6 +8,7 @@ import { Order } from 'src/entities/Order.entity';
 import { Room } from 'src/entities/Room.entity';
 import { Transaction } from 'src/entities/Transaction.entity';
 import { User } from 'src/entities/User.entity';
+import { Zone } from 'src/entities/Zone.entity';
 import { default as Stripe, default as stripe } from 'stripe';
 import { LessThan, MoreThan, Repository } from 'typeorm';
 import {
@@ -29,6 +30,9 @@ export class TransactionService {
 
     @InjectRepository(User)
     private usersRepository: Repository<User>,
+
+    @InjectRepository(Zone)
+    private zonesRepository: Repository<Zone>,
 
     private s3Client: S3Client,
   ) {
@@ -159,7 +163,64 @@ export class TransactionService {
 
       return result;
     } else {
-      return 1;
+      const zone = await this.zonesRepository.findOne({
+        where: {
+          zone_id: id,
+        },
+      });
+
+      if (!zone) {
+        return null;
+      }
+
+      const overlappingCount = await this.ordersRepository.count({
+        where: {
+          zone: { zone_id: id },
+          start_time: LessThan(end_time),
+          end_time: MoreThan(start_time),
+        },
+      });
+
+      if (overlappingCount >= 50) {
+        return null;
+      }
+
+      const start = start_time.getHours();
+      const end = end_time.getHours();
+      const total_hour = end - start;
+      const price_per_unit = 40;
+      const total_price = total_hour * price_per_unit;
+      const transaction = this.transactionRepository.create();
+      const discount_list: string[] = [];
+      let total_discount_percentage = 0;
+
+      const isHoliday = holidays.some((e) => {
+        return (
+          e.getDate() === start_time.getDate() &&
+          e.getMonth() === start_time.getMonth()
+        );
+      });
+
+      if (isHoliday) {
+        total_discount_percentage += 0.15;
+        discount_list.push('Holiday promotion');
+      }
+
+      transaction.user = { user_id: user_id };
+      transaction.price_before_discount = total_price;
+      transaction.price = total_price - total_price * total_discount_percentage;
+      transaction.createdAt = new Date();
+      transaction.status = 'pending';
+      transaction.start_time = start_time;
+      transaction.end_time = end_time;
+      transaction.price_per_unit = price_per_unit;
+      transaction.total_hour = total_hour;
+      transaction.total_discount_percentage = total_discount_percentage;
+      transaction.discount_list = discount_list;
+      transaction.zone_id = id;
+      const result = await this.transactionRepository.save(transaction);
+
+      return result;
     }
   }
 
@@ -305,7 +366,7 @@ export class TransactionService {
       ],
       mode: 'payment',
       metadata: { transaction_id: transaction_id.toString() },
-      success_url: `${process.env.FRONTEND_URL}/payment-success?transaction_id=${transaction_id}`,
+      success_url: `${process.env.FRONTEND_URL}/success?transaction_id=${transaction_id}`,
       cancel_url: `${process.env.FRONTEND_URL}/payment-failed`,
     });
 
@@ -366,6 +427,16 @@ export class TransactionService {
           const result = await this.ordersRepository.insert({
             user: { user_id: user_id },
             room: { room_id: transaction.room_id },
+            start_time: start_time,
+            end_time: end_time,
+            price: price,
+            qr_url: url,
+          });
+          return result;
+        } else {
+          const result = await this.ordersRepository.insert({
+            user: { user_id: user_id },
+            zone: { zone_id: transaction.zone_id },
             start_time: start_time,
             end_time: end_time,
             price: price,

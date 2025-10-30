@@ -2,6 +2,7 @@ import {
   Body,
   ConflictException,
   Controller,
+  Get,
   Post,
   Res,
   UnauthorizedException,
@@ -45,5 +46,10 @@ export class AuthenticationController {
     } else {
       throw new UnauthorizedException();
     }
+  }
+
+  @Get('logout')
+  async logout(@Res() response: express.Response) {
+    return response.clearCookie('jwt').sendStatus(200);
   }
 }

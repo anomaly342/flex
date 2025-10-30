@@ -5,10 +5,12 @@ import {
 } from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
 import * as jwt from 'jsonwebtoken';
+import { UserRoleType } from 'src/entities/User.entity';
 
 type Payload = {
   id: number;
   username: string;
+  role: UserRoleType;
   iat: EpochTimeStamp;
   exp: EpochTimeStamp;
 };

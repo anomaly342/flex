@@ -7,18 +7,50 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Put,
   Query,
   Req,
   Res,
+  UnauthorizedException,
 } from '@nestjs/common';
 import express from 'express';
-import { RemainingQueries, RoomOrder, RoomQueries } from './rooms.dto';
+import {
+  EditRoomBody,
+  RemainingQueries,
+  RoomOrder,
+  RoomQueries,
+} from './rooms.dto';
 import { RoomsOrderPipe } from './rooms.pipe';
 import { RoomsService } from './rooms.service';
 
 @Controller('rooms')
 export class RoomsController {
   constructor(private readonly roomsService: RoomsService) {}
+
+  @Get()
+  async rooms() {
+    const result = await this.roomsService.rooms();
+    return result;
+  }
+
+  @Put()
+  async editRoom(
+    @Body() editRoomBody: EditRoomBody,
+    @Res() response: express.Response,
+    @Req() request: express.Request,
+  ) {
+    const role = request.user.role;
+    if (role !== 'admin') {
+      throw new UnauthorizedException();
+    }
+    const result = await this.roomsService.editRoom(editRoomBody);
+
+    if (result) {
+      response.sendStatus(200);
+    } else {
+      throw new NotFoundException();
+    }
+  }
 
   @Get('search')
   async roomLayout(@Query() queries: RoomQueries) {

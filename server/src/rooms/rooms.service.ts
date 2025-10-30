@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Order } from 'src/entities/Order.entity';
 import { Room } from 'src/entities/Room.entity';
 import { LessThan, MoreThan, Repository } from 'typeorm';
-import { RoomOrder, RoomQueries } from './rooms.dto';
+import { EditRoomBody, RoomOrder, RoomQueries } from './rooms.dto';
 
 @Injectable()
 export class RoomsService {
@@ -13,6 +13,25 @@ export class RoomsService {
     @InjectRepository(Order)
     private ordersRepository: Repository<Order>,
   ) {}
+
+  async rooms() {
+    return await this.roomsRepository.find({
+      select: ['room_id', 'room_no', 'room_floor'],
+    });
+  }
+
+  async editRoom(editRoomBody: EditRoomBody) {
+    const result = await this.roomsRepository.update(
+      { room_id: editRoomBody.room_id },
+      { ...editRoomBody },
+    );
+
+    if (result.affected === 0) {
+      return null;
+    } else {
+      return true;
+    }
+  }
 
   async roomLayout(queries: RoomQueries) {
     const { date, floor } = queries;
