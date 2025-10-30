@@ -113,7 +113,7 @@ export class RoomsService {
       start_time: start_time,
       end_time: end_time,
       price: 5000,
-      qr: { qr_id: 1 },
+      qr_url: 'something',
     });
 
     return result;

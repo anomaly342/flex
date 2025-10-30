@@ -1,11 +1,14 @@
+import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import QRCode from 'qrcode';
 import { holidays } from 'src/database/data/holidays';
 import { Coupon } from 'src/entities/Coupon.entity';
 import { Order } from 'src/entities/Order.entity';
 import { Room } from 'src/entities/Room.entity';
 import { Transaction } from 'src/entities/Transaction.entity';
 import { User } from 'src/entities/User.entity';
+import { default as Stripe, default as stripe } from 'stripe';
 import { LessThan, MoreThan, Repository } from 'typeorm';
 import {
   AddCouponQuery,
@@ -26,7 +29,34 @@ export class TransactionService {
 
     @InjectRepository(User)
     private usersRepository: Repository<User>,
-  ) {}
+
+    private s3Client: S3Client,
+  ) {
+    this.s3Client = new S3Client({
+      region: 'auto', // R2 uses 'auto'
+      endpoint: process.env.R2_URL,
+      credentials: {
+        accessKeyId: process.env.R2_ACCESS as string,
+        secretAccessKey: process.env.R2_SECRET as string,
+      },
+    });
+  }
+
+  async uploadFile(fileName: string, data: Buffer, contentType: string) {
+    const command = new PutObjectCommand({
+      Bucket: process.env.R2_BUCKET_NAME,
+      Key: fileName,
+      Body: data,
+      ContentType: contentType,
+      ACL: 'public-read', // optional: make it public
+    });
+
+    await this.s3Client.send(command);
+
+    // Public URL format for R2:
+    return `https://${process.env.R2_BUCKET_NAME}.${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com/${fileName}`;
+  }
+
   async summary(summaryQuery: SummaryQuery, user_id: number) {
     const { id, type, start_time, end_time } = summaryQuery;
     if (type === 'room') {
@@ -102,7 +132,6 @@ export class TransactionService {
       let total_discount_percentage = 0;
 
       const isHoliday = holidays.some((e) => {
-        console.log(e.toUTCString());
         return (
           e.getDate() === start_time.getDate() &&
           e.getMonth() === start_time.getMonth()
@@ -148,6 +177,8 @@ export class TransactionService {
     } else if (
       transaction.coupons.some((e) => Number(e.coupon_id) === Number(coupon_id))
     ) {
+      return null;
+    } else if (transaction.status === 'paid') {
       return null;
     }
 
@@ -200,6 +231,8 @@ export class TransactionService {
       return null;
     } else if (transaction.user.user_id !== user_id) {
       return null;
+    } else if (transaction.status === 'paid') {
+      return null;
     }
 
     const user = await this.usersRepository.findOne({
@@ -238,5 +271,108 @@ export class TransactionService {
     delete transaction.user.exp_date;
 
     return transaction;
+  }
+
+  async createPayment(transaction_id: number, user_id: number) {
+    const transaction = await this.transactionRepository.findOne({
+      where: { id: transaction_id },
+      relations: ['user'],
+    });
+    if (!transaction) {
+      return null;
+    } else if (transaction.user.user_id !== user_id) {
+      return null;
+    } else if (transaction.status === 'paid') {
+      return null;
+    }
+
+    const stripe = new Stripe(process.env.STRIPE_KEY as string, {
+      apiVersion: '2025-10-29.clover',
+    });
+
+    // Create a payment link
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['promptpay'],
+      line_items: [
+        {
+          price_data: {
+            currency: 'thb',
+            product_data: { name: 'Room Booking' },
+            unit_amount: Math.round(transaction.price * 100),
+          },
+          quantity: 1,
+        },
+      ],
+      mode: 'payment',
+      metadata: { transaction_id: transaction_id.toString() },
+      success_url: `${process.env.FRONTEND_URL}/payment-success?transaction_id=${transaction_id}`,
+      cancel_url: `${process.env.FRONTEND_URL}/payment-failed`,
+    });
+
+    return session.url;
+  }
+
+  async handleWebhook(body: Buffer<ArrayBufferLike>, signature: string) {
+    const endpointSecret = process.env.SECRET_ENDPOINT_KEY as string;
+
+    let event: Stripe.Event;
+
+    try {
+      event = stripe.webhooks.constructEvent(body, signature, endpointSecret);
+    } catch (err) {
+      return null;
+    }
+
+    switch (event.type) {
+      case 'checkout.session.completed':
+        const session = event.data.object as Stripe.Checkout.Session;
+        const transaction_id = session.metadata?.transaction_id;
+
+        const transaction = (await this.transactionRepository.findOne({
+          where: {
+            id: transaction_id as any,
+          },
+          relations: ['user'],
+        })) as Transaction;
+
+        transaction.status = 'paid';
+        await this.transactionRepository.save(transaction);
+
+        const buffer = await QRCode.toBuffer(JSON.stringify(transaction));
+
+        const fileName = `qr-${Date.now()}.png`;
+        const url = await this.uploadFile(fileName, buffer, 'image/png');
+
+        const start_time = transaction.start_time;
+        const end_time = transaction.end_time;
+        const user_id = transaction.user.user_id;
+        const price = transaction.price;
+
+        if (transaction.room_id) {
+          const Isoverlapped = await this.ordersRepository.findOne({
+            where: [
+              {
+                room: { room_id: transaction.room_id },
+                start_time: LessThan(end_time),
+                end_time: MoreThan(start_time),
+              },
+            ],
+          });
+
+          if (Isoverlapped) {
+            return null;
+          }
+
+          const result = await this.ordersRepository.insert({
+            user: { user_id: user_id },
+            room: { room_id: transaction.room_id },
+            start_time: start_time,
+            end_time: end_time,
+            price: price,
+            qr_url: url,
+          });
+          return result;
+        }
+    }
   }
 }

@@ -3,6 +3,7 @@ import {
   Module,
   NestModule,
   OnApplicationBootstrap,
+  RequestMethod,
 } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -41,7 +42,7 @@ const ENV = process.env.NODE_ENV;
       database: process.env.DB_NAME,
       entities: [User, Room, Zone, QR, Order, Transaction, Coupon],
       synchronize: ENV === 'development' ? true : false,
-      dropSchema: true,
+      dropSchema: false,
       ssl: true,
     }),
     AuthenticationModule,
@@ -58,7 +59,10 @@ export class AppModule implements NestModule, OnApplicationBootstrap {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(cookieParser(), AuthMiddleware)
-      .exclude('authentication/*path')
+      .exclude(
+        { path: 'authentication/(.*)', method: RequestMethod.ALL },
+        { path: 'transaction/stripe', method: RequestMethod.ALL }, // exclude Stripe webhook
+      )
       .forRoutes('*');
   }
 

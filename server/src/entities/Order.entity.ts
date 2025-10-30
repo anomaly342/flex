@@ -5,7 +5,6 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { QR } from './QR.entity';
 import { Room } from './Room.entity';
 import { User } from './User.entity';
 import { Zone } from './Zone.entity';
@@ -26,9 +25,8 @@ export class Order {
   @JoinColumn({ name: 'zone_id' })
   zone: Zone | null;
 
-  @ManyToOne(() => QR, { nullable: false })
-  @JoinColumn({ name: 'qr_id' })
-  qr: QR;
+  @Column()
+  qr_url: string;
 
   @Column({ type: 'timestamptz' })
   start_time: Date;

@@ -1,3 +1,4 @@
+import { S3Client } from '@aws-sdk/client-s3';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Coupon } from 'src/entities/Coupon.entity';
@@ -10,7 +11,7 @@ import { TransactionService } from './transaction.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Room, Order, Transaction, Coupon, User])],
-  providers: [TransactionService],
+  providers: [TransactionService, S3Client],
   controllers: [TransactionController],
 })
 export class TransactionModule {}
