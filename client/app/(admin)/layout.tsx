@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import "./admin.css";
 
@@ -14,14 +14,48 @@ export default function AdminLayout({
 
   const handleLinkClick = () => setOpen(false);
 
+  const [theme, setTheme] = useState<boolean>(false);
+
+  useEffect(() => {
+    const changeThemeBtn = document.getElementById("change-theme-btn");
+
+    if (changeThemeBtn) {
+      changeThemeBtn.addEventListener("click", () => {
+        setTheme((prev) => !prev);
+      });
+    }
+
+    return () => {
+      if (changeThemeBtn) {
+        changeThemeBtn.removeEventListener("click", () =>
+          setTheme((prev) => !prev)
+        );
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    const navbar = document.getElementById("id-admin-navbar");
+    if (!navbar) return;
+
+    if (theme) {
+      navbar.classList.add("green-theme");
+      navbar.classList.remove("blue-theme");
+    } else {
+      navbar.classList.add("blue-theme");
+      navbar.classList.remove("green-theme");
+    }
+
+  }, [theme])
+
   return (
     <div className="admin-layout">
-      <nav className="admin-navbar">
+      <nav id="id-admin-navbar" className="admin-navbar">
         <div className="navbar-header">
           <button className="menu-btn" onClick={toggleNavbar}>
             Menu
           </button>
-          <h3>Admin Panel</h3>
+          <button id="change-theme-btn">Change Theme</button>
         </div>
 
         <div className={`navbar-links ${open ? "show" : ""}`}>

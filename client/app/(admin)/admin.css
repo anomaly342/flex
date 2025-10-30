@@ -31,6 +31,14 @@
   cursor: pointer;
 }
 
+#change-theme-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
+
 .navbar-links {
   display: none;
   flex-direction: column;
@@ -46,6 +54,16 @@
 
 .navbar-links.show {
   display: flex;
+}
+
+.admin-navbar.blue-theme {
+  background-color: #1e40af;
+  transition: background-color 0.3s ease;
+}
+
+.admin-navbar.green-theme {
+  background-color: #1eaf3d;
+  transition: background-color 0.3s ease;
 }
 
 @keyframes slideDown {

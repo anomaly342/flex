@@ -87,7 +87,7 @@ export default function DashboardPage() {
   }, []);
 
   return (
-    <div className="dashboard-container">
+    <div id="id-dashboard-container" className="dashboard-container">
       <div
         className="total-order"
         onClick={goTo("/dashboard/summary/total-order")}
