@@ -33,18 +33,25 @@ ChartJS.register(
 );
 
 type Duration = "Weekly" | "Monthly" | "Yearly";
+type YearRangeOption = "current" | "1" | "3" | "5" | "all";
 
 type FilterType =
   | "booking_account"
-  | "total_account"
   | "booking_room"
-  | "total_room"
   | "booking_zone"
-  | "total_zone"
-  | "price";
+  | "income";
+
+interface BookingItem {
+  type: string;
+  no: string;
+  startBooking: string;
+  endBooking?: string;
+  price: number;
+}
 
 export default function SummaryPage() {
   const [duration, setDuration] = useState<Duration>("Weekly");
+  const [yearRange, setYearRange] = useState<YearRangeOption>("current");
   const [filters, setFilters] = useState<FilterType[]>(["booking_account"]);
   const [dataPreview, setDataPreview] = useState<any[]>([]);
   const [selectedRange, setSelectedRange] = useState<{
@@ -61,171 +68,173 @@ export default function SummaryPage() {
   const [dragStart, setDragStart] = useState<number | null>(null);
   const [dragEnd, setDragEnd] = useState<number | null>(null);
 
-  // ✅ Mock data ปัจจุบัน
-  const mockData = [
-    {
-      date: "2025-10-20",
-      booking_account: 50,
-      total_account: 401,
-      booking_room: 100,
-      total_room: 120,
-      booking_zone: 60,
-      total_zone: 90,
-      price: 1200,
-    },
-    {
-      date: "2025-10-21",
-      booking_account: 60,
-      total_account: 403,
-      booking_room: 110,
-      total_room: 130,
-      booking_zone: 75,
-      total_zone: 95,
-      price: 1500,
-    },
-    {
-      date: "2025-10-22",
-      booking_account: 80,
-      total_account: 412,
-      booking_room: 130,
-      total_room: 150,
-      booking_zone: 85,
-      total_zone: 100,
-      price: 1700,
-    },
-    {
-      date: "2025-10-23",
-      booking_account: 100,
-      total_account: 423,
-      booking_room: 160,
-      total_room: 180,
-      booking_zone: 95,
-      total_zone: 110,
-      price: 2100,
-    },
-    {
-      date: "2025-10-24",
-      booking_account: 120,
-      total_account: 447,
-      booking_room: 180,
-      total_room: 200,
-      booking_zone: 105,
-      total_zone: 120,
-      price: 2600,
-    },
-    {
-      date: "2025-10-25",
-      booking_account: 111,
-      total_account: 449,
-      booking_room: 195,
-      total_room: 200,
-      booking_zone: 112,
-      total_zone: 120,
-      price: 2400,
-    },
-    {
-      date: "2025-10-26",
-      booking_account: 235,
-      total_account: 461,
-      booking_room: 110,
-      total_room: 200,
-      booking_zone: 1,
-      total_zone: 120,
-      price: 3000,
-    },
-  ];
+  const colorMap: Record<FilterType, string> = {
+    booking_account: "rgb(255,99,132)",
+    booking_room: "rgb(255,206,86)",
+    booking_zone: "rgb(153,102,255)",
+    income: "rgb(0,200,0)",
+  };
 
-  // ✅ Mock data ปีที่แล้ว (ใช้เทียบ)
-  const mockLastYear = [
-    {
-      date: "2024-10-20",
-      booking_account: 30,
-      total_account: 380,
-      booking_room: 90,
-      total_room: 110,
-      booking_zone: 50,
-      total_zone: 85,
-      price: 900,
-    },
-    {
-      date: "2024-10-21",
-      booking_account: 40,
-      total_account: 385,
-      booking_room: 95,
-      total_room: 115,
-      booking_zone: 55,
-      total_zone: 87,
-      price: 1100,
-    },
-    {
-      date: "2024-10-22",
-      booking_account: 60,
-      total_account: 390,
-      booking_room: 100,
-      total_room: 120,
-      booking_zone: 60,
-      total_zone: 90,
-      price: 1300,
-    },
-    {
-      date: "2024-10-23",
-      booking_account: 70,
-      total_account: 400,
-      booking_room: 110,
-      total_room: 130,
-      booking_zone: 65,
-      total_zone: 92,
-      price: 1600,
-    },
-    {
-      date: "2024-10-24",
-      booking_account: 85,
-      total_account: 420,
-      booking_room: 120,
-      total_room: 140,
-      booking_zone: 70,
-      total_zone: 95,
-      price: 1800,
-    },
-    {
-      date: "2024-10-25",
-      booking_account: 100,
-      total_account: 430,
-      booking_room: 125,
-      total_room: 150,
-      booking_zone: 75,
-      total_zone: 100,
-      price: 2000,
-    },
-    {
-      date: "2024-10-26",
-      booking_account: 150,
-      total_account: 440,
-      booking_room: 130,
-      total_room: 160,
-      booking_zone: 80,
-      total_zone: 110,
-      price: 2200,
-    },
-  ];
+  const parseDate = (dateStr: string) => {
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) {
+      return new Date(Date.parse(dateStr));
+    }
+    return d;
+  };
 
-  // ✅ Fetch จาก backend (mock ไว้)
+  const getYear = (d: Date) => d.getFullYear();
+
+  const getISOWeek = (d0: Date) => {
+    const d = new Date(Date.UTC(d0.getFullYear(), d0.getMonth(), d0.getDate()));
+    const dayNum = d.getUTCDay() || 7;
+    d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+    const weekNo = Math.ceil(
+      ((d.getTime() - yearStart.getTime()) / 86400000 + 1) / 7
+    );
+    return { year: d.getUTCFullYear(), week: weekNo };
+  };
+
+  const formatKeyAndLabel = (d: Date, duration: Duration) => {
+    if (duration === "Weekly") {
+      const { year, week } = getISOWeek(d);
+      const label = `${year}-W${String(week).padStart(2, "0")}`;
+      const tmp = new Date(d);
+      const day = tmp.getDay() || 7;
+      const monday = new Date(tmp);
+      monday.setDate(tmp.getDate() - (day - 1));
+      monday.setHours(0, 0, 0, 0);
+      return {
+        key: `${year}-W${String(week).padStart(2, "0")}`,
+        label,
+        keyDate: monday,
+      };
+    } else if (duration === "Monthly") {
+      const y = d.getFullYear();
+      const m = d.getMonth() + 1;
+      const label = `${y}-${String(m).padStart(2, "0")}`;
+      const keyDate = new Date(y, m - 1, 1);
+      return { key: `${y}-${String(m).padStart(2, "0")}`, label, keyDate };
+    } else {
+      const y = d.getFullYear();
+      const label = `${y}`;
+      const keyDate = new Date(y, 0, 1);
+      return { key: `${y}`, label, keyDate };
+    }
+  };
+
+  const computeYearBounds = (option: YearRangeOption) => {
+    const current = new Date().getFullYear();
+    if (option === "current") return { from: current, to: current };
+    if (option === "1") return { from: current - 1, to: current };
+    if (option === "3") return { from: current - 3, to: current };
+    if (option === "5") return { from: current - 5, to: current };
+    return { from: -Infinity, to: Infinity };
+  };
+
+  const aggregateBookings = (
+    accData: BookingItem[],
+    roomData: BookingItem[],
+    zoneData: BookingItem[],
+    durationFilter: Duration,
+    yearRangeOption: YearRangeOption
+  ) => {
+    const map: Record<
+      string,
+      {
+        key: string;
+        label: string;
+        keyDate: Date;
+        booking_account: number;
+        booking_room: number;
+        booking_zone: number;
+        income: number;
+      }
+    > = {};
+
+    const { from: yearFrom, to: yearTo } = computeYearBounds(yearRangeOption);
+
+    const add = (
+      item: BookingItem,
+      bucket: "booking_account" | "booking_room" | "booking_zone"
+    ) => {
+      const d = parseDate(item.startBooking);
+      if (isNaN(d.getTime())) return;
+      const y = getYear(d);
+      if (y < yearFrom || y > yearTo) return;
+
+      const { key, label, keyDate } = formatKeyAndLabel(d, durationFilter);
+
+      if (!map[key]) {
+        map[key] = {
+          key,
+          label,
+          keyDate,
+          booking_account: 0,
+          booking_room: 0,
+          booking_zone: 0,
+          income: 0,
+        };
+      }
+      map[key][bucket] += 1;
+      map[key].income += Number(item.price || 0);
+    };
+
+    accData.forEach((it) => add(it, "booking_account"));
+    roomData.forEach((it) => add(it, "booking_room"));
+    zoneData.forEach((it) => add(it, "booking_zone"));
+
+    return Object.values(map).sort(
+      (a, b) => a.keyDate.getTime() - b.keyDate.getTime()
+    );
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
+    let cancelled = false;
+
+    const fetchAll = async () => {
       try {
-        const res = await fetch("http://localhost:8080/api/export-data");
-        if (!res.ok) throw new Error("Network error");
-        const result = await res.json();
-        setDataPreview(result);
+        const base = "http://localhost:8080/api";
+        const [accRes, roomRes, zoneRes] = await Promise.all([
+          fetch(`${base}/booking-account`),
+          fetch(`${base}/booking-room`),
+          fetch(`${base}/booking-zone`),
+        ]);
+
+        if (!accRes.ok || !roomRes.ok || !zoneRes.ok) {
+          throw new Error("Network error while fetching booking APIs");
+        }
+
+        const [accData, roomData, zoneData] = await Promise.all([
+          accRes.json(),
+          roomRes.json(),
+          zoneRes.json(),
+        ]);
+
+        if (cancelled) return;
+
+        const aggregated = aggregateBookings(
+          accData,
+          roomData,
+          zoneData,
+          duration,
+          yearRange
+        );
+        setDataPreview(aggregated);
       } catch (err) {
-        console.warn("Fetch failed, using mock data:", err);
-        setDataPreview(mockData);
+        console.warn("Fetch error:", err);
+        setDataPreview([]);
       }
     };
-    fetchData();
-  }, [duration]);
 
-  // ✅ Mouse selection
+    fetchAll();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [duration, yearRange]);
+
   const handleMouseDown = (e: ReactMouseEvent<HTMLCanvasElement>) => {
     if (!chartRef.current) return;
     const chart = chartRef.current;
@@ -242,6 +251,7 @@ export default function SummaryPage() {
       setDragEnd(index);
     }
   };
+
   const handleMouseMove = (e: ReactMouseEvent<HTMLCanvasElement>) => {
     if (!isDragging || !chartRef.current) return;
     const chart = chartRef.current;
@@ -256,6 +266,7 @@ export default function SummaryPage() {
       setDragEnd(index);
     }
   };
+
   const handleMouseUp = () => {
     if (isDragging && dragStart !== null && dragEnd !== null) {
       const [start, end] = [dragStart, dragEnd].sort((a, b) => a - b);
@@ -267,30 +278,27 @@ export default function SummaryPage() {
   };
 
   const getFilteredData = () => {
-    if (selectedRange.start === null || selectedRange.end === null)
-      return dataPreview;
-    const [min, max] = [selectedRange.start, selectedRange.end].sort(
-      (a, b) => a - b
-    );
-    return dataPreview.slice(min, max + 1);
+    const { from: yearFrom, to: yearTo } = computeYearBounds(yearRange);
+
+    let filtered = dataPreview.filter((d) => {
+      const dYear = parseDate(d.date).getFullYear();
+      return dYear >= yearFrom && dYear <= yearTo;
+    });
+
+    if (selectedRange.start !== null && selectedRange.end !== null) {
+      const [min, max] = [selectedRange.start, selectedRange.end].sort(
+        (a, b) => a - b
+      );
+      filtered = filtered.slice(min, max + 1);
+    }
+
+    return filtered;
   };
 
   const filteredData = getFilteredData();
 
-  // ✅ สีแต่ละ filter
-  const colorMap: Record<FilterType, string> = {
-    booking_account: "rgb(255,99,132)",
-    total_account: "rgb(54,162,235)",
-    booking_room: "rgb(255,206,86)",
-    total_room: "rgb(75,192,192)",
-    booking_zone: "rgb(153,102,255)",
-    total_zone: "rgb(255,159,64)",
-    price: "rgb(0,200,0)",
-  };
-
-  // ✅ Line Chart
   const chartData: ChartData<"line"> = {
-    labels: filteredData.map((d) => d.date),
+    labels: filteredData.map((d) => d.label),
     datasets: filters.map((f) => ({
       label: f.replaceAll("_", " ").replace(/\b\w/g, (l) => l.toUpperCase()),
       data: filteredData.map((d) => d[f]),
@@ -302,7 +310,6 @@ export default function SummaryPage() {
     })),
   };
 
-  // ✅ ความต่างสะสม (Cumulative Difference)
   const cumulativeDiff = filteredData.map((_, i) => {
     if (i === 0) return 0;
     const prev = filteredData[i - 1];
@@ -314,16 +321,14 @@ export default function SummaryPage() {
     return acc;
   }, []);
 
-  // ✅ ความต่างเทียบปีที่แล้ว
   const yearlyDiff = filteredData.map((d, i) => {
-    const lastYear = mockLastYear[i];
-    if (!lastYear) return 0;
-    return filters.reduce((sum, f) => sum + (d[f] - lastYear[f]), 0);
+    if (i === 0) return 0;
+    const prev = filteredData[i - 1];
+    return filters.reduce((sum, f) => sum + (d[f] - prev[f]), 0);
   });
 
-  // ✅ กราฟวิเคราะห์ (Bar Chart)
   const analysisData: ChartData<"bar"> = {
-    labels: filteredData.map((d) => d.date),
+    labels: filteredData.map((d) => d.label),
     datasets: [
       ...filters.map((f) => ({
         label: f.replaceAll("_", " ").replace(/\b\w/g, (l) => l.toUpperCase()),
@@ -360,15 +365,31 @@ export default function SummaryPage() {
   return (
     <div className="export-container">
       <div className="export-top">
-        <label>Duration</label>
-        <select
-          value={duration}
-          onChange={(e) => setDuration(e.target.value as Duration)}
-        >
-          <option value="Weekly">Weekly</option>
-          <option value="Monthly">Monthly</option>
-          <option value="Yearly">Yearly</option>
-        </select>
+        <div className="duration">
+          <label>Duration</label>
+          <select
+            value={duration}
+            onChange={(e) => setDuration(e.target.value as Duration)}
+          >
+            <option value="Weekly">Weekly</option>
+            <option value="Monthly">Monthly</option>
+            <option value="Yearly">Yearly</option>
+          </select>
+        </div>
+
+        <div className="year-range">
+          <label>Year Range</label>
+          <select
+            value={yearRange}
+            onChange={(e) => setYearRange(e.target.value as YearRangeOption)}
+          >
+            <option value="current">Current</option>
+            <option value="1">Past 1 year</option>
+            <option value="3">Past 3 years</option>
+            <option value="5">Past 5 years</option>
+            <option value="all">All</option>
+          </select>
+        </div>
 
         <div className="filter-group">
           <label>Filters</label>
@@ -376,24 +397,18 @@ export default function SummaryPage() {
             {(
               [
                 "booking_account",
-                "total_account",
                 "booking_room",
-                "total_room",
                 "booking_zone",
-                "total_zone",
-                "price",
+                "income",
               ] as FilterType[]
             ).map((f) => (
-              <label
-                key={f}
-                style={{ display: "flex", alignItems: "center", gap: "4px" }}
-              >
+              <label key={f}>
                 <input
                   type="checkbox"
                   checked={filters.includes(f)}
                   onChange={() => handleFilterChange(f)}
                 />
-                {f.replaceAll("_", " ")}
+                <span>{f.replaceAll("_", " ")}</span>
               </label>
             ))}
           </div>
@@ -416,28 +431,31 @@ export default function SummaryPage() {
         )}
       </div>
 
-      <div className="export-bottom" style={{ marginTop: "10px" }}>
+      <div className="export-bottom">
         <button className="btn-clear" onClick={handleClearSelection}>
           Clear Selection
         </button>
+
         <button
           className="btn-analysis"
-          style={{ marginLeft: "10px" }}
           onClick={() => setShowAnalysis(!showAnalysis)}
         >
           {showAnalysis ? "Hide Analysis" : "Analysis"}
         </button>
       </div>
 
-      {selectedRange.start !== null && selectedRange.end !== null && (
-        <p>
-          Selected Range: {mockData[selectedRange.start].date} →{" "}
-          {mockData[selectedRange.end].date}
-        </p>
-      )}
+      {selectedRange.start !== null &&
+        selectedRange.end !== null &&
+        dataPreview[selectedRange.start] &&
+        dataPreview[selectedRange.end] && (
+          <p>
+            Selected Range: {dataPreview[selectedRange.start].label} →{" "}
+            {dataPreview[selectedRange.end].label}
+          </p>
+        )}
 
       {showAnalysis && (
-        <div className="analysis-chart" style={{ marginTop: "20px" }}>
+        <div className="analysis-chart">
           <h3>Analysis (Bar Chart)</h3>
           <Bar data={analysisData} />
         </div>

@@ -35,7 +35,7 @@ export default function BookingZonePage() {
   //     useEffect(() => {
   //     const fetchData = async () => {
   //       try {
-  //         const res = await fetch("http://localhost:3000/booking_account", {
+  //         const res = await fetch("http://localhost:3000/booking_zone", {
   //           method: "GET",
   //           credentials: "include",
   //         });
