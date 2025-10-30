@@ -3,7 +3,7 @@ import { useState } from "react";
 import Link from "next/link";
 import "./group.css";
 
-export default function Profile() {
+export default function GroupBooking() {
     const maxfloor = 20;
 
     const [floor, setFloor] = useState(1);
@@ -51,38 +51,33 @@ export default function Profile() {
 
     return (
         <div className="maindiv">
-            <main className="space-y-4">
-                <div className="flex flex-row justify-center space-x-5 ">
-                    <button
-                        className="border-1 p-2"
-                        onClick={() => changeDate(-1)}
-                    >
+            <main>
+                <div className="select-date">
+                    <button className="date-btn" onClick={() => changeDate(-1)}>
                         &lt;
                     </button>
-                    <div className="border-1 p-2">
+                    <div className="date-btn">
                         <p>{formatted}</p>
                     </div>
-                    <button
-                        className="border-1 p-2"
-                        onClick={() => changeDate(1)}
-                    >
+                    <button className="date-btn" onClick={() => changeDate(1)}>
                         &gt;
                     </button>
                 </div>
-                <div className="flex flex-row justify-center space-x-9">
-                    <button className="border-1 p-2" onClick={lowerfloor}>
+                <div className="select-floor">
+                    <button className="floor-btn" onClick={lowerfloor}>
                         &lt;
                     </button>
-                    <div className="border-1 p-2">
+                    <div className="floor-btn">
                         <p>{`Floor ${floor}`}</p>
                     </div>
-                    <button className="border-1 p-2" onClick={upperfloor}>
+                    <button className="floor-btn" onClick={upperfloor}>
                         &gt;
                     </button>
                 </div>
-                <div className="flex flex-wrap justify-center gap-5">
+                <div className="room-mapping">
                     {[...Array(5)].map((_, i) => (
                         <Link
+                            key={i}
                             href={{
                                 pathname: "/group/details",
                                 query: {
@@ -91,19 +86,16 @@ export default function Profile() {
                                     date: formatted,
                                 },
                             }}
-                            className="border p-5"
+                            className="room-link"
                         >
                             Room {i + 1}
                         </Link>
                     ))}
                 </div>
-                <div>
+                <div className="refresh-section">
                     <h2>Last update:</h2>
                     <p>{formatted2}</p>
-                    <button
-                        onClick={handleRefresh}
-                        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
-                    >
+                    <button onClick={handleRefresh} className="refresh-btn">
                         🔄
                     </button>
                 </div>
