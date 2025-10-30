@@ -12,8 +12,16 @@ export default function HomeLayout({
 }) {
     return (
         <>
-            {/* <Navbar /> */}
-            <main>{children}</main>
+            {/* mobile */}
+            <div className="hidden max-[431px]:flex max-[431px]:flex-col ">
+                {/* <Navbar /> */}
+                <main>{children}</main>
+            </div>
+            {/* Desktop */}
+            <div className="hidden min-[431px]:flex min-[431px]:flex-col">
+                {/* <DesktopNavbar /> */}
+                <main>{children}</main>
+            </div>
         </>
     );
 }
