@@ -1,48 +1,139 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 
-export default function Profile() {
+interface Room {
+  room_id: number;
+  room_no: string;
+  room_floor: number;
+}
+
+interface RoomDetail extends Room {
+  room_type: string;
+  room_detail: string;
+  room_img_url: string;
+}
+
+export default function RoomDetail() {
   const sp = useSearchParams();
-  const room = sp.get("room") ?? "N/A";
-  const floor = sp.get("floor") ?? "N/A";
+  const router = useRouter();
+  const room_id = sp.get("room_id");
 
   const [data, setData] = useState<any>(null);
   const [editData, setEditData] = useState<any>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-    // useEffect(() => {
-  //   async function fetchData() {
+  // useEffect(() => {
+  //   async function fetchRoomData() {
+  //     if (!room_id) return;
+
   //     try {
+  //       setLoading(true);
   //       const res = await fetch(
-  //         `http://localhost:3000/edit/room?room=${room}&floor=${floor}`,
-  //         { method: "GET" }
+  //         `http://localhost:3000/edit/room?room_id=${room_id}`,
+  //         {
+  //           method: "GET",
+  //         }
   //       );
+
+  //       if (!res.ok) throw new Error(`HTTP error: ${res.status}`);
 
   //       const json = await res.json();
   //       setData(json);
-  //       setEditData(json); // เก็บสำเนาไว้แก้ไข
-  //     } catch (err) {
+  //       setEditData(json);
+  //     } catch (err: any) {
   //       console.error("Fetch failed:", err);
+  //       setError(err.message);
+  //     } finally {
+  //       setLoading(false);
   //     }
   //   }
-  //   if (room !== "N/A" && floor !== "N/A") {
-  //     fetchData();
-  //   }
-  // }, [room, floor]);
 
-  // ✅ mock fetch
+  //   fetchRoomData();
+  // }, [room_id]);
+
   useEffect(() => {
-    const mockJson = {
-      title: `Room ${room} Floor ${floor}`,
-      description: "Mocked data for testing UI without backend.",
-      features: "Wi-Fi, Desk, AC, Mock Mode Enabled",
-      imageUrl: "https://via.placeholder.com/400x300?text=Mock+Room",
+    setLoading(false);
+    const mockData: Room[] = [
+      { room_id: 101, room_no: "101A", room_floor: 1 },
+      { room_id: 102, room_no: "102B", room_floor: 1 },
+      { room_id: 201, room_no: "201C", room_floor: 2 },
+      { room_id: 202, room_no: "202D", room_floor: 2 },
+    ];
+    const mockEditData: RoomDetail = {
+      room_id: 202,
+      room_no: "202D",
+      room_floor: 2,
+      room_type: "small_decorated",
+      room_detail:
+        "High-speed Wi-Fi, Ergonomic Desk, Air Conditioning, Sound-proofed walls, Private Bathroom",
+      room_img_url: "null",
     };
-    setData(mockJson);
-    setEditData(mockJson);
-  }, [room, floor]);
+    setData(mockData);
+    setEditData(mockEditData);
+  }, []);
+
+  const handleDelete = async () => {
+    if (!room_id) return;
+
+    const confirmDelete = confirm(
+      `Are you sure you want to delete room ${room_id}?`
+    );
+    if (!confirmDelete) return;
+
+    try {
+      const res = await fetch(
+        `http://localhost:3000/delete/room?room_id=${room_id}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (res.ok) {
+        alert("Room deleted successfully!");
+        router.push("/edit/booking-room");
+      } else {
+        const json = await res.json();
+        alert(`Delete failed: ${json.message || "unknown error"}`);
+      }
+    } catch (err) {
+      alert("Delete failed: network error");
+      console.error(err);
+    }
+  };
+
+  const handleConfirm = async () => {
+    try {
+      const formData = new FormData();
+      formData.append("room_id", room_id || "");
+      formData.append("room_no", editData.room_no || "");
+      formData.append("room_floor", editData.room_floor || "");
+      formData.append("room_type", editData.room_type || "");
+      formData.append("room_detail", editData.room_detail || "");
+      if (imageFile) formData.append("image", imageFile);
+
+      const res = await fetch("http://localhost:3000/edit/room", {
+        method: "POST",
+        body: formData,
+      });
+
+      const json = await res.json();
+      if (res.ok) {
+        alert(`Update success: ${json.message || "success"}`);
+        setData(editData);
+        setIsEditing(false);
+        setImageFile(null);
+      } else {
+        alert(`Update failed: ${json.message || "unknown error"}`);
+      }
+    } catch (err) {
+      alert("Update failed: network error");
+      console.error(err);
+    }
+  };
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -58,54 +149,24 @@ export default function Profile() {
     setIsEditing(false);
   };
 
-  const handleConfirm = async () => {
-    try {
-      const formData = new FormData();
-      formData.append("room", room);
-      formData.append("floor", floor);
-      formData.append("title", editData.title || "");
-      formData.append("description", editData.description || "");
-      formData.append("features", editData.features || "");
-      if (imageFile) formData.append("image", imageFile);
-
-      const res = await fetch("http://localhost:3000/edit/room", {
-        method: "POST",
-        body: formData,
-      });
-
-      const json = await res.json();
-      if (res.ok) {
-        alert(`update success: ${json.message || "success"}`);
-        setData(editData);
-        setIsEditing(false);
-        setImageFile(null);
-      } else {
-        alert(`update failed: ${json.message || "unknown error"}`);
-      }
-    } catch (err) {
-      alert("update failed: network error");
-      console.error(err);
-    }
-  };
-
-  if (!editData) {
-    return <div className="loading-text">Loading room data...</div>;
-  }
+  if (loading) return <div className="loading-text">Loading room data...</div>;
+  if (error) return <div className="error-text">Error: {error}</div>;
+  if (!editData) return <div className="no-data">No data found.</div>;
 
   return (
-    <div className="profile-container">
-      <main className="profile-main">
+    <div className="room-container">
+      <main className="room-main">
         <div className="header">
-          <h1>Room {room}</h1>
-          <h2>Floor {floor}</h2>
+          <h1>Room {editData.room_no}</h1>
+          <h2>Floor {editData.room_floor}</h2>
         </div>
 
         <div className="content">
           <div className="image-box">
             {imageFile ? (
               <img src={URL.createObjectURL(imageFile)} alt="Preview" />
-            ) : editData.imageUrl ? (
-              <img src={editData.imageUrl} alt="Room" />
+            ) : editData.room_img_url ? (
+              <img src={editData.room_img_url} alt="Room" />
             ) : (
               <p className="no-photo">No Photo</p>
             )}
@@ -120,42 +181,37 @@ export default function Profile() {
           </div>
 
           <div className="form-box">
-            <label>Title:</label>
+            <label>Room Type:</label>
             <input
               type="text"
-              name="title"
-              value={editData.title || ""}
+              name="room_type"
+              value={editData.room_type || ""}
               onChange={handleChange}
               readOnly={!isEditing}
               className={isEditing ? "editable" : "readonly"}
             />
 
-            <label>Description:</label>
+            <label>Room Detail:</label>
             <textarea
-              name="description"
-              value={editData.description || ""}
+              name="room_detail"
+              value={editData.room_detail || ""}
               onChange={handleChange}
               readOnly={!isEditing}
               rows={5}
-              className={isEditing ? "editable" : "readonly"}
-            />
-
-            <label>Features:</label>
-            <textarea
-              name="features"
-              value={editData.features || ""}
-              onChange={handleChange}
-              readOnly={!isEditing}
-              rows={4}
               className={isEditing ? "editable" : "readonly"}
             />
           </div>
 
           <div className="button-group">
             {!isEditing ? (
-              <button onClick={() => setIsEditing(true)} className="btn edit">
-                Edit
-              </button>
+              <>
+                <button onClick={() => setIsEditing(true)} className="btn edit">
+                  Edit
+                </button>
+                <button onClick={handleDelete} className="btn delete">
+                  Delete
+                </button>
+              </>
             ) : (
               <>
                 <button onClick={handleCancel} className="btn cancel">

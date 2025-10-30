@@ -2,24 +2,26 @@
 
 import { useEffect, useState } from "react";
 
-interface Booking {
-  id: number;
-  type: "small" | "medium" | "big";
-  no: number;
-  start: string;
-  end: string;
-  period: number;
+interface OrderData {
+  order_id: string;
+  start_time: string;
+  end_time: string;
   price: number;
+  room_id: string | null;
+  zone_id: string | null;
+  type: "room" | "zone";
+  no: string;
+  period: number;
 }
 
-export default function BookingRoomPage() {
-  const [bookings, setBookings] = useState<Booking[]>([]);
+export default function BookingAccountPage() {
+  const [bookings, setBookings] = useState<OrderData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const [rowsPerPage, setRowsPerPage] = useState<number>(25);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [selectedType, setSelectedType] = useState<"all" | Booking["type"]>(
+  const [selectedType, setSelectedType] = useState<"all" | "room" | "zone">(
     "all"
   );
 
@@ -32,71 +34,92 @@ export default function BookingRoomPage() {
     return parseFloat((diffMs / (1000 * 60 * 60)).toFixed(2));
   };
 
-  //     useEffect(() => {
-  //     const fetchData = async () => {
-  //       try {
-  //         const res = await fetch("http://localhost:3000/booking_room", {
-  //           method: "GET",
-  //           credentials: "include",
-  //         });
+  const fetchData = async () => {
+    try {
+      const res = await fetch("http://localhost:3000/total_order", {
+        method: "GET",
+        credentials: "include",
+      });
 
-  //         if (!res.ok) throw new Error("Failed to fetch booking data");
+      if (!res.ok) throw new Error("Failed to fetch booking data");
 
-  //         const data: Booking[] = await res.json();
-  //         setBookings(data);
-  //       } catch (err: any) {
-  //         setError(err.message);
-  //       } finally {
-  //         setLoading(false);
-  //       }
-  //     };
+      const data = await res.json();
 
-  //     fetchData();
-  //   }, []);
+      const mappedData: OrderData[] = data
+        .filter((item: any) => item.room_id !== null || item.zone_id !== null)
+        .map((item: any) => ({
+          order_id: item.order_id,
+          start_time: item.start_time,
+          end_time: item.end_time,
+          price: item.price,
+          room_id: item.room_id,
+          zone_id: item.zone_id,
+          type: item.room_id ? "room" : "zone",
+          no: item.room_id ?? item.zone_id,
+          period: calculatePeriod(item.start_time, item.end_time),
+        }));
+
+      setBookings(mappedData);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const demoFetchData = () => {
+    const mockData = [
+      {
+        order_id: "ORD001",
+        start_time: "2025-01-10T14:00:00Z",
+        end_time: "2025-01-12T10:00:00Z",
+        price: 1000.0,
+        room_id: "A101",
+        zone_id: null,
+      },
+      {
+        order_id: "ORD002",
+        start_time: "2025-02-05T09:00:00Z",
+        end_time: "2025-02-05T17:00:00Z",
+        price: 850.0,
+        room_id: null,
+        zone_id: "Z03",
+      },
+      {
+        order_id: "ORD003",
+        start_time: "2024-11-20T16:00:00Z",
+        end_time: "2024-11-22T10:00:00Z",
+        price: 1300.5,
+        room_id: "A205",
+        zone_id: null,
+      },
+    ];
+
+    const mapped: OrderData[] = mockData.map((item) => ({
+      ...item,
+      type: item.room_id ? "room" : "zone",
+      no: item.room_id ?? item.zone_id ?? "",
+      period: calculatePeriod(item.start_time, item.end_time),
+    }));
+
+    setBookings(mapped);
+    setLoading(false);
+  };
 
   useEffect(() => {
-    const mockData: Booking[] = Array.from({ length: 112 }, (_, i) => {
-      const startDate = new Date(
-        2025,
-        Math.floor(Math.random() * 12),
-        Math.floor(Math.random() * 28) + 1,
-        Math.floor(Math.random() * 23),
-        Math.floor(Math.random() * 60)
-      );
-      const endDate = new Date(
-        startDate.getTime() + (1 + Math.random() * 5) * 60 * 60 * 1000
-      );
-      const startISO = startDate.toISOString();
-      const endISO = endDate.toISOString();
-
-      const types: Booking["type"][] = ["small", "medium", "big"];
-      return {
-        id: i + 1,
-        type: types[Math.floor(Math.random() * 3)],
-        no: Math.floor(Math.random() * 20) + 1,
-        start: startISO,
-        end: endISO,
-        period: calculatePeriod(startISO, endISO),
-        price: Math.floor(Math.random() * 2000) + 500,
-      };
-    });
-
-    setBookings(mockData);
-    setLoading(false);
+    // fetchData();
+    demoFetchData();
   }, []);
 
   const filteredBookings = bookings.filter((b) => {
-    const bookingDate = new Date(b.start);
+    const bookingDate = new Date(b.start_time);
     const matchType = selectedType === "all" || b.type === selectedType;
-
     const matchMonth =
       selectedMonth === "all" ||
       bookingDate.getMonth() + 1 === Number(selectedMonth);
-
     const matchDay =
       selectedDay === "" ||
       bookingDate.toISOString().slice(0, 10) === selectedDay;
-
     return matchType && matchMonth && matchDay;
   });
 
@@ -119,6 +142,7 @@ export default function BookingRoomPage() {
     setSelectedType(e.target.value as any);
     setCurrentPage(1);
   };
+
   const handleCalculateTotal = () => {
     const total = filteredBookings.reduce((sum, b) => sum + b.price, 0);
     setTotalAmount(total);
@@ -129,14 +153,13 @@ export default function BookingRoomPage() {
 
   return (
     <div className="booking-container">
-      <h1 className="page-title">Booking Room</h1>
+      <h1 className="page-title">Total Orders</h1>
 
       <div className="table-controls">
         <div className="rows-select">
           <label>Rows per page:</label>
           <select
             className="select-rows"
-            id="rows"
             value={rowsPerPage}
             onChange={handleRowsChange}
           >
@@ -150,21 +173,18 @@ export default function BookingRoomPage() {
           <label>Type:</label>
           <select
             className="select-types"
-            id="type"
             value={selectedType}
             onChange={handleTypeChange}
           >
             <option value="all">All</option>
-            <option value="small">Small</option>
-            <option value="medium">Medium</option>
-            <option value="big">Big</option>
+            <option value="room">Room</option>
+            <option value="zone">Zone</option>
           </select>
         </div>
 
         <div className="month">
           <label>Month:</label>
           <select
-            id="month"
             value={selectedMonth}
             onChange={(e) => setSelectedMonth(e.target.value)}
             className="select-month"
@@ -181,7 +201,6 @@ export default function BookingRoomPage() {
         <div className="date">
           <label>Date:</label>
           <input
-            id="day"
             type="date"
             value={selectedDay}
             onChange={(e) => setSelectedDay(e.target.value)}
@@ -201,7 +220,6 @@ export default function BookingRoomPage() {
           <button onClick={handleCalculateTotal} className="calc-btn">
             Calculate Total
           </button>
-
           {totalAmount !== null && (
             <p className="total-amount">
               Total: ฿{totalAmount.toLocaleString()}
@@ -232,12 +250,12 @@ export default function BookingRoomPage() {
               </tr>
             ) : (
               currentBookings.map((b, i) => (
-                <tr key={b.id}>
+                <tr key={b.order_id}>
                   <td>{startIndex + i + 1}</td>
                   <td className="capitalize">{b.type}</td>
                   <td>{b.no}</td>
-                  <td>{new Date(b.start).toLocaleString()}</td>
-                  <td>{new Date(b.end).toLocaleString()}</td>
+                  <td>{new Date(b.start_time).toLocaleString()}</td>
+                  <td>{new Date(b.end_time).toLocaleString()}</td>
                   <td>{b.period.toFixed(2)}</td>
                   <td>{b.price.toLocaleString()}</td>
                 </tr>

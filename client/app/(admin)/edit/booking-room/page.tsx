@@ -2,38 +2,44 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 
+interface Room {
+  room_id: number;
+  room_no: string;
+  room_floor: number;
+}
+
 export default function BookingRoom() {
-  const [rooms, setRooms] = useState<{ room: string; floor: number }[]>([]);
+  const [rooms, setRooms] = useState<Room[]>([]);
   const [floor, setFloor] = useState(1);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const maxfloor = 20;
 
-//   useEffect(() => {
-//     const fetchRooms = async () => {
-//       try {
-//         setLoading(true);
-//         const res = await fetch("http://localhost:3000/edit/room");
-//         if (!res.ok) throw new Error(`HTTP error: ${res.status}`);
-//         const data = await res.json();
-//         setRooms(data);
-//       } catch (err: any) {
-//         setError(err.message);
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
-//     fetchRooms();
-//   }, []);
+  // useEffect(() => {
+  //   const fetchRooms = async () => {
+  //     try {
+  //       setLoading(true);
+  //       const res = await fetch("http://localhost:3000/edit/room");
+  //       if (!res.ok) throw new Error(`HTTP error: ${res.status}`);
+  //       const data = await res.json();
+  //       setRooms(data);
+  //     } catch (err: any) {
+  //       setError(err.message);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+  //   fetchRooms();
+  // }, []);
 
   useEffect(() => {
     setLoading(false);
-    const mockData = [
-      { room: "A", floor: 1 },
-      { room: "B", floor: 1 },
-      { room: "C", floor: 2 },
-      { room: "D", floor: 3 },
+    const mockData: Room[] = [
+      { room_id: 101, room_no: "101A", room_floor: 1 },
+      { room_id: 102, room_no: "102B", room_floor: 1 },
+      { room_id: 201, room_no: "201C", room_floor: 2 },
+      { room_id: 202, room_no: "202D", room_floor: 2 },
     ];
     setRooms(mockData);
   }, []);
@@ -47,11 +53,11 @@ export default function BookingRoom() {
     day: "numeric",
   });
 
-  const filteredRooms = rooms.filter((r) => r.floor === floor);
+  const filteredRooms = rooms.filter((r) => r.room_floor === floor);
 
   return (
-    <div className="booking-container">
-      <main className="booking-main">
+    <div className="room-container">
+      <main className="room-main">
         <div className="selector-row">
           <button className="btn small" onClick={lowerfloor}>
             &lt;
@@ -69,16 +75,18 @@ export default function BookingRoom() {
         ) : (
           <div className="room-grid">
             {filteredRooms.length > 0 ? (
-              filteredRooms.map((r, i) => (
+              filteredRooms.map((r) => (
                 <Link
-                  key={i}
+                  key={r.room_id}
                   href={{
                     pathname: "/edit/booking-room/detail",
-                    query: { room: r.room, floor: floor, date: formatted },
+                    query: {
+                      room_id: r.room_id
+                    },
                   }}
                   className="room-box"
                 >
-                  Room {r.room}
+                  Room {r.room_no}
                 </Link>
               ))
             ) : (

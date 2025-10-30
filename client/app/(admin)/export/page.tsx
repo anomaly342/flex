@@ -36,9 +36,9 @@ type Duration = "Weekly" | "Monthly" | "Yearly";
 type YearRangeOption = "current" | "1" | "3" | "5" | "all";
 
 type FilterType =
-  | "booking_account"
-  | "booking_room"
-  | "booking_zone"
+  | "total_order"
+  | "total_order_room"
+  | "total_order_zone"
   | "income";
 
 interface BookingItem {
@@ -52,7 +52,7 @@ interface BookingItem {
 export default function ExportPage() {
   const [duration, setDuration] = useState<Duration>("Weekly");
   const [yearRange, setYearRange] = useState<YearRangeOption>("current");
-  const [filters, setFilters] = useState<FilterType[]>(["booking_account"]);
+  const [filters, setFilters] = useState<FilterType[]>(["total_order"]);
   const [dataPreview, setDataPreview] = useState<any[]>([]);
   const [selectedRange, setSelectedRange] = useState<{
     start: number | null;
@@ -62,53 +62,16 @@ export default function ExportPage() {
     end: null,
   });
   const [showAnalysis, setShowAnalysis] = useState(false);
-  const [exportType, setExportType] = useState<"csv" | "json">("csv");
 
   const chartRef = useRef<ChartJS<"line"> | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState<number | null>(null);
   const [dragEnd, setDragEnd] = useState<number | null>(null);
 
-  const convertToCSV = (data: any[]) => {
-    if (!data.length) return "";
-    const headers = Object.keys(data[0]);
-    const csvRows = data.map((row) =>
-      headers.map((h) => `"${row[h]}"`).join(",")
-    );
-    return [headers.join(","), ...csvRows].join("\n");
-  };
-
-  const handleExportConfirm = () => {
-    const dataToExport = filteredData.map((d) => {
-      const obj: Record<string, any> = { label: d.label, keyDate: d.keyDate };
-      filters.forEach((f) => (obj[f] = d[f]));
-      return obj;
-    });
-
-    let blob: Blob;
-    let filename = `export_${new Date().toISOString()}`;
-
-    if (exportType === "csv") {
-      const csv = convertToCSV(dataToExport);
-      blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-      filename += ".csv";
-    } else {
-      blob = new Blob([JSON.stringify(dataToExport, null, 2)], {
-        type: "application/json",
-      });
-      filename += ".json";
-    }
-
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.setAttribute("download", filename);
-    link.click();
-  };
-
   const colorMap: Record<FilterType, string> = {
-    booking_account: "rgb(255,99,132)",
-    booking_room: "rgb(255,206,86)",
-    booking_zone: "rgb(153,102,255)",
+    total_order: "rgb(255,99,132)",
+    total_order_room: "rgb(255,206,86)",
+    total_order_zone: "rgb(153,102,255)",
     income: "rgb(0,200,0)",
   };
 
@@ -183,9 +146,9 @@ export default function ExportPage() {
         key: string;
         label: string;
         keyDate: Date;
-        booking_account: number;
-        booking_room: number;
-        booking_zone: number;
+        total_order: number;
+        total_order_room: number;
+        total_order_zone: number;
         income: number;
       }
     > = {};
@@ -194,7 +157,7 @@ export default function ExportPage() {
 
     const add = (
       item: BookingItem,
-      bucket: "booking_account" | "booking_room" | "booking_zone"
+      bucket: "total_order" | "total_order_room" | "total_order_zone"
     ) => {
       const d = parseDate(item.startBooking);
       if (isNaN(d.getTime())) return;
@@ -208,9 +171,9 @@ export default function ExportPage() {
           key,
           label,
           keyDate,
-          booking_account: 0,
-          booking_room: 0,
-          booking_zone: 0,
+          total_order: 0,
+          total_order_room: 0,
+          total_order_zone: 0,
           income: 0,
         };
       }
@@ -218,38 +181,87 @@ export default function ExportPage() {
       map[key].income += Number(item.price || 0);
     };
 
-    accData.forEach((it) => add(it, "booking_account"));
-    roomData.forEach((it) => add(it, "booking_room"));
-    zoneData.forEach((it) => add(it, "booking_zone"));
+    accData.forEach((it) => add(it, "total_order"));
+    roomData.forEach((it) => add(it, "total_order_room"));
+    zoneData.forEach((it) => add(it, "total_order_zone"));
 
     return Object.values(map).sort(
       (a, b) => a.keyDate.getTime() - b.keyDate.getTime()
     );
   };
 
+  const handleExportCSV = () => {
+    if (!filteredData || filteredData.length === 0) {
+      alert("No data to export");
+      return;
+    }
+
+    const headers = [
+      "Label",
+      ...filters.map((f) =>
+        f.replaceAll("_", " ").replace(/\b\w/g, (l) => l.toUpperCase())
+      ),
+    ];
+
+    const rows = filteredData.map((item) => [
+      item.label,
+      ...filters.map((f) => item[f]),
+    ]);
+
+    const csvContent = [headers, ...rows]
+      .map((row) => row.map((cell) => `"${cell ?? ""}"`).join(","))
+      .join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+    a.download = `export_${duration}_${yearRange}_${timestamp}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   useEffect(() => {
     let cancelled = false;
 
-    const fetchAll = async () => {
+    const fetchData = async () => {
       try {
-        const base = "http://localhost:8080/api";
-        const [accRes, roomRes, zoneRes] = await Promise.all([
-          fetch(`${base}/booking-account`),
-          fetch(`${base}/booking-room`),
-          fetch(`${base}/booking-zone`),
-        ]);
+        const base = "http://localhost:3000/total_order";
+        const res = await fetch(`${base}/bookings`);
 
-        if (!accRes.ok || !roomRes.ok || !zoneRes.ok) {
-          throw new Error("Network error while fetching booking APIs");
-        }
+        if (!res.ok) throw new Error("Network error while fetching bookings");
 
-        const [accData, roomData, zoneData] = await Promise.all([
-          accRes.json(),
-          roomRes.json(),
-          zoneRes.json(),
-        ]);
-
+        const allData = await res.json();
         if (cancelled) return;
+
+        const roomData: BookingItem[] = allData
+          .filter((b: any) => b.room_id !== null)
+          .map((b: any) => ({
+            type: "room",
+            no: b.order_id,
+            startBooking: b.start_time,
+            endBooking: b.end_time,
+            price: b.price,
+          }));
+
+        const zoneData: BookingItem[] = allData
+          .filter((b: any) => b.zone_id !== null)
+          .map((b: any) => ({
+            type: "zone",
+            no: b.order_id,
+            startBooking: b.start_time,
+            endBooking: b.end_time,
+            price: b.price,
+          }));
+
+        const accData: BookingItem[] = allData.map((b: any) => ({
+          type: "account",
+          no: b.order_id,
+          startBooking: b.start_time,
+          endBooking: b.end_time,
+          price: b.price,
+        }));
 
         const aggregated = aggregateBookings(
           accData,
@@ -265,7 +277,91 @@ export default function ExportPage() {
       }
     };
 
-    fetchAll();
+    const demoFetchData = () => {
+      const mockData = [
+        {
+          order_id: "ORD001",
+          start_time: "2025-01-10T14:00:00Z",
+          end_time: "2025-01-12T10:00:00Z",
+          price: 1000.0,
+          room_id: "A101",
+          zone_id: null,
+        },
+        {
+          order_id: "ORD002",
+          start_time: "2025-02-05T09:00:00Z",
+          end_time: "2025-02-05T17:00:00Z",
+          price: 850.0,
+          room_id: null,
+          zone_id: "Z03",
+        },
+        {
+          order_id: "ORD003",
+          start_time: "2024-11-20T16:00:00Z",
+          end_time: "2024-11-22T10:00:00Z",
+          price: 1300.5,
+          room_id: "A205",
+          zone_id: null,
+        },
+        {
+          order_id: "ORD004",
+          start_time: "2025-03-10T09:00:00Z",
+          end_time: "2025-03-12T10:00:00Z",
+          price: 1750.0,
+          room_id: "A302",
+          zone_id: null,
+        },
+        {
+          order_id: "ORD005",
+          start_time: "2025-03-20T13:00:00Z",
+          end_time: "2025-03-20T18:00:00Z",
+          price: 650.0,
+          room_id: null,
+          zone_id: "Z08",
+        },
+      ];
+
+      const roomData: BookingItem[] = mockData
+        .filter((b) => b.room_id !== null)
+        .map((b) => ({
+          type: "room",
+          no: b.order_id,
+          startBooking: b.start_time,
+          endBooking: b.end_time,
+          price: b.price,
+        }));
+
+      const zoneData: BookingItem[] = mockData
+        .filter((b) => b.zone_id !== null)
+        .map((b) => ({
+          type: "zone",
+          no: b.order_id,
+          startBooking: b.start_time,
+          endBooking: b.end_time,
+          price: b.price,
+        }));
+
+      const accData: BookingItem[] = mockData.map((b) => ({
+        type: "account",
+        no: b.order_id,
+        startBooking: b.start_time,
+        endBooking: b.end_time,
+        price: b.price,
+      }));
+
+      const aggregated = aggregateBookings(
+        accData,
+        roomData,
+        zoneData,
+        duration,
+        yearRange
+      );
+
+      setDataPreview(aggregated);
+    };
+
+    // fetchData();
+    demoFetchData();
 
     return () => {
       cancelled = true;
@@ -318,7 +414,7 @@ export default function ExportPage() {
     const { from: yearFrom, to: yearTo } = computeYearBounds(yearRange);
 
     let filtered = dataPreview.filter((d) => {
-      const dYear = parseDate(d.date).getFullYear();
+      const dYear = d.keyDate.getFullYear();
       return dYear >= yearFrom && dYear <= yearTo;
     });
 
@@ -433,9 +529,9 @@ export default function ExportPage() {
           <div className="filter-checkboxes">
             {(
               [
-                "booking_account",
-                "booking_room",
-                "booking_zone",
+                "total_order",
+                "total_order_room",
+                "total_order_zone",
                 "income",
               ] as FilterType[]
             ).map((f) => (
@@ -469,39 +565,20 @@ export default function ExportPage() {
       </div>
 
       <div className="export-bottom">
-        <div className="export">
-          <div>
-            <label>Export as:</label>
-            <select
-              value={exportType}
-              onChange={(e) => setExportType(e.target.value as "csv" | "json")}
-            >
-              <option value="csv">CSV</option>
-              <option value="json">JSON</option>
-            </select>
-          </div>
+        <button className="btn-export" onClick={handleExportCSV}>
+          Export CSV
+        </button>
+        
+        <button className="btn-clear" onClick={handleClearSelection}>
+          Clear Selection
+        </button>
 
-          <div className="confirm">
-            <button className="btn-confirm" onClick={handleExportConfirm}>
-              Confirm
-            </button>
-          </div>
-        </div>
-
-        <div className="clear">
-          <button className="btn-clear" onClick={handleClearSelection}>
-            Clear Selection
-          </button>
-        </div>
-
-        <div className="analysis">
-          <button
-            className="btn-analysis"
-            onClick={() => setShowAnalysis(!showAnalysis)}
-          >
-            {showAnalysis ? "Hide Analysis" : "Analysis"}
-          </button>
-        </div>
+        <button
+          className="btn-analysis"
+          onClick={() => setShowAnalysis(!showAnalysis)}
+        >
+          {showAnalysis ? "Hide Analysis" : "Analysis"}
+        </button>
       </div>
 
       {selectedRange.start !== null &&

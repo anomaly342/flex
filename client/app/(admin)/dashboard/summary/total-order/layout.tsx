@@ -1,4 +1,4 @@
-import "./booking_account.css";
+import "./total_order.css";
 
 export default function noHeader({ children }: { children: React.ReactNode }) {
   return (

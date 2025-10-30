@@ -44,17 +44,14 @@
   margin-top: 6px;
 }
 
-.dashboard-container div.booking-account {
+.dashboard-container div.total-order {
   border-left-color: #1cc88a;
 }
-.dashboard-container div.booking-room {
+.dashboard-container div.total-order-room {
   border-left-color: #36b9cc;
 }
-.dashboard-container div.booking-zone {
+.dashboard-container div.total-order-zone {
   border-left-color: #f6c23e;
-}
-.dashboard-container div.booking-status {
-  border-left-color: #e74a3b;
 }
 
 @media (min-width: 431px) {
@@ -62,6 +59,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    max-width: 100vw;
   }
 
   .dashboard-container {
@@ -70,6 +68,8 @@
     gap: 30px 40px;
     justify-content: center;
     align-content: center;
+    min-width: 1024px;
+    max-width: 100%;
   }
 
   .dashboard-container div {

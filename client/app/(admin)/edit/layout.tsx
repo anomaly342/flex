@@ -1,9 +1,9 @@
-import "./booking_zone.css";
+import "./edit.css";
 
 export default function noHeader({ children }: { children: React.ReactNode }) {
   return (
     <div>
-      <div>{children}</div>
+      <div className="edit-container">{children}</div>
     </div>
   );
 }

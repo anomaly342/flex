@@ -1,18 +1,9 @@
-html,
-body {
-  width: 100%;
-  max-width: 100%;
-  margin: 0;
-  padding: 0;
-}
-
-.profile-container {
+.room-container {
   width: 100%;
   max-width: 430px;
   height: 100%;
   margin: 10px auto;
   padding: 0 8px; 
-  font-family: "Inter", sans-serif;
 }
 
 .loading-text {
@@ -20,7 +11,7 @@ body {
   padding: 20px;
 }
 
-.profile-main {
+.room-main {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -133,6 +124,13 @@ body {
   background-color: #2563eb;
 }
 
+.btn.delete {
+  background-color: #df1212
+}
+.btn.delete:hover {
+  background-color: #eb1616
+}
+
 .btn.cancel {
   background-color: #9ca3af;
 }
@@ -148,20 +146,14 @@ body {
 }
 
 @media (min-width: 431px) {
-  body {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .profile-container {
+  .room-container {
     width: 100%;
-    min-width: 430px;
-    max-width: 1024px;
+    min-width: 1024x;
+    max-width: 100%;
     padding: 20px;
   }
 
-  .profile-main {
+  .room-main {
     gap: 24px;
   }
 

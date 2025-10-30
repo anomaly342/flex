@@ -79,7 +79,7 @@
   font-size: x-small;
 }
 
-.btn-confirm,
+.btn-export,
 .btn-clear,
 .btn-analysis {
   border: 1px solid #000;
@@ -89,7 +89,7 @@
   transition: 0.2s;
 }
 
-.btn-confirm:hover,
+.btn-export:hover,
 .btn-clear:hover,
 .btn-analysis:hover {
   cursor: pointer;
@@ -107,15 +107,9 @@
 }
 
 @media (min-width: 431px) {
-  body {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100vw;
-  }
-
   .export-container {
-    max-width: 1024px;
+    min-width: 1024px;
+    max-width: 100%;
     padding: 24px;
     gap: 24px;
   }
