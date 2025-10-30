@@ -16,42 +16,42 @@ export default function Profile() {
         display2 = "hidden";
     }
 
-    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-        console.log("Button clicked!", event);
-    };
-
     return (
         <div className="maindiv">
-            <main>
-                <div className="flex flex-row space-x-5 justify-center mt-5">
+            <main className="main-wrapper">
+                <div className="profile-header-row">
                     <Image
                         src="/profile.svg"
                         alt="User Profile"
                         width={50}
                         height={50}
                     />
-                    <div className="flex flex-col">
-                        <h3>Username</h3>
-                        <h4>
+                    <div className="profile-header-col">
+                        <p>Username</p>
+                        <p>
                             <span className="rolename">{role}</span> Points:{" "}
                             {points}
-                        </h4>
+                        </p>
                     </div>
                 </div>
-                <div className="border-2 m-5">
-                    <div className={`${display} p-3`}>
-                        <h1>Subcribe to our Membership!</h1>
+
+                <div className="outer-card">
+                    <div className={`subscribe-section ${display}`}>
+                        <p>Subcribe to our Membership!</p>
                         <button
-                            onClick={handleClick}
-                            className="border-1 bg-gray-400 p-1"
+                            onClick={() => {
+                                console.log("Subscribe!!");
+                            }}
+                            className="subscribe-button"
                         >
                             Click to Subscribe
                         </button>
                     </div>
-                    <div className={`${display2} p-3`}>
+
+                    <div className={`member-section ${display2}`}>
                         <h1>Membership</h1>
                         <div>
-                            <table className="border-separate border-spacing-x-4">
+                            <table className="member-table">
                                 <thead>
                                     <tr>
                                         <th>Your membership ends at</th>
@@ -67,9 +67,10 @@ export default function Profile() {
                             </table>
                         </div>
                     </div>
-                    <div className="block pb-3">
-                        <h1 className="pl-3">History</h1>
-                        <table className="border-separate border-spacing-x-4">
+
+                    <div className="history-section">
+                        <p className="history-title">History</p>
+                        <table className="history-table">
                             <thead>
                                 <tr>
                                     <th>Date</th>
@@ -93,16 +94,11 @@ export default function Profile() {
                                 </tr>
                             </tbody>
                         </table>
-                        <div className="flex mt-3 justify-center space-x-4">
-                            <button className="border-1 bg-gray-200 p-1 rounded-2xl p-1.5">
-                                &lt;
-                            </button>
-                            <button className="border-1 bg-gray-200 p-1 rounded-2xl p-1.5">
-                                1
-                            </button>
-                            <button className="border-1 bg-gray-200 p-1 rounded-2xl p-1.5">
-                                &gt;
-                            </button>
+
+                        <div className="pagination-wrapper">
+                            <button className="pagination-btn">&lt;</button>
+                            <button className="pagination-btn">1</button>
+                            <button className="pagination-btn">&gt;</button>
                         </div>
                     </div>
                 </div>
