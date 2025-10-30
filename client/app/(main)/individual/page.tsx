@@ -3,7 +3,7 @@ import { useState } from "react";
 import Link from "next/link";
 import "./individual.css";
 
-export default function Profile() {
+export default function ZoneBooking() {
     const [selectedDate, setSelectedDate] = useState(new Date());
 
     const changeDate = (days: number) => {
@@ -36,28 +36,21 @@ export default function Profile() {
 
     return (
         <div className="maindiv">
-            <main className="space-y-4">
-                <div className="flex flex-row justify-center space-x-5 ">
-                    <button
-                        onClick={() => changeDate(-1)}
-                        className="border-1 p-2"
-                    >
+            <main>
+                <div className="select-date">
+                    <button onClick={() => changeDate(-1)} className="date-btn">
                         &lt;
                     </button>
-                    <div className="border-1 p-2">
-                        <p>{formatted}</p>
-                    </div>
-                    <button
-                        onClick={() => changeDate(1)}
-                        className="border-1 p-2"
-                    >
+                    <p className="date-btn">{formatted}</p>
+                    <button onClick={() => changeDate(1)} className="date-btn">
                         &gt;
                     </button>
                 </div>
 
-                <div className="flex flex-wrap justify-center gap-5">
+                <div className="zone-mapping">
                     {[...Array(9)].map((_, i) => (
                         <Link
+                            key={i}
                             href={{
                                 pathname: "/individual/details",
                                 query: {
@@ -66,19 +59,16 @@ export default function Profile() {
                                     date: formatted,
                                 },
                             }}
-                            className="border p-5"
+                            className="zone-link"
                         >
                             Zone {i + 1}
                         </Link>
                     ))}
                 </div>
-                <div>
-                    <h2>Last update:</h2>
+                <p className="update-text">Last update:</p>
+                <div className="refresh-section">
                     <p>{formatted2}</p>
-                    <button
-                        onClick={handleRefresh}
-                        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
-                    >
+                    <button onClick={handleRefresh} className="refresh-btn">
                         🔄
                     </button>
                 </div>
