@@ -1,11 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Coupon } from 'src/entities/Coupon.entity';
 import { Order } from 'src/entities/Order.entity';
 import { QR } from 'src/entities/QR.entity';
 import { Room } from 'src/entities/Room.entity';
 import { User } from 'src/entities/User.entity';
 import { Zone } from 'src/entities/Zone.entity';
 import { Repository } from 'typeorm';
+import { coupons } from '../data/coupons';
 import { orders } from '../data/orders';
 import { qrs } from '../data/qrs';
 import { rooms } from '../data/rooms';
@@ -28,6 +30,9 @@ export class SeederService {
 
     @InjectRepository(User)
     private usersRepository: Repository<User>,
+
+    @InjectRepository(Coupon)
+    private couponsRepository: Repository<Coupon>,
   ) {}
   async populate() {
     await this.roomsRepository.save(rooms, { chunk: 100 });
@@ -40,5 +45,6 @@ export class SeederService {
 
     await this.qrsRepository.save(qrs, { chunk: 100 });
     await this.ordersRepository.save(orders, { chunk: 100 });
+    await this.couponsRepository.save(coupons);
   }
 }

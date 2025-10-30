@@ -11,14 +11,18 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthMiddleware } from './authentication/authentication.middleware';
 import { AuthenticationModule } from './authentication/authentication.module';
+import { CouponsModule } from './coupons/coupons.module';
 import { SeederModule } from './database/seeders/seeder.module';
 import { SeederService } from './database/seeders/seeder.service';
+import { Coupon } from './entities/Coupon.entity';
 import { Order } from './entities/Order.entity';
 import { QR } from './entities/QR.entity';
 import { Room } from './entities/Room.entity';
+import { Transaction } from './entities/Transaction.entity';
 import { User } from './entities/User.entity';
 import { Zone } from './entities/Zone.entity';
 import { RoomsModule } from './rooms/rooms.module';
+import { TransactionModule } from './transaction/transaction.module';
 const ENV = process.env.NODE_ENV;
 @Module({
   imports: [
@@ -27,7 +31,7 @@ const ENV = process.env.NODE_ENV;
       envFilePath:
         ENV === 'development' ? '.env.development' : '.env.production',
     }),
-    TypeOrmModule.forFeature([Room, Zone, QR, Order, User]),
+    TypeOrmModule.forFeature([Room, Zone, QR, Order, User, Coupon]),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST,
@@ -35,14 +39,16 @@ const ENV = process.env.NODE_ENV;
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      entities: [User, Room, Zone, QR, Order],
+      entities: [User, Room, Zone, QR, Order, Transaction, Coupon],
       synchronize: ENV === 'development' ? true : false,
-      dropSchema: ENV === 'development' ? true : false,
+      dropSchema: true,
       ssl: true,
     }),
     AuthenticationModule,
     SeederModule,
     RoomsModule,
+    TransactionModule,
+    CouponsModule,
   ],
   controllers: [AppController],
   providers: [AppService, SeederService],
