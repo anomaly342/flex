@@ -10,7 +10,10 @@ export default function ZoneDetail() {
     const get_date = sp.get("date") ?? "N/A";
 
     const [showModal, setShowModal] = useState(false);
-    const [selectedTime, setSelectedTime] = useState<string | null>(null);
+
+    const [startTime, setStartTime] = useState<string | null>(null);
+    const [endTime, setEndTime] = useState<string | null>(null);
+
     const [selectedDate, setSelectedDate] = useState(new Date());
 
     const times = [
@@ -40,10 +43,50 @@ export default function ZoneDetail() {
         month: "short",
     });
 
+    const handleTimeClick = (time: string) => {
+        if (!startTime) {
+            setStartTime(time);
+            setEndTime(null);
+            return;
+        }
+
+        if (!endTime) {
+            const startIndex = times.indexOf(startTime);
+            const newIndex = times.indexOf(time);
+
+            if (newIndex >= startIndex) {
+                // valid range
+                setEndTime(time);
+            } else {
+                setStartTime(time);
+                setEndTime(startTime);
+            }
+            return;
+        }
+
+        setStartTime(time);
+        setEndTime(null);
+    };
+
+    const isInRange = (time: string) => {
+        if (!startTime) return false;
+        if (!endTime) return time === startTime;
+        const startIndex = times.indexOf(startTime);
+        const endIndex = times.indexOf(endTime);
+        const currentIndex = times.indexOf(time);
+        return currentIndex >= startIndex && currentIndex <= endIndex;
+    };
+
     const confirmBooking = () => {
-        alert(`✅ Booked on ${get_date} at ${selectedTime}`);
+        alert(
+            `✅ Booked on ${get_date} from ${startTime} to ${
+                endTime ?? startTime
+            }`
+        );
         setShowModal(false);
     };
+
+    const confirmDisabled = !startTime;
 
     return (
         <div className="maindiv">
@@ -84,30 +127,32 @@ export default function ZoneDetail() {
                         </p>
                     </div>
                 </div>
+
                 <button onClick={() => setShowModal(true)} className="book-btn">
                     Book
                 </button>
+
                 {showModal && (
                     <div className="booking-section">
                         <div className="booking-section2">
-                            {/* Time list */}
+                            {/* time list */}
                             <div className="time-mapping">
                                 {times.map((time) => (
                                     <div
                                         key={time}
                                         className={`p-2 text-center cursor-pointer ${
-                                            selectedTime === time
+                                            isInRange(time)
                                                 ? "bg-blue-500 text-white"
                                                 : "hover:bg-gray-100"
                                         }`}
-                                        onClick={() => setSelectedTime(time)}
+                                        onClick={() => handleTimeClick(time)}
                                     >
                                         {time}
                                     </div>
                                 ))}
                             </div>
 
-                            {/* Date selector */}
+                            {/* date selector */}
                             <div className="date-section">
                                 <button
                                     onClick={() => changeDate(-1)}
@@ -124,7 +169,7 @@ export default function ZoneDetail() {
                                 </button>
                             </div>
 
-                            {/* Buttons */}
+                            {/* buttons */}
                             <div className="button-section">
                                 <button
                                     onClick={() => setShowModal(false)}
@@ -132,16 +177,21 @@ export default function ZoneDetail() {
                                 >
                                     Cancel
                                 </button>
+
                                 <button
                                     onClick={confirmBooking}
-                                    disabled={!selectedTime}
+                                    disabled={confirmDisabled}
                                     className={`px-3 py-2 rounded ${
-                                        selectedTime
+                                        !confirmDisabled
                                             ? "bg-blue-500 text-white hover:bg-blue-600"
                                             : "bg-gray-200 text-gray-400 cursor-not-allowed"
                                     }`}
                                 >
-                                    Confirm
+                                    {startTime && endTime
+                                        ? `Confirm ${startTime} - ${endTime}`
+                                        : startTime
+                                        ? `Confirm ${startTime}`
+                                        : "Confirm"}
                                 </button>
                             </div>
                         </div>
