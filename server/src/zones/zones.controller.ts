@@ -28,6 +28,16 @@ export class ZonesController {
     return result;
   }
 
+  @Get(':id')
+  async zone(@Param('id', ParseIntPipe) id: number) {
+    const result = await this.zonesService.zone(id);
+    if (result) {
+      return result;
+    } else {
+      throw new NotFoundException();
+    }
+  }
+
   @Put()
   async editZone(
     @Body() editZoneBody: EditZoneBody,

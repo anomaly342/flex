@@ -24,6 +24,14 @@ export class ZonesService {
     return await this.zonesRepository.find();
   }
 
+  async zone(id: number) {
+    return await this.zonesRepository.findOne({
+      where: {
+        zone_id: id,
+      },
+    });
+  }
+
   async editZone(editZoneBody: EditZoneBody) {
     const result = await this.zonesRepository.update(
       { zone_id: editZoneBody.zone_id },
