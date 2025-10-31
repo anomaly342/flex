@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 interface RegisterData {
   username: string;
@@ -8,6 +9,8 @@ interface RegisterData {
 }
 
 export default function LoginPage() {
+  const router = useRouter();
+
   const [formData, setFormData] = useState<RegisterData>({
     username: "",
     password: "",
@@ -16,9 +19,9 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
-    const handleShowPassword = () => {
-      setShowPassword((prev) => !prev);
-    };
+  const handleShowPassword = () => {
+    setShowPassword((prev) => !prev);
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -35,16 +38,23 @@ export default function LoginPage() {
     }
 
     try {
-      const res = await fetch("http://localhost:3000/authentication/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/authentication/login`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: new URLSearchParams({
+            username: username,
+            password: password,
+          }),
+        }
+      );
 
       if (res.ok) {
-        console.log("Register success!");
+        console.log("Login success!");
+        router.push("/home");
       } else {
-        setErrorMsg("Register failed");
+        setErrorMsg("Login failed");
       }
     } catch (err) {
       console.error("Error:", err);

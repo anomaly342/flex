@@ -46,10 +46,13 @@ export default function RegisterPage() {
     }
 
     try {
-      const res = await fetch("http://localhost:3000/authentication/register", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/authentication/register`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({ 
+            username: username, 
+            password: password 
+        }),
       });
 
       if (res.ok) {
