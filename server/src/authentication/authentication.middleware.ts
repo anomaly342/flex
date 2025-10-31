@@ -5,18 +5,34 @@ import {
 } from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
 import * as jwt from 'jsonwebtoken';
+import { UserRoleType } from 'src/entities/User.entity';
+
+type Payload = {
+  id: number;
+  username: string;
+  role: UserRoleType;
+  iat: EpochTimeStamp;
+  exp: EpochTimeStamp;
+};
+
+declare global {
+  namespace Express {
+    interface Request {
+      user: Payload;
+    }
+  }
+}
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
-    const token = req.cookies?.token;
+    const token = req.cookies?.jwt;
     if (!token) {
       throw new UnauthorizedException('No token provided');
     }
-
     try {
-      const decoded = jwt.verify(token, process.env.SALT as string);
-      (req as any).user = decoded;
+      const decoded = jwt.verify(token, process.env.SALT as string) as Payload;
+      req.user = decoded;
       next();
     } catch (err) {
       throw new UnauthorizedException('Invalid or expired token');
