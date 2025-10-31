@@ -3,28 +3,26 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-interface DashboardData {
-  bookingAccount: number;
-  totalAccount: number;
-  bookingRoom: number;
-  totalRoom: number;
-  bookingZone: number;
-  totalZone: number;
+interface OrderData {
+  order_id: string;
+  start_time: string;
+  end_time: string;
+  price: number;
+  room_id: string | null;
+  zone_id: string | null;
 }
 
 export default function DashboardPage() {
-  const [bookingAccount, setBookingAccount] = useState<number>(0);
-  const [totalAccount, setTotalAccount] = useState<number>(0);
-  const [bookingRoom, setBookingRoom] = useState<number>(0);
-  const [totalRoom, setTotalRoom] = useState<number>(0);
-  const [bookingZone, setBookingZone] = useState<number>(0);
-  const [totalZone, setTotalZone] = useState<number>(0);
+  const [totalOrder, setTotalOrder] = useState<number>(0);
+  const [totalOrderRoom, setTotalOrderRoom] = useState<number>(0);
+  const [totalOrderZone, setTotalOrderZone] = useState<number>(0);
 
   const router = useRouter();
+  const goTo = (path: string) => () => router.push(path);
 
   const fetchDashboardData = async () => {
     try {
-      const response = await fetch("http://localhost:3000/dashboard", {
+      const response = await fetch("http://localhost:3000/orders/all", {
         method: "GET",
         credentials: "include",
         headers: {
@@ -36,71 +34,89 @@ export default function DashboardPage() {
         throw new Error("Failed to fetch dashboard data");
       }
 
-      const data: DashboardData = await response.json();
+      const data: OrderData[] = await response.json();
 
-      setBookingAccount(data.bookingAccount);
-      setTotalAccount(data.totalAccount);
-      setBookingRoom(data.bookingRoom);
-      setTotalRoom(data.totalRoom);
-      setBookingZone(data.bookingZone);
-      setTotalZone(data.totalZone);
+      const totalOrders = data.length;
+      const totalRooms = data.filter((o) => o.room_id !== null).length;
+      const totalZones = data.filter((o) => o.zone_id !== null).length;
+
+      setTotalOrder(totalOrders);
+      setTotalOrderRoom(totalRooms);
+      setTotalOrderZone(totalZones);
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
     }
   };
 
   const demoFetchDashboardData = () => {
-    setBookingAccount(312);
-    setTotalAccount(402);
-    setBookingRoom(81);
-    setTotalRoom(100);
-    setBookingZone(378);
-    setTotalZone(500);
+    const mockData: OrderData[] = [
+      {
+        order_id: "ORD001",
+        start_time: "2025-01-10T14:00:00Z",
+        end_time: "2025-01-12T10:00:00Z",
+        price: 1000.0,
+        room_id: "A101",
+        zone_id: null,
+      },
+      {
+        order_id: "ORD002",
+        start_time: "2025-02-05T09:00:00Z",
+        end_time: "2025-02-05T17:00:00Z",
+        price: 850.0,
+        room_id: null,
+        zone_id: "Z03",
+      },
+      {
+        order_id: "ORD003",
+        start_time: "2024-11-20T16:00:00Z",
+        end_time: "2024-11-22T10:00:00Z",
+        price: 1300.5,
+        room_id: "A205",
+        zone_id: null,
+      },
+    ];
+
+    setTotalOrder(mockData.length);
+    setTotalOrderRoom(mockData.filter((o) => o.room_id !== null).length);
+    setTotalOrderZone(mockData.filter((o) => o.zone_id !== null).length);
   };
 
   useEffect(() => {
-    // fetchDashboardData();
-    demoFetchDashboardData();
+    fetchDashboardData();
+    // demoFetchDashboardData();
   }, []);
 
-  const handleClickBookingAccount = () => {
-    router.push("/dashboard/summary/booking-account");
-  };
-
   return (
-    <div className="dashboard-container">
-      <div className="booking-account" onClick={handleClickBookingAccount}>
+    <section id="id-dashboard-container" className="dashboard-container">
+      <article
+        className="total-order"
+        onClick={goTo("/dashboard/summary/total-order")}
+      >
         <p>
-          <strong>
-            {bookingAccount}/{totalAccount}
-          </strong>
+          <strong>{totalOrder}</strong>
         </p>
-        <p>Booking Account</p>
-      </div>
-      <div className="booking-room">
+        <p>Total Orders</p>
+      </article>
+
+      <article
+        className="total-order-room"
+        onClick={goTo("/dashboard/summary/total-order")}
+      >
         <p>
-          <strong>
-            {bookingRoom}/{totalRoom}
-          </strong>
+          <strong>{totalOrderRoom}</strong>
         </p>
-        <p>Booking Room</p>
-      </div>
-      <div className="booking-zone">
+        <p>Total Orders (Room)</p>
+      </article>
+
+      <article
+        className="total-order-zone"
+        onClick={goTo("/dashboard/summary/total-order")}
+      >
         <p>
-          <strong>
-            {bookingZone}/{totalZone}
-          </strong>
+          <strong>{totalOrderZone}</strong>
         </p>
-        <p>Booking Zone</p>
-      </div>
-      <div className="booking-status">
-        <p>
-          <strong>
-            {((bookingAccount / totalAccount) * 100).toFixed(2)}%
-          </strong>
-        </p>
-        <p>Booking Status</p>
-      </div>
-    </div>
+        <p>Total Orders (Zone)</p>
+      </article>
+    </section>
   );
 }

@@ -1,0 +1,208 @@
+.total-order-main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.total-order-header {
+  width: 100%;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.page-title {
+  font-size: 1.8em;
+  color: #333;
+}
+
+.total-order-section {
+  width: 100%;
+  max-width: 1024px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.table-controls {
+  display: grid;
+  grid-template-areas:
+    "rows-select rows-select type"
+    "month month date"
+    "cal-price cal-price show-text";
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.rows-select {
+  grid-area: rows-select;
+}
+
+.show-text {
+  grid-area: show-text;
+}
+
+.type {
+  grid-area: type;
+}
+
+.month {
+  grid-area: month;
+}
+
+.date {
+  grid-area: date;
+}
+
+.cal-price {
+  grid-area: cal-price;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.rows-select label,
+.type label,
+.month label,
+.date label {
+  font-weight: bold;
+  margin-right: 4px;
+}
+
+.rows-select select,
+.select-types,
+.month select,
+.date input,
+.cal-price button {
+  border: 1px solid gray;
+  border-radius: 4px;
+  padding: 4px 6px;
+}
+
+.rows-select select:hover,
+.select-types:hover,
+.month select:hover,
+.date input:hover,
+.cal-price button:hover {
+  cursor: pointer;
+}
+
+.showing-text {
+  font-size: 0.9em;
+  color: #555;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  margin-top: 10px;
+}
+
+.booking-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95em;
+}
+
+.booking-table th,
+.booking-table td {
+  border: 1px solid #ccc;
+  padding: 8px 10px;
+  text-align: center;
+}
+
+.booking-table th {
+  background-color: #f7f7f7;
+  font-weight: bold;
+}
+
+.booking-table tr:nth-child(even) {
+  background-color: #fafafa;
+}
+
+.booking-table tr:hover {
+  background-color: #f1f1f1;
+}
+
+.no-data {
+  text-align: center;
+  padding: 20px;
+  color: #888;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.page-btn {
+  padding: 6px 10px;
+  border: 1px solid #999;
+  background: #f8f8f8;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.page-btn:hover:not(:disabled) {
+  background-color: #e0e0e0;
+}
+
+.page-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.loading,
+.error {
+  text-align: center;
+  margin-top: 40px;
+  font-size: 1.2em;
+}
+
+.error {
+  color: red;
+}
+
+@media (max-width: 431px) {
+  .total-order-main {
+    padding: 10px;
+  }
+
+  .page-title {
+    font-size: 1.2em;
+  }
+
+  .showing-text {
+    font-size: 0.75em;
+  }
+
+  .booking-table {
+    font-size: 0.7em;
+  }
+
+  .table-controls-article {
+    grid-template-areas:
+      "rows-select"
+      "type"
+      "month"
+      "date"
+      "cal-price"
+      "show-text";
+    gap: 8px;
+  }
+
+  .rows-select select,
+  .select-types,
+  .month select,
+  .date input,
+  .cal-price button {
+    width: 100%;
+  }
+}
