@@ -38,6 +38,7 @@
     ".next\\dev/types/**/*.ts",
     ".next\\dev/types/**/*.ts"
 , "app/(main)/test"  ],
+  ],
   "exclude": [
     "node_modules"
   ]

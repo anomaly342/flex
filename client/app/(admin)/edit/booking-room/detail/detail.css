@@ -1,0 +1,176 @@
+.room-container {
+  width: 100%;
+  max-width: 430px;
+  margin: 10px auto;
+  padding: 0 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.room-header {
+  text-align: center;
+}
+
+.room-header h3 {
+  font-weight: 700;
+  font-size: 1.25rem;
+}
+
+.room-header p {
+  font-size: 1rem;
+  color: #555;
+}
+
+.room-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+.image-box {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
+  width: 100%;
+  max-width: 260px;
+  text-align: center;
+  background-color: #fafafa;
+}
+
+.image-box img {
+  width: 100%;
+  height: auto;
+  max-height: 160px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.no-photo {
+  padding: 50px 0;
+  color: #777;
+  font-style: italic;
+}
+
+.file-input {
+  margin-top: 8px;
+}
+
+.form-box {
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+.form-box label {
+  font-weight: 600;
+  margin-top: 12px;
+  margin-bottom: 4px;
+}
+
+.form-box input,
+.form-box textarea {
+  width: 100%;
+  max-width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 8px;
+  font-size: 0.95rem;
+  resize: vertical;
+}
+
+.readonly {
+  background-color: #f3f3f3;
+}
+
+.editable {
+  background-color: #fff;
+}
+
+.button-group {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 16px;
+  padding-top: 8px;
+  border-top: 1px solid #eee;
+}
+
+.btn {
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.btn:hover {
+  transform: scale(1.03);
+}
+
+.btn.edit {
+  background-color: #3b82f6;
+}
+.btn.edit:hover {
+  background-color: #2563eb;
+}
+
+.btn.delete {
+  background-color: #df1212;
+}
+.btn.delete:hover {
+  background-color: #eb1616;
+}
+
+.btn.cancel {
+  background-color: #9ca3af;
+}
+.btn.cancel:hover {
+  background-color: #6b7280;
+}
+
+.btn.confirm {
+  background-color: #22c55e;
+}
+.btn.confirm:hover {
+  background-color: #16a34a;
+}
+
+@media (min-width: 431px) {
+  .room-container {
+    min-width: 1024px;
+    max-width: 100%;
+    padding: 20px;
+  }
+
+  .room-header h3 {
+    font-size: 1.5rem;
+  }
+
+  .room-header p {
+    font-size: 1.1rem;
+  }
+
+  .room-content {
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .form-box {
+    max-width: 600px;
+  }
+
+  .form-box input,
+  .form-box textarea {
+    padding: 12px;
+    font-size: 1rem;
+  }
+}
