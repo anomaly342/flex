@@ -7,6 +7,7 @@ import {
   NotFoundException,
   Param,
   ParseIntPipe,
+  Post,
   Put,
   Query,
   Req,
@@ -68,7 +69,7 @@ export class RoomsController {
     }
   }
 
-  @Get(':id/remaining')
+  @Post(':id/remaining')
   async remainingSlot(
     @Param('id', ParseIntPipe) id: number,
     @Body() date: RemainingQueries,
