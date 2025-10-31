@@ -40,6 +40,10 @@
     display: block;
     padding-bottom: 12px;
 }
+.title {
+    font-weight: 700;
+    font-size: large;
+}
 .history-title {
     padding-left: 12px;
 }

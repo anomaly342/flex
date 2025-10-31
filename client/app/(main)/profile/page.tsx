@@ -1,14 +1,73 @@
 "use client";
 import Image from "next/image";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import "./profile.css";
 
+interface UserProfile {
+    id: number;
+    username: string;
+    role: string;
+    exp_date: null;
+    points: number;
+}
+
 export default function Profile() {
-    let role = "Membership";
-    let points = 999;
+    const router = useRouter();
+    const [user, setUser] = useState<UserProfile | null>(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        // -------- MOCK MODE FOR UI TEST --------
+        const mockUser: UserProfile = {
+            id: 1,
+            username: "Alice",
+            role: "Membership",
+            exp_date: null,
+            points: 999,
+        };
+        setUser(mockUser);
+        setLoading(false);
+
+        // const loadUser = async () => {
+        //     try {
+        //         const res = await fetch(
+        //             `${process.env.NEXT_PUBLIC_BACKEND_URL}/authentication/me`,
+        //             {
+        //                 method: "GET",
+        //                 credentials: "include",
+        //             }
+        //         );
+
+        //         if (!res.ok) {
+        //             router.replace("/login");
+        //             return;
+        //         }
+
+        //         const data: UserProfile = await res.json();
+        //         setUser(data);
+        //     } catch (err) {
+        //         console.error("Failed to load user", err);
+        //         router.replace("/login");
+        //     } finally {
+        //         setLoading(false);
+        //     }
+        // };
+
+        // loadUser();
+    }, [router]);
+
+    if (loading) {
+        return <p>Loading...</p>;
+    }
+
+    // let role = "Membership";
+    // let points = 999;
+
     let display = "";
     let display2 = "";
 
-    if (role === "Membership") {
+    if (user?.role === "Membership") {
         display = "hidden";
         display2 = "block";
     } else {
@@ -27,10 +86,10 @@ export default function Profile() {
                         height={50}
                     />
                     <div className="profile-header-col">
-                        <p>Username</p>
+                        <p>{user?.username}</p>
                         <p>
-                            <span className="rolename">{role}</span> Points:{" "}
-                            {points}
+                            <span className="rolename">{user?.role}</span>{" "}
+                            Points: {user?.points}
                         </p>
                     </div>
                 </div>
@@ -49,7 +108,7 @@ export default function Profile() {
                     </div>
 
                     <div className={`member-section ${display2}`}>
-                        <h1>Membership</h1>
+                        <h1 className="title">Membership</h1>
                         <div>
                             <table className="member-table">
                                 <thead>
@@ -60,8 +119,8 @@ export default function Profile() {
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td>January 09, 2025</td>
-                                        <td>{points}</td>
+                                        <td>{user?.exp_date}</td>
+                                        <td>{user?.points}</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -69,7 +128,7 @@ export default function Profile() {
                     </div>
 
                     <div className="history-section">
-                        <p className="history-title">History</p>
+                        <p className="history-title title">History</p>
                         <table className="history-table">
                             <thead>
                                 <tr>
