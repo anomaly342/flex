@@ -1,5 +1,5 @@
 "use client";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import "./details.css";
 
@@ -13,6 +13,7 @@ interface RoomData {
 }
 
 export default function Profile() {
+	const router = useRouter();
 	const sp = useSearchParams();
 	const roomId = sp.get("room");
 	const floor = sp.get("floor") ?? "N/A";
@@ -55,9 +56,7 @@ export default function Profile() {
 				setLoading(true);
 				const res = await fetch(
 					`${process.env.NEXT_PUBLIC_BACKEND_URL}/rooms/${roomId}`,
-					{
-						credentials: "include",
-					}
+					{ credentials: "include" }
 				);
 				if (!res.ok) throw new Error("Failed to fetch room");
 				const data = await res.json();
@@ -172,6 +171,38 @@ export default function Profile() {
 	if (loading) return <p className="loading-text">Loading room details...</p>;
 	if (error) return <p className="error-text">Error: {error}</p>;
 
+	// Redirect to summary page
+	const handleConfirm = () => {
+		if (!startTime) {
+			alert("Please select a start time!");
+			return;
+		}
+
+		const startISO = new Date(
+			selectedDate.getFullYear(),
+			selectedDate.getMonth(),
+			selectedDate.getDate(),
+			parseInt(startTime.split(":")[0]),
+			parseInt(startTime.split(":")[1])
+		).toISOString();
+
+		const endISO = new Date(
+			selectedDate.getFullYear(),
+			selectedDate.getMonth(),
+			selectedDate.getDate(),
+			parseInt((endTime ?? startTime).split(":")[0]),
+			parseInt((endTime ?? startTime).split(":")[1])
+		).toISOString();
+
+		const params = new URLSearchParams();
+		params.append("id", roomData!.room_id.toString());
+		params.append("type", "room");
+		params.append("start_time", startISO);
+		params.append("end_time", endISO);
+
+		router.push(`/summary?${params.toString()}`);
+	};
+
 	return (
 		<div className="maindiv">
 			<main>
@@ -197,7 +228,10 @@ export default function Profile() {
 								<p>{roomData.room_detail}</p>
 							</div>
 						</div>
-						<button onClick={() => setShowModal(true)} className="book-btn">
+						<button
+							onClick={() => setShowModal(true)}
+							className="px-3 py-2 rounded bg-blue-500 text-white hover:bg-blue-600"
+						>
 							Book
 						</button>
 					</>
@@ -250,16 +284,7 @@ export default function Profile() {
 									Cancel
 								</button>
 								<button
-									onClick={() => {
-										alert(
-											`Booked ${
-												roomData?.room_no
-											} on ${get_date} from ${startTime} to ${
-												endTime ?? startTime
-											}`
-										);
-										setShowModal(false);
-									}}
+									onClick={handleConfirm}
 									disabled={confirmDisabled}
 									className={`px-3 py-2 rounded ${
 										!confirmDisabled
