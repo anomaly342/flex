@@ -9,7 +9,9 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Coupon } from './Coupon.entity';
+import { Room } from './Room.entity';
 import { User } from './User.entity';
+import { Zone } from './Zone.entity';
 
 @Entity()
 export class Transaction {
@@ -59,9 +61,11 @@ export class Transaction {
   @Column('int', { nullable: true })
   point_reduction: number;
 
-  @Column({ nullable: true })
-  room_id: number;
+  @ManyToOne(() => Room, { nullable: true, onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'room_id' })
+  room: Partial<Room> | null;
 
-  @Column({ nullable: true })
-  zone_id: number;
+  @ManyToOne(() => Zone, { nullable: true, onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'zone_id' })
+  zone: Partial<Zone> | null;
 }

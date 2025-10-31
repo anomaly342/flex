@@ -1,12 +1,12 @@
 import {
   Body,
-  ConflictException,
   Controller,
+  Delete,
   Get,
+  HttpCode,
   NotFoundException,
   Param,
   ParseIntPipe,
-  Post,
   Put,
   Query,
   Req,
@@ -14,13 +14,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import express from 'express';
-import {
-  EditRoomBody,
-  RemainingQueries,
-  RoomOrder,
-  RoomQueries,
-} from './rooms.dto';
-import { RoomsOrderPipe } from './rooms.pipe';
+import { EditRoomBody, RemainingQueries, RoomQueries } from './rooms.dto';
 import { RoomsService } from './rooms.service';
 
 @Controller('rooms')
@@ -89,24 +83,22 @@ export class RoomsController {
     }
   }
 
-  @Post(':id')
-  async roomOrder(
-    @Param('id', ParseIntPipe) room_id: number,
-    @Body(RoomsOrderPipe) roomOrder: RoomOrder,
-    @Res() response: express.Response,
+  @Delete(':id')
+  @HttpCode(200)
+  async deleteRoom(
+    @Param('id', ParseIntPipe) id: number,
     @Req() request: express.Request,
   ) {
-    const user_id = request.user.id;
-    const result = await this.roomsService.roomOrder(
-      roomOrder,
-      room_id,
-      user_id,
-    );
+    const role = request.user.role;
+    if (role !== 'admin') {
+      throw new UnauthorizedException();
+    }
+    const result = await this.roomsService.removeRoom(id);
 
     if (result) {
-      return response.sendStatus(200);
+      return 'deleted';
     } else {
-      throw new ConflictException();
+      throw new NotFoundException();
     }
   }
 }

@@ -62,4 +62,13 @@ export class ZonesService {
 
     return { table: slots };
   }
+
+  async removeZone(id: number) {
+    const result = await this.zonesRepository.delete({ zone_id: id });
+    if (result.affected) {
+      return true;
+    } else {
+      return null;
+    }
+  }
 }

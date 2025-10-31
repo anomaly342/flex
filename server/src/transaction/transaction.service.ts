@@ -158,7 +158,7 @@ export class TransactionService {
       transaction.total_hour = total_hour;
       transaction.total_discount_percentage = total_discount_percentage;
       transaction.discount_list = discount_list;
-      transaction.room_id = id;
+      transaction.room = { room_id: id };
       const result = await this.transactionRepository.save(transaction);
 
       return result;
@@ -217,7 +217,7 @@ export class TransactionService {
       transaction.total_hour = total_hour;
       transaction.total_discount_percentage = total_discount_percentage;
       transaction.discount_list = discount_list;
-      transaction.zone_id = id;
+      transaction.zone = { zone_id: id };
       const result = await this.transactionRepository.save(transaction);
 
       return result;
@@ -393,7 +393,7 @@ export class TransactionService {
           where: {
             id: transaction_id as any,
           },
-          relations: ['user'],
+          relations: ['user', 'room', 'zone'],
         })) as Transaction;
 
         transaction.status = 'paid';
@@ -409,11 +409,11 @@ export class TransactionService {
         const user_id = transaction.user.user_id;
         const price = transaction.price;
 
-        if (transaction.room_id) {
+        if (transaction.room) {
           const Isoverlapped = await this.ordersRepository.findOne({
             where: [
               {
-                room: { room_id: transaction.room_id },
+                room: { room_id: transaction.room.room_id },
                 start_time: LessThan(end_time),
                 end_time: MoreThan(start_time),
               },
@@ -426,7 +426,7 @@ export class TransactionService {
 
           const result = await this.ordersRepository.insert({
             user: { user_id: user_id },
-            room: { room_id: transaction.room_id },
+            room: { room_id: transaction.room.room_id },
             start_time: start_time,
             end_time: end_time,
             price: price,
@@ -436,7 +436,7 @@ export class TransactionService {
         } else {
           const result = await this.ordersRepository.insert({
             user: { user_id: user_id },
-            zone: { zone_id: transaction.zone_id },
+            zone: { zone_id: transaction.zone?.zone_id },
             start_time: start_time,
             end_time: end_time,
             price: price,

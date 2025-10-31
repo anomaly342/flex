@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Order } from 'src/entities/Order.entity';
 import { Room } from 'src/entities/Room.entity';
-import { LessThan, MoreThan, Repository } from 'typeorm';
-import { EditRoomBody, RoomOrder, RoomQueries } from './rooms.dto';
+import { Repository } from 'typeorm';
+import { EditRoomBody, RoomQueries } from './rooms.dto';
 
 @Injectable()
 export class RoomsService {
@@ -110,31 +110,13 @@ export class RoomsService {
 
     return { table: slots };
   }
-  async roomOrder(roomOrder: RoomOrder, room_id: number, user_id: number) {
-    const { start_time, end_time } = roomOrder;
-    const Isoverlapped = await this.ordersRepository.findOne({
-      where: [
-        {
-          room: { room_id },
-          start_time: LessThan(end_time),
-          end_time: MoreThan(start_time),
-        },
-      ],
-    });
 
-    if (Isoverlapped) {
+  async removeRoom(id: number) {
+    const result = await this.roomsRepository.delete({ room_id: id });
+    if (result.affected) {
+      return true;
+    } else {
       return null;
     }
-
-    const result = await this.ordersRepository.insert({
-      user: { user_id: user_id },
-      room: { room_id: room_id },
-      start_time: start_time,
-      end_time: end_time,
-      price: 5000,
-      qr_url: 'something',
-    });
-
-    return result;
   }
 }

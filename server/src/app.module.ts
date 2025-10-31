@@ -44,9 +44,10 @@ const ENV = process.env.NODE_ENV;
       database: process.env.DB_NAME,
       entities: [User, Room, Zone, QR, Order, Transaction, Coupon],
       synchronize: ENV === 'development' ? true : false,
-      dropSchema: false,
+      dropSchema: ENV === 'development' ? true : false,
       ssl: true,
     }),
+
     AuthenticationModule,
     SeederModule,
     RoomsModule,

@@ -18,11 +18,11 @@ export class Order {
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-  @ManyToOne(() => Room, { nullable: true })
+  @ManyToOne(() => Room, { nullable: true, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'room_id' })
   room: Room | null;
 
-  @ManyToOne(() => Zone, { nullable: true })
+  @ManyToOne(() => Zone, { nullable: true, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'zone_id' })
   zone: Zone | null;
 

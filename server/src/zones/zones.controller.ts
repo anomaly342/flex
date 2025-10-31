@@ -1,7 +1,9 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  HttpCode,
   NotFoundException,
   Param,
   ParseIntPipe,
@@ -55,6 +57,25 @@ export class ZonesController {
 
     if (result) {
       return result;
+    } else {
+      throw new NotFoundException();
+    }
+  }
+
+  @Delete(':id')
+  @HttpCode(200)
+  async deleteZone(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() request: express.Request,
+  ) {
+    const role = request.user.role;
+    if (role !== 'admin') {
+      throw new UnauthorizedException();
+    }
+    const result = await this.zonesService.removeZone(id);
+
+    if (result) {
+      return 'deleted';
     } else {
       throw new NotFoundException();
     }
