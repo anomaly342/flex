@@ -1,10 +1,52 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import "./navbar.css";
 
+interface UserProfile {
+    id: number;
+    username: string;
+    role: string;
+    exp_date: null;
+    points: number;
+}
+
 export default function Desktop_Navbar() {
+    const router = useRouter();
+    const [user, setUser] = useState<UserProfile | null>(null);
+
+    useEffect(() => {
+        // -------- MOCK MODE FOR UI TEST --------
+        // const mockUser: UserProfile = {
+        //     id: 1,
+        //     username: "Alice",
+        //     role: "Membership",
+        //     exp_date: null,
+        //     points: 999,
+        // };
+        // setUser(mockUser);
+        // setLoading(false);
+
+        const loadUser = async () => {
+            try {
+                const res = await fetch(
+                    `${process.env.NEXT_PUBLIC_BACKEND_URL}/authentication/me`,
+                    {
+                        method: "GET",
+                        credentials: "include",
+                    }
+                );
+                const data: UserProfile = await res.json();
+                setUser(data);
+            } catch (err) {
+            }
+        };
+
+        loadUser();
+    }, [router]);
+
     const [openList, setOpenList] = useState(false);
     const arrow = openList ? "▼" : "▶";
     return (
@@ -60,7 +102,7 @@ export default function Desktop_Navbar() {
                             className="icon"
                             priority
                         />
-                        <p>Username</p>
+                        <p>{user?.username}</p>
                     </Link>
                     <Image
                         src="/notification.svg"
