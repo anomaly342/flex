@@ -1,11 +1,69 @@
 "use client";
 import Image from "next/image";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import "./home.css";
 
+interface UserProfile {
+    id: number;
+    username: string;
+    role: string;
+    exp_date: null;
+    points: number;
+}
+
 export default function Home() {
-    let role = "Membership";
-    let points = 999;
+    const router = useRouter();
+    const [user, setUser] = useState<UserProfile | null>(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        // -------- MOCK MODE FOR UI TEST --------
+        // const mockUser: UserProfile = {
+        //     id: 1,
+        //     username: "Alice",
+        //     role: "Membership",
+        //     exp_date: null,
+        //     points: 999,
+        // };
+        // setUser(mockUser);
+        // setLoading(false);
+
+        const loadUser = async () => {
+            try {
+                const res = await fetch(
+                    `${process.env.NEXT_PUBLIC_BACKEND_URL}/authentication/me`,
+                    {
+                        method: "GET",
+                        credentials: "include",
+                    }
+                );
+
+                if (!res.ok) {
+                    router.replace("/login");
+                    return;
+                }
+
+                const data: UserProfile = await res.json();
+                setUser(data);
+            } catch (err) {
+                console.error("Failed to load user", err);
+                router.replace("/login");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadUser();
+    }, [router]);
+
+    if (loading) {
+        return <p>Loading...</p>;
+    }
+
+    // let role = "Membership";
+    // let points = 999;
 
     return (
         <div className="maindiv">
@@ -29,10 +87,12 @@ export default function Home() {
                                 height={50}
                             />
                             <div className="profile-text">
-                                <h3>Username</h3>
+                                <h3>{user?.username}</h3>
                                 <h4>
-                                    <span className="rolename">{role}</span>{" "}
-                                    Points: {points}
+                                    <span className="rolename">
+                                        {user?.role}
+                                    </span>{" "}
+                                    Points: {user?.points}
                                 </h4>
                             </div>
                         </div>
