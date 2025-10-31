@@ -42,7 +42,12 @@ export class AuthenticationController {
       response.cookie(
         'jwt',
         sign(result, process.env.SALT as string, { expiresIn: '7d' }),
-        { maxAge: 7 * 24 * 60 * 60 * 1000, secure: true, httpOnly: true },
+        {
+          maxAge: 7 * 24 * 60 * 60 * 1000,
+          secure: true,
+          httpOnly: true,
+          sameSite: 'none',
+        },
       );
       return response.status(200).send();
     } else {
