@@ -2,18 +2,27 @@
   max-width: 430px;
   margin: 0 auto;
   margin-top: 10px;
-  padding: 10px;
+  padding: 16px;
   box-sizing: border-box;
+}
+
+.room-header {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.room-header .title {
+  font-size: 1.5rem;
+  font-weight: bold;
 }
 
 .room-main {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 20px;
+  gap: 24px;
 }
 
-.selector-row {
+.selector-section {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -24,8 +33,14 @@
   border: 1px solid #ccc;
   border-radius: 8px;
   padding: 8px 16px;
-  text-align: center;
   font-weight: 500;
+  text-align: center;
+}
+
+.room-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .room-grid {
@@ -33,6 +48,13 @@
   flex-wrap: wrap;
   justify-content: center;
   gap: 12px;
+  list-style: none; 
+  padding: 0;
+  margin: 0;
+}
+
+.room-item {
+  display: flex;
 }
 
 .room-box {
@@ -40,9 +62,13 @@
   border-radius: 8px;
   padding: 16px 24px;
   text-align: center;
+  transition: background 0.2s ease;
+}
+
+.room-box a {
   text-decoration: none;
   color: #000;
-  transition: background 0.2s ease;
+  font-weight: 500;
 }
 
 .room-box:hover {
@@ -67,17 +93,28 @@
   padding: 4px 10px;
 }
 
-.btn.refresh {
-  background-color: #22c55e;
+.loading-text,
+.error-text,
+.no-room {
+  text-align: center;
+  font-size: 0.9rem;
+  color: #555;
 }
-.btn.refresh:hover {
-  background-color: #16a34a;
+
+.room-footer {
+  display: flex;
+  justify-content: center;
+  margin-top: 16px;
 }
 
 @media (min-width: 431px) {
   .room-container {
     min-width: 1024px;
     max-width: 100%;
+  }
+
+  .room-header .title {
+    font-size: 2rem;
   }
 
   .selector-box {

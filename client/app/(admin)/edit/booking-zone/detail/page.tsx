@@ -19,48 +19,49 @@ export default function ZoneDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // useEffect(() => {
-  //   async function fetchZoneData() {
-  //     if (!zone_id) return;
-
-  //     try {
-  //       setLoading(true);
-  //       const res = await fetch(
-  //         `http://localhost:3000/edit/zone?zone_id=${zone_id}`,
-  //         {
-  //           method: "GET",
-  //         }
-  //       );
-
-  //       if (!res.ok) throw new Error(`HTTP error: ${res.status}`);
-
-  //       const json = await res.json();
-  //       setData(json);
-  //       setEditData(json);
-  //     } catch (err: any) {
-  //       console.error("Fetch failed:", err);
-  //       setError(err.message);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   }
-
-  //   fetchZoneData();
-  // }, [zone_id]);
-
   useEffect(() => {
-    setLoading(false);
-    const mockData: Zone[] = [
-      { zone_id: 1, zone_no: 1 },
-      { zone_id: 2, zone_no: 2 },
-    ];
-    const mockEditData: Zone = {
-      zone_id: 1,
-      zone_no: 1,
-    };
-    setData(mockData);
-    setEditData(mockEditData);
+    async function fetchZoneData() {
+      if (!zone_id) return;
+
+      try {
+        setLoading(true);
+        const res = await fetch(
+          `http://localhost:3000/zones/${zone_id}`,
+          {
+            method: "GET",
+            credentials: 'include',
+          }
+        );
+
+        if (!res.ok) throw new Error(`HTTP error: ${res.status}`);
+
+        const json = await res.json();
+        setData(json);
+        setEditData(json);
+      } catch (err: any) {
+        console.error("Fetch failed:", err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchZoneData();
   }, [zone_id]);
+
+  // useEffect(() => {
+  //   setLoading(false);
+  //   const mockData: Zone[] = [
+  //     { zone_id: 1, zone_no: 1 },
+  //     { zone_id: 2, zone_no: 2 },
+  //   ];
+  //   const mockEditData: Zone = {
+  //     zone_id: 1,
+  //     zone_no: 1,
+  //   };
+  //   setData(mockData);
+  //   setEditData(mockEditData);
+  // }, [zone_id]);
 
   const handleDelete = async () => {
     if (!zone_id) return;
@@ -72,9 +73,10 @@ export default function ZoneDetail() {
 
     try {
       const res = await fetch(
-        `http://localhost:3000/delete/zone?zone_id=${zone_id}`,
+        `http://localhost:3000/zones/${zone_id}`,
         {
           method: "DELETE",
+          credentials: 'include',
         }
       );
 
@@ -96,10 +98,10 @@ export default function ZoneDetail() {
       const formData = new FormData();
       formData.append("zone_id", zone_id || "");
       formData.append("zone_no", editData.zone_no || "");
-      if (imageFile) formData.append("image", imageFile);
 
-      const res = await fetch("http://localhost:3000/edit/zone", {
-        method: "POST",
+      const res = await fetch("http://localhost:3000/zones", {
+        method: "PUT",
+        credentials: 'include',
         body: formData,
       });
 
@@ -136,67 +138,65 @@ export default function ZoneDetail() {
   if (!editData) return <div className="no-data">No data found.</div>;
 
   return (
-    <div className="zone-container">
-      <main className="zone-main">
-        <div className="header">
-          <h1>Zone {editData.zone_no}</h1>
-          <h2>ID: {editData.zone_id}</h2>
-        </div>
+    <main className="zone-detail">
+      <header className="zone-header">
+        <h1>Zone {editData.zone_no}</h1>
+        <h2>ID: {editData.zone_id}</h2>
+      </header>
 
-        <div className="content">
-          <div className="image-box">
-            {imageFile ? (
-              <img src={URL.createObjectURL(imageFile)} alt="Preview" />
-            ) : editData.zone_img_url ? (
-              <img src={editData.zone_img_url} alt="Zone" />
-            ) : (
-              <p className="no-photo">No Photo</p>
-            )}
-            {isEditing && (
-              <input
-                type="file"
-                accept="image/*"
-                className="file-input"
-                onChange={handleFileChange}
-              />
-            )}
-          </div>
-
-          <div className="form-box">
-            <label>Zone Number:</label>
+      <section className="zone-content">
+        <div className="zone-image">
+          {imageFile ? (
+            <img src={URL.createObjectURL(imageFile)} alt="Preview" />
+          ) : editData.zone_img_url ? (
+            <img src={editData.zone_img_url} alt="Zone" />
+          ) : (
+            <p className="no-photo">No Photo</p>
+          )}
+          {isEditing && (
             <input
-              type="text"
-              name="zone_no"
-              value={editData.zone_no || ""}
-              onChange={handleChange}
-              readOnly={!isEditing}
-              className={isEditing ? "editable" : "readonly"}
+              type="file"
+              accept="image/*"
+              className="file-input"
+              onChange={handleFileChange}
             />
-          </div>
-
-          <div className="button-group">
-            {!isEditing ? (
-              <>
-                <button onClick={() => setIsEditing(true)} className="btn edit">
-                  Edit
-                </button>
-                <button onClick={handleDelete} className="btn delete">
-                  Delete
-                </button>
-              </>
-            ) : (
-              <>
-                <button onClick={handleCancel} className="btn cancel">
-                  Cancel
-                </button>
-                <button onClick={handleConfirm} className="btn confirm">
-                  Confirm
-                </button>
-              </>
-            )}
-          </div>
+          )}
         </div>
-      </main>
-    </div>
+
+        <form className="zone-form">
+          <label>Zone Number:</label>
+          <input
+            type="text"
+            name="zone_no"
+            value={editData.zone_no || ""}
+            onChange={handleChange}
+            readOnly={!isEditing}
+            className={isEditing ? "editable" : "readonly"}
+          />
+        </form>
+
+        <div className="zone-buttons">
+          {!isEditing ? (
+            <>
+              <button onClick={() => setIsEditing(true)} className="btn edit">
+                Edit
+              </button>
+              <button onClick={handleDelete} className="btn delete">
+                Delete
+              </button>
+            </>
+          ) : (
+            <>
+              <button onClick={handleCancel} className="btn cancel">
+                Cancel
+              </button>
+              <button onClick={handleConfirm} className="btn confirm">
+                Confirm
+              </button>
+            </>
+          )}
+        </div>
+      </section>
+    </main>
   );
 }

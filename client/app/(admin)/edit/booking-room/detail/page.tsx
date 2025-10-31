@@ -26,55 +26,56 @@ export default function RoomDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // useEffect(() => {
-  //   async function fetchRoomData() {
-  //     if (!room_id) return;
-
-  //     try {
-  //       setLoading(true);
-  //       const res = await fetch(
-  //         `http://localhost:3000/edit/room?room_id=${room_id}`,
-  //         {
-  //           method: "GET",
-  //         }
-  //       );
-
-  //       if (!res.ok) throw new Error(`HTTP error: ${res.status}`);
-
-  //       const json = await res.json();
-  //       setData(json);
-  //       setEditData(json);
-  //     } catch (err: any) {
-  //       console.error("Fetch failed:", err);
-  //       setError(err.message);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   }
-
-  //   fetchRoomData();
-  // }, [room_id]);
-
   useEffect(() => {
-    setLoading(false);
-    const mockData: Room[] = [
-      { room_id: 101, room_no: "101A", room_floor: 1 },
-      { room_id: 102, room_no: "102B", room_floor: 1 },
-      { room_id: 201, room_no: "201C", room_floor: 2 },
-      { room_id: 202, room_no: "202D", room_floor: 2 },
-    ];
-    const mockEditData: RoomDetail = {
-      room_id: 202,
-      room_no: "202D",
-      room_floor: 2,
-      room_type: "small_decorated",
-      room_detail:
-        "High-speed Wi-Fi, Ergonomic Desk, Air Conditioning, Sound-proofed walls, Private Bathroom",
-      room_img_url: "null",
-    };
-    setData(mockData);
-    setEditData(mockEditData);
-  }, []);
+    async function fetchRoomData() {
+      if (!room_id) return;
+
+      try {
+        setLoading(true);
+        const res = await fetch(
+          `http://localhost:3000/rooms/${room_id}`,
+          {
+            method: "GET",
+            credentials: 'include',
+          }
+        );
+
+        if (!res.ok) throw new Error(`HTTP error: ${res.status}`);
+
+        const json = await res.json();
+        setData(json);
+        setEditData(json);
+      } catch (err: any) {
+        console.error("Fetch failed:", err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchRoomData();
+  }, [room_id]);
+
+  // useEffect(() => {
+  //   setLoading(false);
+  //   const mockData: Room[] = [
+  //     { room_id: 101, room_no: "101A", room_floor: 1 },
+  //     { room_id: 102, room_no: "102B", room_floor: 1 },
+  //     { room_id: 201, room_no: "201C", room_floor: 2 },
+  //     { room_id: 202, room_no: "202D", room_floor: 2 },
+  //   ];
+  //   const mockEditData: RoomDetail = {
+  //     room_id: 202,
+  //     room_no: "202D",
+  //     room_floor: 2,
+  //     room_type: "small_decorated",
+  //     room_detail:
+  //       "High-speed Wi-Fi, Ergonomic Desk, Air Conditioning, Sound-proofed walls, Private Bathroom",
+  //     room_img_url: "null",
+  //   };
+  //   setData(mockData);
+  //   setEditData(mockEditData);
+  // }, []);
 
   const handleDelete = async () => {
     if (!room_id) return;
@@ -86,9 +87,10 @@ export default function RoomDetail() {
 
     try {
       const res = await fetch(
-        `http://localhost:3000/delete/room?room_id=${room_id}`,
+        `http://localhost:3000/rooms/${room_id}`,
         {
           method: "DELETE",
+          credentials: 'include',
         }
       );
 
@@ -115,8 +117,9 @@ export default function RoomDetail() {
       formData.append("room_detail", editData.room_detail || "");
       if (imageFile) formData.append("image", imageFile);
 
-      const res = await fetch("http://localhost:3000/edit/room", {
-        method: "POST",
+      const res = await fetch("http://localhost:3000/rooms", {
+        method: "PUT",
+        credentials: 'include',
         body: formData,
       });
 
@@ -154,77 +157,77 @@ export default function RoomDetail() {
   if (!editData) return <div className="no-data">No data found.</div>;
 
   return (
-    <div className="room-container">
-      <main className="room-main">
-        <div className="header">
-          <h1>Room {editData.room_no}</h1>
-          <h2>Floor {editData.room_floor}</h2>
-        </div>
+    <article className="room-container">
+      <header className="room-header">
+        <h3>Room {editData.room_no}</h3>
+        <p>Floor {editData.room_floor}</p>
+      </header>
 
-        <div className="content">
-          <div className="image-box">
-            {imageFile ? (
-              <img src={URL.createObjectURL(imageFile)} alt="Preview" />
-            ) : editData.room_img_url ? (
-              <img src={editData.room_img_url} alt="Room" />
-            ) : (
-              <p className="no-photo">No Photo</p>
-            )}
-            {isEditing && (
-              <input
-                type="file"
-                accept="image/*"
-                className="file-input"
-                onChange={handleFileChange}
-              />
-            )}
-          </div>
-
-          <div className="form-box">
-            <label>Room Type:</label>
+      <section className="room-content">
+        <figure className="image-box">
+          {imageFile ? (
+            <img src={URL.createObjectURL(imageFile)} alt="Preview" />
+          ) : editData.room_img_url ? (
+            <img src={editData.room_img_url} alt={`Room ${editData.room_no}`} />
+          ) : (
+            <figcaption className="no-photo">No Photo</figcaption>
+          )}
+          {isEditing && (
             <input
-              type="text"
-              name="room_type"
-              value={editData.room_type || ""}
-              onChange={handleChange}
-              readOnly={!isEditing}
-              className={isEditing ? "editable" : "readonly"}
+              type="file"
+              accept="image/*"
+              className="file-input"
+              onChange={handleFileChange}
             />
+          )}
+        </figure>
 
-            <label>Room Detail:</label>
-            <textarea
-              name="room_detail"
-              value={editData.room_detail || ""}
-              onChange={handleChange}
-              readOnly={!isEditing}
-              rows={5}
-              className={isEditing ? "editable" : "readonly"}
-            />
-          </div>
+        <form className="form-box" onSubmit={(e) => e.preventDefault()}>
+          <label htmlFor="room_type">Room Type:</label>
+          <input
+            id="room_type"
+            type="text"
+            name="room_type"
+            value={editData.room_type || ""}
+            onChange={handleChange}
+            readOnly={!isEditing}
+            className={isEditing ? "editable" : "readonly"}
+          />
 
-          <div className="button-group">
-            {!isEditing ? (
-              <>
-                <button onClick={() => setIsEditing(true)} className="btn edit">
-                  Edit
-                </button>
-                <button onClick={handleDelete} className="btn delete">
-                  Delete
-                </button>
-              </>
-            ) : (
-              <>
-                <button onClick={handleCancel} className="btn cancel">
-                  Cancel
-                </button>
-                <button onClick={handleConfirm} className="btn confirm">
-                  Confirm
-                </button>
-              </>
-            )}
-          </div>
-        </div>
-      </main>
-    </div>
+          <label htmlFor="room_detail">Room Detail:</label>
+          <textarea
+            id="room_detail"
+            name="room_detail"
+            value={editData.room_detail || ""}
+            onChange={handleChange}
+            readOnly={!isEditing}
+            rows={5}
+            className={isEditing ? "editable" : "readonly"}
+          />
+        </form>
+      </section>
+
+      <footer className="button-group">
+        {!isEditing ? (
+          <>
+            <button onClick={() => setIsEditing(true)} className="btn edit">
+              Edit
+            </button>
+            <button onClick={handleDelete} className="btn delete">
+              Delete
+            </button>
+          </>
+        ) : (
+          <>
+            <button onClick={handleCancel} className="btn cancel">
+              Cancel
+            </button>
+            <button onClick={handleConfirm} className="btn confirm">
+              Confirm
+            </button>
+          </>
+        )}
+      </footer>
+    </article>
   );
 }

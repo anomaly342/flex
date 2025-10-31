@@ -11,56 +11,34 @@ export default function AdminLayout({
 }) {
   const [open, setOpen] = useState(false);
   const toggleNavbar = () => setOpen(!open);
-
   const handleLinkClick = () => setOpen(false);
-
   const [theme, setTheme] = useState<boolean>(false);
 
-  useEffect(() => {
-    const changeThemeBtn = document.getElementById("change-theme-btn");
-
-    if (changeThemeBtn) {
-      changeThemeBtn.addEventListener("click", () => {
-        setTheme((prev) => !prev);
-      });
-    }
-
-    return () => {
-      if (changeThemeBtn) {
-        changeThemeBtn.removeEventListener("click", () =>
-          setTheme((prev) => !prev)
-        );
-      }
-    };
-  }, []);
+  const toggleTheme = () => setTheme((prev) => !prev);
 
   useEffect(() => {
-    const navbar = document.getElementById("id-admin-navbar");
-    if (!navbar) return;
+    const header  = document.getElementById("id-navbar-header");
+    if (!header ) return;
 
-    if (theme) {
-      navbar.classList.add("green-theme");
-      navbar.classList.remove("blue-theme");
-    } else {
-      navbar.classList.add("blue-theme");
-      navbar.classList.remove("green-theme");
-    }
-
-  }, [theme])
+    header .classList.remove("blue-theme", "green-theme");
+    header .classList.add(theme ? "green-theme" : "blue-theme");
+  }, [theme]);
 
   return (
     <div className="admin-layout">
-      <nav id="id-admin-navbar" className="admin-navbar">
-        <div className="navbar-header">
-          <button className="menu-btn" onClick={toggleNavbar}>
-            Menu
-          </button>
-          <button id="change-theme-btn">Change Theme</button>
-        </div>
+      <header id="id-navbar-header" className="navbar-header">
+        <button className="menu-btn" onClick={toggleNavbar}>
+          Menu
+        </button>
+        <button id="change-theme-btn" onClick={toggleTheme}>
+          Change Theme
+        </button>
+      </header>
 
+      <nav className={`admin-navbar ${theme ? "green-theme" : "blue-theme"}`}>
         <div className={`navbar-links ${open ? "show" : ""}`}>
-          <div className="nav-group">
-            <p>Dashboard</p>
+          <section className="nav-group">
+            <h2>Dashboard</h2>
             <Link href="/dashboard" onClick={handleLinkClick}>
               Dashboard
             </Link>
@@ -76,24 +54,24 @@ export default function AdminLayout({
             >
               Order Status
             </Link>
-          </div>
+          </section>
 
-          <div className="nav-group">
-            <p>Edit</p>
+          <section className="nav-group">
+            <h2>Edit</h2>
             <Link href="/edit/booking-room" onClick={handleLinkClick}>
               Edit Booking Room
             </Link>
             <Link href="/edit/booking-zone" onClick={handleLinkClick}>
               Edit Booking Zone
             </Link>
-          </div>
+          </section>
 
-          <div className="nav-group">
-            <p>Export</p>
+          <section className="nav-group">
+            <h2>Export</h2>
             <Link href="/export" onClick={handleLinkClick}>
               Export
             </Link>
-          </div>
+          </section>
         </div>
       </nav>
 

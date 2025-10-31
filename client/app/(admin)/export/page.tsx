@@ -227,8 +227,13 @@ export default function ExportPage() {
 
     const fetchData = async () => {
       try {
-        const base = "http://localhost:3000/total_order";
-        const res = await fetch(`${base}/bookings`);
+        const res = await fetch("http://localhost:3000/orders/all", {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
 
         if (!res.ok) throw new Error("Network error while fetching bookings");
 
@@ -360,8 +365,8 @@ export default function ExportPage() {
       setDataPreview(aggregated);
     };
 
-    // fetchData();
-    demoFetchData();
+    fetchData();
+    // demoFetchData();
 
     return () => {
       cancelled = true;
@@ -496,11 +501,12 @@ export default function ExportPage() {
   };
 
   return (
-    <div className="export-container">
-      <div className="export-top">
+    <section className="export-container">
+      <header className="export-top">
         <div className="duration">
-          <label>Duration</label>
+          <label htmlFor="duration">Duration</label>
           <select
+            id="duration"
             value={duration}
             onChange={(e) => setDuration(e.target.value as Duration)}
           >
@@ -511,8 +517,9 @@ export default function ExportPage() {
         </div>
 
         <div className="year-range">
-          <label>Year Range</label>
+          <label htmlFor="yearRange">Year Range</label>
           <select
+            id="yearRange"
             value={yearRange}
             onChange={(e) => setYearRange(e.target.value as YearRangeOption)}
           >
@@ -524,8 +531,8 @@ export default function ExportPage() {
           </select>
         </div>
 
-        <div className="filter-group">
-          <label>Filters</label>
+        <fieldset className="filter-group">
+          <legend>Filters</legend>
           <div className="filter-checkboxes">
             {(
               [
@@ -545,14 +552,14 @@ export default function ExportPage() {
               </label>
             ))}
           </div>
-        </div>
-      </div>
+        </fieldset>
+      </header>
 
-      <div className="export-preview">
+      <section className="export-preview">
         {dataPreview.length === 0 ? (
           <p>No data yet</p>
         ) : (
-          <div className="chart-wrapper">
+          <figure className="chart-wrapper">
             <Line
               ref={chartRef}
               data={chartData}
@@ -560,43 +567,41 @@ export default function ExportPage() {
               onMouseMove={handleMouseMove}
               onMouseUp={handleMouseUp}
             />
-          </div>
+          </figure>
         )}
-      </div>
+      </section>
 
-      <div className="export-bottom">
+      <footer className="export-bottom">
         <button className="btn-export" onClick={handleExportCSV}>
           Export CSV
         </button>
-        
         <button className="btn-clear" onClick={handleClearSelection}>
           Clear Selection
         </button>
-
         <button
           className="btn-analysis"
           onClick={() => setShowAnalysis(!showAnalysis)}
         >
           {showAnalysis ? "Hide Analysis" : "Analysis"}
         </button>
-      </div>
+      </footer>
 
       {selectedRange.start !== null &&
         selectedRange.end !== null &&
         dataPreview[selectedRange.start] &&
         dataPreview[selectedRange.end] && (
-          <p>
+          <p className="range-text">
             Selected Range: {dataPreview[selectedRange.start].label} →{" "}
             {dataPreview[selectedRange.end].label}
           </p>
         )}
 
       {showAnalysis && (
-        <div className="analysis-chart">
+        <section className="analysis-chart">
           <h3>Analysis (Bar Chart)</h3>
           <Bar data={analysisData} />
-        </div>
+        </section>
       )}
-    </div>
+    </section>
   );
 }

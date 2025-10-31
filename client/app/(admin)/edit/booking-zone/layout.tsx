@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./booking_zone.css"
 
 export const metadata: Metadata = {
-  title: "Zone Booking",
+  title: "Zone Edit",
 };
 
 export default function ProfileLayout({
@@ -11,9 +11,8 @@ export default function ProfileLayout({
   children: React.ReactNode;
 }) {
   return (
-    <>
-      {/* <Navbar /> */}
-      <main>{children}</main>
-    </>
+    <section>
+      <article>{children}</article>
+    </section>
   );
 }

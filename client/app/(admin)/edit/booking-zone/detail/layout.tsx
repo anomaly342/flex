@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
-// import Navbar from "../_navbar/page";
 import "./detail.css";
 
 export const metadata: Metadata = {
-    title: "Zone Booking",
+    title: "Zone Edit Detail",
 };
 
 export default function ProfileLayout({
@@ -12,9 +11,8 @@ export default function ProfileLayout({
     children: React.ReactNode;
 }) {
     return (
-        <>
-            {/* <Navbar /> */}
-            <main>{children}</main>
-        </>
+        <article>
+            <section>{children}</section>
+        </article>
     );
 }

@@ -1,33 +1,45 @@
-.export-container {
-  width: 100%;
-  max-width: 430px;
-  min-height: 100vh;
-  margin: 0 auto;
-  padding: 16px;
-  font-family: "Inter", sans-serif;
+.status-main {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  align-items: center;
+  width: 100%;
+  min-height: 100vh;
+  padding: 16px;
+  font-family: "Inter", sans-serif;
   box-sizing: border-box;
 }
 
-.export-top,
-.export-bottom {
+.status-section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 1024px;
+}
+
+.status-article {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.status-top, .status-bottom {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
-.export-top > .duration,
-.export-top > .year-range {
+.status-top > .duration,
+.status-top > .year-range {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: start;
+  align-items: flex-start;
 }
 
-.export-top > .duration select,
-.export-top > .year-range select {
+.status-top > .duration select,
+.status-top > .year-range select {
   width: 100%;
 }
 
@@ -38,7 +50,7 @@
   align-items: center;
 }
 
-.export-preview {
+.status-preview {
   border: 2px solid #000;
   border-radius: 8px;
   padding: 10px;
@@ -46,6 +58,7 @@
   justify-content: center;
   align-items: center;
   position: relative;
+  margin: 10px;
 }
 
 .chart-wrapper {
@@ -53,8 +66,8 @@
   height: 300px;
 }
 
-.export-top select,
-.export-bottom select {
+.status-top select,
+.status-bottom select {
   border: 1px solid gray;
   border-radius: 6px;
   padding: 6px 10px;
@@ -87,30 +100,29 @@
 }
 
 @media (min-width: 431px) {
-  .export-container {
-    min-width: 1024px;
-    max-width: 100%;
-    padding: 20px;
+  .status-section {
     gap: 24px;
+    padding: 0 20px;
   }
 
-  .export-top,
-  .export-bottom {
+  .status-preview {
+    margin: 30px;
+  }
+
+  .status-top,
+  .status-bottom {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-  }
-
-  .chart-container {
-    height: 400px;
+    gap: 30px;
   }
 
   .chart-wrapper {
     height: 400px;
   }
 
-  .export-top select,
-  .export-bottom select {
+  .status-top select,
+  .status-bottom select {
     font-size: medium;
   }
 

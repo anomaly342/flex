@@ -6,7 +6,7 @@ body {
   padding: 0;
 }
 
-.edit-container {
+section.edit-container {
   width: 100%;
   max-width: 430px;
   height: 100%;
@@ -22,7 +22,7 @@ body {
     align-items: center;
   }
 
-  .edit-container {
+  section.edit-container {
     width: 100%;
     min-width: 430px;
     max-width: 1024px;

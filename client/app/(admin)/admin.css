@@ -1,42 +1,64 @@
 * {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 .admin-layout {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  background-color: #fff;
+  font-family: sans-serif;
 }
 
-.admin-navbar {
-  width: 100%;
+header.navbar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   background-color: #1e40af;
+  color: white;
+  padding: 8px 16px;
+  z-index: 20;
+}
+
+.menu-btn,
+#change-theme-btn {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.menu-btn:hover,
+#change-theme-btn:hover {
+  opacity: 0.8;
+}
+
+.menu-btn {
+  font-size: 22px;
+}
+
+#change-theme-btn {
+  font-size: 16px;
+}
+
+nav.admin-navbar {
+  width: 100%;
   color: white;
   position: relative;
   z-index: 10;
 }
 
-.navbar-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 16px;
+.navbar-header.blue-theme {
+  background-color: #1e40af;
+  transition: background-color 0.3s ease;
 }
 
-.menu-btn {
-  background: none;
-  border: none;
-  color: white;
-  font-size: 22px;
-  cursor: pointer;
-}
-
-#change-theme-btn {
-  background: none;
-  border: none;
-  color: white;
-  font-size: 16px;
-  cursor: pointer;
+.navbar-header.green-theme {
+  background-color: #1eaf3d;
+  transition: background-color 0.3s ease;
 }
 
 .navbar-links {
@@ -47,7 +69,7 @@
   width: 100%;
   position: absolute;
   left: 0;
-  top: 48px;
+  top: 0;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   animation: slideDown 0.3s ease forwards;
 }
@@ -56,14 +78,29 @@
   display: flex;
 }
 
-.admin-navbar.blue-theme {
-  background-color: #1e40af;
-  transition: background-color 0.3s ease;
+.nav-group {
+  padding: 12px 16px;
+  border-bottom: 1px solid #ddd;
 }
 
-.admin-navbar.green-theme {
-  background-color: #1eaf3d;
-  transition: background-color 0.3s ease;
+.nav-group h2 {
+  font-weight: bold;
+  font-size: 14px;
+  color: #1e40af;
+  margin-bottom: 4px;
+}
+
+.nav-group a {
+  display: block;
+  text-decoration: none;
+  color: #333;
+  font-size: small;
+  padding: 4px 0;
+  transition: color 0.2s;
+}
+
+.nav-group a:hover {
+  color: #1e40af;
 }
 
 @keyframes slideDown {
@@ -77,34 +114,22 @@
   }
 }
 
-.nav-group {
-  padding: 12px 16px;
-  border-bottom: 1px solid #ddd;
-}
-
-.nav-group p {
-  font-weight: bold;
-  color: #1e40af;
-  margin-bottom: 4px;
-}
-
-.nav-group a {
-  display: block;
-  text-decoration: none;
-  color: #333;
-  font-size: small;
-  padding: 4px 0;
-}
-
-.nav-group a:hover {
-  color: #1e40af;
-}
-
-.admin-container {
+main.admin-container {
+  flex: 1;
   width: 100%;
   max-width: 430px;
-  height: 100vh;
+  margin: 0 auto;
+  padding: 16px;
+  background-color: #fff;
 }
+
+/* footer.admin-footer {
+  background-color: #f3f4f6;
+  color: #333;
+  text-align: center;
+  padding: 12px 0;
+  font-size: small;
+} */
 
 label,
 input,
@@ -120,10 +145,9 @@ button {
   body {
     width: 100vw;
   }
-  .admin-container {
-    width: 100%;
+
+  main.admin-container {
     max-width: 1024px;
-    height: 100vh;
   }
 
   label,
@@ -131,5 +155,9 @@ button {
   p,
   button {
     font-size: medium;
+  }
+
+  .nav-group h2 {
+    font-size: 16px;
   }
 }

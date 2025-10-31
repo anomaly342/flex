@@ -36,7 +36,7 @@ export default function BookingAccountPage() {
 
   const fetchData = async () => {
     try {
-      const res = await fetch("http://localhost:3000/total_order", {
+      const res = await fetch("http://localhost:3000/orders/all", {
         method: "GET",
         credentials: "include",
       });
@@ -107,8 +107,8 @@ export default function BookingAccountPage() {
   };
 
   useEffect(() => {
-    // fetchData();
-    demoFetchData();
+    fetchData();
+    // demoFetchData();
   }, []);
 
   const filteredBookings = bookings.filter((b) => {
@@ -152,13 +152,12 @@ export default function BookingAccountPage() {
   if (error) return <p className="error">{error}</p>;
 
   return (
-    <div className="booking-container">
-      <h1 className="page-title">Total Orders</h1>
-
+    <section className="booking-container">
       <div className="table-controls">
         <div className="rows-select">
-          <label>Rows per page:</label>
+          <label className="rows-select">Rows per page:</label>
           <select
+            id="rows-select"
             className="select-rows"
             value={rowsPerPage}
             onChange={handleRowsChange}
@@ -170,8 +169,9 @@ export default function BookingAccountPage() {
         </div>
 
         <div className="type">
-          <label>Type:</label>
+          <label className="type-select">Type:</label>
           <select
+            id="type-select"
             className="select-types"
             value={selectedType}
             onChange={handleTypeChange}
@@ -183,11 +183,12 @@ export default function BookingAccountPage() {
         </div>
 
         <div className="month">
-          <label>Month:</label>
+          <label className="month-select">Month:</label>
           <select
+            id="month-select"
+            className="select-month"
             value={selectedMonth}
             onChange={(e) => setSelectedMonth(e.target.value)}
-            className="select-month"
           >
             <option value="all">All</option>
             {Array.from({ length: 12 }, (_, i) => (
@@ -199,8 +200,9 @@ export default function BookingAccountPage() {
         </div>
 
         <div className="date">
-          <label>Date:</label>
+          <label className="date-select">Date:</label>
           <input
+            id="date-select"
             type="date"
             value={selectedDay}
             onChange={(e) => setSelectedDay(e.target.value)}
@@ -228,17 +230,18 @@ export default function BookingAccountPage() {
         </div>
       </div>
 
-      <div className="table-wrapper">
+      <section className="table-wrapper">
         <table className="booking-table">
+          <caption className="sr-only">Booking Records Table</caption>
           <thead>
             <tr>
-              <th>#</th>
-              <th>Type</th>
-              <th>No</th>
-              <th>Start Booking</th>
-              <th>End Booking</th>
-              <th>Period (hrs)</th>
-              <th>Price (฿)</th>
+              <th scope="col">#</th>
+              <th scope="col">Type</th>
+              <th scope="col">No</th>
+              <th scope="col">Start Booking</th>
+              <th scope="col">End Booking</th>
+              <th scope="col">Period (hrs)</th>
+              <th scope="col">Price (฿)</th>
             </tr>
           </thead>
           <tbody>
@@ -263,15 +266,15 @@ export default function BookingAccountPage() {
             )}
           </tbody>
         </table>
-      </div>
+      </section>
 
-      <div className="pagination">
+      <footer className="pagination">
         <button
           onClick={handlePrevPage}
           disabled={currentPage === 1}
           className="page-btn"
         >
-          {"<"}
+          &lt;
         </button>
         <span>
           Page {currentPage} of {totalPages}
@@ -281,9 +284,9 @@ export default function BookingAccountPage() {
           disabled={currentPage === totalPages}
           className="page-btn"
         >
-          {">"}
+          &gt;
         </button>
-      </div>
-    </div>
+      </footer>
+    </section>
   );
 }

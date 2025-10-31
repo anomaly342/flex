@@ -195,8 +195,13 @@ export default function SummaryPage() {
 
     const fetchData = async () => {
       try {
-        const base = "http://localhost:3000/total_order";
-        const res = await fetch(`${base}/bookings`);
+        const res = await fetch("http://localhost:3000/orders/all", {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
 
         if (!res.ok) throw new Error("Network error while fetching bookings");
 
@@ -328,8 +333,8 @@ export default function SummaryPage() {
       setDataPreview(aggregated);
     };
 
-    // fetchData(); 
-    demoFetchData(); 
+    fetchData();
+    // demoFetchData();
 
     return () => {
       cancelled = true;
@@ -464,11 +469,12 @@ export default function SummaryPage() {
   };
 
   return (
-    <div className="export-container">
-      <div className="export-top">
+    <main className="status-container">
+      <header className="status-top">
         <div className="duration">
-          <label>Duration</label>
+          <label className="duration-select">Duration</label>
           <select
+            id="duration-select"
             value={duration}
             onChange={(e) => setDuration(e.target.value as Duration)}
           >
@@ -479,8 +485,9 @@ export default function SummaryPage() {
         </div>
 
         <div className="year-range">
-          <label>Year Range</label>
+          <label className="year-range-select">Year Range</label>
           <select
+            id="year-range-select"
             value={yearRange}
             onChange={(e) => setYearRange(e.target.value as YearRangeOption)}
           >
@@ -494,7 +501,7 @@ export default function SummaryPage() {
 
         <div className="filter-group">
           <label>Filters</label>
-          <div className="filter-checkboxes">
+          <fieldset className="filter-checkboxes">
             {(
               [
                 "total_order",
@@ -512,11 +519,11 @@ export default function SummaryPage() {
                 <span>{f.replaceAll("_", " ")}</span>
               </label>
             ))}
-          </div>
+          </fieldset>
         </div>
-      </div>
+      </header>
 
-      <div className="export-preview">
+      <section className="status-preview">
         {dataPreview.length === 0 ? (
           <p>No data yet</p>
         ) : (
@@ -530,9 +537,9 @@ export default function SummaryPage() {
             />
           </div>
         )}
-      </div>
+      </section>
 
-      <div className="export-bottom">
+      <footer className="status-bottom">
         <button className="btn-clear" onClick={handleClearSelection}>
           Clear Selection
         </button>
@@ -543,7 +550,7 @@ export default function SummaryPage() {
         >
           {showAnalysis ? "Hide Analysis" : "Analysis"}
         </button>
-      </div>
+      </footer>
 
       {selectedRange.start !== null &&
         selectedRange.end !== null &&
@@ -556,11 +563,11 @@ export default function SummaryPage() {
         )}
 
       {showAnalysis && (
-        <div className="analysis-chart">
+        <section className="analysis-chart">
           <h3>Analysis (Bar Chart)</h3>
           <Bar data={analysisData} />
-        </div>
+        </section>
       )}
-    </div>
+    </main>
   );
 }

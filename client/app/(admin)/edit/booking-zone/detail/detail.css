@@ -1,56 +1,47 @@
-.zone-container {
+.zone-detail {
   width: 100%;
   max-width: 430px;
-  height: 100%;
   margin: 10px auto;
-  padding: 0 8px; 
-}
-
-.loading-text {
-  text-align: center;
-  padding: 20px;
-}
-
-.zone-main {
+  padding: 0 8px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  gap: 16px;
 }
 
-.header {
+.zone-header {
   text-align: center;
 }
 
-.header h1 {
-  font-weight: bold;
+.zone-header h1 {
+  font-weight: 700;
   font-size: 1.25rem;
 }
 
-.header h2 {
+.zone-header h2 {
   font-size: 1rem;
   color: #555;
 }
 
-.content {
+.zone-content {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   width: 100%;
   overflow-x: hidden;
 }
 
-.image-box {
+.zone-image {
   border: 1px solid #ddd;
   border-radius: 8px;
   padding: 10px;
   width: 100%;
   max-width: 260px;
   text-align: center;
+  background-color: #fafafa;
 }
 
-.image-box img {
+.zone-image img {
   width: 100%;
   height: auto;
   max-height: 160px;
@@ -61,13 +52,14 @@
 .no-photo {
   padding: 50px 0;
   color: #777;
+  font-style: italic;
 }
 
 .file-input {
   margin-top: 8px;
 }
 
-.form-box {
+.zone-form {
   width: 100%;
   max-width: 100%;
   display: flex;
@@ -75,14 +67,14 @@
   overflow-x: hidden;
 }
 
-.form-box label {
+.zone-form label {
   font-weight: 600;
   margin-top: 12px;
   margin-bottom: 4px;
 }
 
-.form-box input,
-.form-box textarea {
+.zone-form input,
+.zone-form textarea {
   width: 100%;
   max-width: 100%;
   border: 1px solid #ccc;
@@ -100,12 +92,14 @@
   background-color: #fff;
 }
 
-.button-group {
+.zone-buttons {
   display: flex;
-  flex-wrap: wrap; 
+  flex-wrap: wrap;
   justify-content: center;
   gap: 12px;
   margin-top: 16px;
+  padding-top: 8px;
+  border-top: 1px solid #eee;
 }
 
 .btn {
@@ -114,7 +108,11 @@
   border: none;
   color: #fff;
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.btn:hover {
+  transform: scale(1.03);
 }
 
 .btn.edit {
@@ -125,10 +123,10 @@
 }
 
 .btn.delete {
-  background-color: #df1212
+  background-color: #df1212;
 }
 .btn.delete:hover {
-  background-color: #eb1616
+  background-color: #eb1616;
 }
 
 .btn.cancel {
@@ -146,37 +144,33 @@
 }
 
 @media (min-width: 431px) {
-  .zone-container {
-    width: 100%;
-    min-width: 1024x;
+  .zone-detail {
+    min-width: 1024px;
     max-width: 100%;
     padding: 20px;
   }
 
-  .zone-main {
-    gap: 24px;
-  }
-
-  .content {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .form-box {
-    max-width: 800px;
-  }
-
-  .form-box input,
-  .form-box textarea {
-    padding: 16px;
-    font-size: 1rem;
-  }
-
-  .header h1 {
+  .zone-header h1 {
     font-size: 1.5rem;
   }
 
-  .header h2 {
+  .zone-header h2 {
     font-size: 1.1rem;
+  }
+
+  .zone-content {
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .zone-form {
+    max-width: 600px;
+  }
+
+  .zone-form input,
+  .zone-form textarea {
+    padding: 12px;
+    font-size: 1rem;
   }
 }

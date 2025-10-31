@@ -22,7 +22,7 @@ export default function DashboardPage() {
 
   const fetchDashboardData = async () => {
     try {
-      const response = await fetch("http://localhost:3000/total_order", {
+      const response = await fetch("http://localhost:3000/orders/all", {
         method: "GET",
         credentials: "include",
         headers: {
@@ -82,13 +82,13 @@ export default function DashboardPage() {
   };
 
   useEffect(() => {
-    // fetchDashboardData();
-    demoFetchDashboardData();
+    fetchDashboardData();
+    // demoFetchDashboardData();
   }, []);
 
   return (
-    <div id="id-dashboard-container" className="dashboard-container">
-      <div
+    <section id="id-dashboard-container" className="dashboard-container">
+      <article
         className="total-order"
         onClick={goTo("/dashboard/summary/total-order")}
       >
@@ -96,9 +96,9 @@ export default function DashboardPage() {
           <strong>{totalOrder}</strong>
         </p>
         <p>Total Orders</p>
-      </div>
+      </article>
 
-      <div
+      <article
         className="total-order-room"
         onClick={goTo("/dashboard/summary/total-order")}
       >
@@ -106,9 +106,9 @@ export default function DashboardPage() {
           <strong>{totalOrderRoom}</strong>
         </p>
         <p>Total Orders (Room)</p>
-      </div>
+      </article>
 
-      <div
+      <article
         className="total-order-zone"
         onClick={goTo("/dashboard/summary/total-order")}
       >
@@ -116,7 +116,7 @@ export default function DashboardPage() {
           <strong>{totalOrderZone}</strong>
         </p>
         <p>Total Orders (Zone)</p>
-      </div>
-    </div>
+      </article>
+    </section>
   );
 }
