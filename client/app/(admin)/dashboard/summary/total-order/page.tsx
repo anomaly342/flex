@@ -36,7 +36,7 @@ export default function BookingAccountPage() {
 
   const fetchData = async () => {
     try {
-      const res = await fetch("http://localhost:3000/orders/all", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/orders/all`, {
         method: "GET",
         credentials: "include",
       });

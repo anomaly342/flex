@@ -195,12 +195,9 @@ export default function SummaryPage() {
 
     const fetchData = async () => {
       try {
-        const res = await fetch("http://localhost:3000/orders/all", {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/orders/all`, {
           method: "GET",
           credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
         });
 
         if (!res.ok) throw new Error("Network error while fetching bookings");

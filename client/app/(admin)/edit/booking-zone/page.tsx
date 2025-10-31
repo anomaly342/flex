@@ -17,7 +17,7 @@ export default function BookingZone() {
     const fetchZones = async () => {
       try {
         setLoading(true); 
-        const res = await fetch("http://localhost:3000/zones", {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/zones`, {
           method: "GET",
           credentials: "include",
         });

@@ -5,79 +5,66 @@ import { useSearchParams, useRouter } from "next/navigation";
 interface Zone {
   zone_id: number;
   zone_no: number;
+  zone_img_url?: string;
 }
 
 export default function ZoneDetail() {
   const sp = useSearchParams();
   const router = useRouter();
   const zone_id = sp.get("zone_id");
+  const zone_no = sp.get("zone_no");
 
-  const [data, setData] = useState<any>(null);
-  const [editData, setEditData] = useState<any>(null);
+  const [data, setData] = useState<Zone | null>(null);
+  const [editData, setEditData] = useState<Zone | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Load zone data on mount or when zone_id changes
   useEffect(() => {
-    async function fetchZoneData() {
-      if (!zone_id) return;
-
-      try {
-        setLoading(true);
-        const res = await fetch(
-          `http://localhost:3000/zones/${zone_id}`,
-          {
-            method: "GET",
-            credentials: 'include',
-          }
-        );
-
-        if (!res.ok) throw new Error(`HTTP error: ${res.status}`);
-
-        const json = await res.json();
-        setData(json);
-        setEditData(json);
-      } catch (err: any) {
-        console.error("Fetch failed:", err);
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
+    if (!zone_id) {
+      setError("Zone ID is missing from URL");
+      setLoading(false);
+      return;
     }
 
-    fetchZoneData();
-  }, [zone_id]);
+    const fetchZone = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/zones/${zone_id}`,
+          { credentials: "include" }
+        );
 
-  // useEffect(() => {
-  //   setLoading(false);
-  //   const mockData: Zone[] = [
-  //     { zone_id: 1, zone_no: 1 },
-  //     { zone_id: 2, zone_no: 2 },
-  //   ];
-  //   const mockEditData: Zone = {
-  //     zone_id: 1,
-  //     zone_no: 1,
-  //   };
-  //   setData(mockData);
-  //   setEditData(mockEditData);
-  // }, [zone_id]);
+        if (!res.ok) {
+          const json = await res.json();
+          throw new Error(json.message || "Failed to fetch zone");
+        }
+
+        const json: Zone = await res.json();
+        setData(json);
+        setEditData(json);
+        setLoading(false);
+      } catch (err: any) {
+        console.error(err);
+        setError(err.message || "Network error");
+        setLoading(false);
+      }
+    };
+
+    fetchZone();
+  }, [zone_id]);
 
   const handleDelete = async () => {
     if (!zone_id) return;
 
-    const confirmDelete = confirm(
-      `Are you sure you want to delete zone ${zone_id}?`
-    );
-    if (!confirmDelete) return;
+    if (!confirm(`Are you sure you want to delete zone ${zone_id}?`)) return;
 
     try {
       const res = await fetch(
-        `http://localhost:3000/zones/${zone_id}`,
-        {
-          method: "DELETE",
-          credentials: 'include',
-        }
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/zones/${zone_id}`,
+        { method: "DELETE", credentials: "include" }
       );
 
       if (res.ok) {
@@ -94,15 +81,18 @@ export default function ZoneDetail() {
   };
 
   const handleConfirm = async () => {
-    try {
-      const formData = new FormData();
-      formData.append("zone_id", zone_id || "");
-      formData.append("zone_no", editData.zone_no || "");
+    if (!editData) return;
 
-      const res = await fetch("http://localhost:3000/zones", {
+    try {
+      const bodyData = new URLSearchParams();
+      bodyData.append("zone_id", zone_id || "");
+      bodyData.append("zone_no", editData.zone_no?.toString() || "");
+
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/zones`, {
         method: "PUT",
-        credentials: 'include',
-        body: formData,
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        credentials: "include",
+        body: bodyData,
       });
 
       const json = await res.json();
@@ -121,7 +111,7 @@ export default function ZoneDetail() {
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    setEditData({ ...editData, [e.target.name]: e.target.value });
+    setEditData({ ...editData!, [e.target.name]: e.target.value });
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) setImageFile(e.target.files[0]);
