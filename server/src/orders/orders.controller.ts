@@ -25,6 +25,17 @@ export class OrdersController {
     return result;
   }
 
+  @Get('all')
+  async allOrders(@Req() request: express.Request) {
+    const role = request.user.role;
+    if (role !== 'admin') {
+      throw new UnauthorizedException();
+    }
+
+    const result = await this.ordersService.allOrders();
+
+    return result;
+  }
   @Get(':id')
   async order(
     @Req() request: express.Request,

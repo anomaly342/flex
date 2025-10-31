@@ -20,8 +20,8 @@ export class User {
   })
   role: UserRoleType;
 
-  @Column({ nullable: true })
-  exp_date: Date;
+  @Column({ type: 'timestamp with time zone', nullable: true })
+  exp_date: Date | null;
 
   @Column({ type: 'int8', default: 0 })
   point: number;

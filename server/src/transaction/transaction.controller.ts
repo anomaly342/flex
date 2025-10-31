@@ -97,4 +97,12 @@ export class TransactionController {
       return response.sendStatus(404);
     }
   }
+
+  @common.Get('subscription')
+  async subscription(@common.Req() request: express.Request) {
+    const user_id = request.user.id;
+    const result = await this.transactionService.subscription(user_id);
+
+    return result;
+  }
 }
