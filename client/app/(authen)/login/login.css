@@ -145,6 +145,16 @@ body {
   color: red;
 }
 
+input[type="text"].valid,
+input[type="password"].valid {
+  border: 3px solid green;
+}
+
+input[type="text"].invalid,
+input[type="password"].invalid {
+  border: 3px solid red;
+}
+
 @media (min-width: 431px) {
   .login-container {
     max-width: 100%;
