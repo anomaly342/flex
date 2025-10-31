@@ -56,27 +56,6 @@ export default function RoomDetail() {
     fetchRoomData();
   }, [room_id]);
 
-  // useEffect(() => {
-  //   setLoading(false);
-  //   const mockData: Room[] = [
-  //     { room_id: 101, room_no: "101A", room_floor: 1 },
-  //     { room_id: 102, room_no: "102B", room_floor: 1 },
-  //     { room_id: 201, room_no: "201C", room_floor: 2 },
-  //     { room_id: 202, room_no: "202D", room_floor: 2 },
-  //   ];
-  //   const mockEditData: RoomDetail = {
-  //     room_id: 202,
-  //     room_no: "202D",
-  //     room_floor: 2,
-  //     room_type: "small_decorated",
-  //     room_detail:
-  //       "High-speed Wi-Fi, Ergonomic Desk, Air Conditioning, Sound-proofed walls, Private Bathroom",
-  //     room_img_url: "null",
-  //   };
-  //   setData(mockData);
-  //   setEditData(mockEditData);
-  // }, []);
-
   const handleDelete = async () => {
     if (!room_id) return;
 
@@ -115,7 +94,9 @@ export default function RoomDetail() {
       bodyData.append("room_floor", editData.room_floor || "");
       bodyData.append("room_type", editData.room_type || "");
       bodyData.append("room_detail", editData.room_detail || "");
-      if (imageFile) bodyData.append("room_img_url", editData.room_img_url || "");
+      if (imageFile) {
+        bodyData.append("room_img_url", editData.room_img_url || "");
+      }
 
       const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/rooms`, {
         method: "PUT",
@@ -124,14 +105,13 @@ export default function RoomDetail() {
         body: bodyData.toString(),
       });
 
-      const json = await res.json();
       if (res.ok) {
-        alert(`Update success: ${json.message || "success"}`);
+        alert(`Update success: success`);
         setData(editData);
         setIsEditing(false);
         setImageFile(null);
       } else {
-        alert(`Update failed: ${json.message || "unknown error"}`);
+        alert(`Update failed: unknown error`);
       }
     } catch (err) {
       alert("Update failed: network error");

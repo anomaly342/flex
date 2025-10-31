@@ -227,10 +227,13 @@ export default function ExportPage() {
 
     const fetchData = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/orders/all`, {
-          method: "GET",
-          credentials: "include",
-        });
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/orders/all`,
+          {
+            method: "GET",
+            credentials: "include",
+          }
+        );
 
         if (!res.ok) throw new Error("Network error while fetching bookings");
 
@@ -238,7 +241,7 @@ export default function ExportPage() {
         if (cancelled) return;
 
         const roomData: BookingItem[] = allData
-          .filter((b: any) => b.room_id !== null)
+          .filter((b: any) => b.room !== null)
           .map((b: any) => ({
             type: "room",
             no: b.order_id,
@@ -248,7 +251,7 @@ export default function ExportPage() {
           }));
 
         const zoneData: BookingItem[] = allData
-          .filter((b: any) => b.zone_id !== null)
+          .filter((b: any) => b.zone !== null)
           .map((b: any) => ({
             type: "zone",
             no: b.order_id,
