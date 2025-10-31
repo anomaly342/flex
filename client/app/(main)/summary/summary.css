@@ -1,0 +1,279 @@
+@import "tailwindcss";
+@media (prefers-color-scheme: dark) {
+    :root {
+        --background: #ffff;
+        --foreground: #0000;
+    }
+}
+.maindiv {
+    color: black;
+    display: flex;
+    flex-direction: column;
+}
+.content {
+    /* @apply p-3 flex-1; */
+    padding: 0.75rem;
+    flex: 1;
+}
+.title-text {
+    /* @apply text-lg font-medium mb-4; */
+    font-size: 18px;
+    line-height: 1.555556;
+    font-weight: 500;
+    margin-bottom: 1rem;
+}
+.detail-section {
+    /* @apply flex flex-row mb-4; */
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 1rem;
+}
+.detail-div {
+    /* @apply flex-1; */
+    flex: 1;
+}
+.detail-text {
+    /* @apply font-medium; */
+    font-weight: 500;
+}
+.duration-section {
+    /* @apply mb-3;*/
+    margin-bottom: 0.75rem;
+}
+.duration-div {
+    /* @apply flex flex-row; */
+    display: flex;
+    flex-direction: row;
+}
+.hour-div {
+    /* @apply flex flex-row items-end justify-end; */
+    display: flex;
+    flex-direction: row;
+    align-items: end;
+    justify-content: flex-end;
+}
+.time-text {
+    /* @apply mr-1; */
+    margin-right: 0.25rem;
+}
+.x-div {
+    /* @apply flex justify-end; */
+    display: flex;
+    justify-content: flex-end;
+}
+.x-text {
+    /* @apply text-xs; */
+    font-size: 0.75rem;
+    line-height: 1.333333;
+}
+.rate-div {
+    /* @apply flex flex-row justify-end; */
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+}
+.coupon-btn {
+    /* @apply border border-black px-2 py-1 text-xs mb-4; */
+    border: black 1px solid;
+    padding-inline: 0.5rem;
+    padding-block: 0.25rem;
+    font-size: 0.75rem;
+    line-height: 1.333333;
+    margin-bottom: 1rem;
+}
+.booking-section {
+    /* @apply fixed inset-0 bg-black/70 flex items-center justify-center; */
+    position: fixed;
+    inset: 0rem;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.booking-section2 {
+    /* @apply bg-white rounded-xl p-6 w-96 shadow-lg; */
+    background-color: white;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    width: 24rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+        0 4px 6px -4px rgba(0, 0, 0, 0.1);
+}
+.coupons-header {
+    display: flex;
+    justify-content: center;
+    font-weight: 700;
+    font-size: x-large;
+    margin-bottom: 20px;
+}
+.time-mapping {
+    /* @apply max-h-60 overflow-y-auto mb-4 border rounded; */
+    max-height: 15rem;
+    overflow-y: auto;
+    margin-bottom: 1rem;
+    border: black 1px solid;
+    border-radius: 0.25rem;
+}
+.points-section {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 0.5rem;
+}
+.points-current {
+    display: flex;
+    border: black 1px solid;
+    align-items: center;
+    padding: 0.5rem;
+}
+.points-btn-div {
+    border: black 1px solid;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+.points-btn {
+    /* @apply px-2 py-1 border rounded; */
+    padding-inline: 0.5rem;
+    padding-block: 0.25rem;
+    /* border: black 1px solid; */
+    border-radius: 0.25rem;
+}
+.points-btn[disabled] {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+.points-text {
+    /* @apply font-semibold; */
+    font-weight: 600;
+}
+.button-section {
+    /* @apply flex justify-between; */
+    display: flex;
+    justify-content: space-between;
+}
+.cancel-btn {
+    /* @apply px-3 py-2 bg-gray-800 text-white rounded; */
+    padding-inline: 0.75rem;
+    padding-block: 0.5rem;
+    background-color: #1e2939;
+    color: white;
+    border-radius: 0.25rem;
+}
+
+.summary-divider {
+    /* @apply border-black mb-2; */
+    border: 1px solid #000;
+    margin-bottom: 8px;
+}
+.summary-divider-gap {
+    margin-top: 12px;
+    margin-bottom: 8px;
+}
+.price-summary {
+    /* @apply text-right; */
+    text-align: right;
+    font-size: 1rem;
+    line-height: 1.4;
+}
+.price-row {
+    /* @apply flex flex-row justify-between; */
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.price-left-half {
+    /* @apply w-1/2; */
+    width: 50%;
+}
+.price-right-half {
+    /* @apply w-1/2 flex justify-end; */
+    width: 50%;
+    display: flex;
+    justify-content: flex-end;
+}
+.price-col-end {
+    /* @apply flex flex-col items-end; */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+.price-inline {
+    /* @apply flex flex-row; */
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    column-gap: 8px;
+}
+.price-number {
+    /* @apply mr-2; */
+    margin-right: 8px;
+}
+.price-minus-mark {
+    /* @apply text-xs leading-none; */
+    font-size: 0.75rem;
+    line-height: 1;
+}
+.price-row-topgap-small {
+    /* @apply flex flex-row justify-between mt-1; */
+    margin-top: 0.25rem;
+}
+.price-row-topgap-small {
+    /* @apply flex flex-row justify-between mt-2; */
+    margin-top: 0.5rem;
+}
+.align-left {
+    text-align: left;
+}
+.total-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    text-align: right;
+    font-size: 1rem;
+    line-height: 1.4;
+}
+
+.total-inline {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    column-gap: 8px;
+}
+
+.total-number {
+    margin-right: 8px;
+}
+
+.footer-row {
+    display: flex;
+    flex-direction: row;
+    column-gap: 16px;
+    flex-wrap: wrap;
+}
+
+.footer-btn {
+    flex: 1;
+    border: 1px solid #000;
+    border-radius: 6px;
+    text-align: center;
+    cursor: pointer;
+    background-color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 40px;
+    font-weight: 500;
+}
+.footer-btn:hover {
+    background-color: #f3f4f6;
+}
+
+.footer-btn-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.footer-btn-pay {
+    background-color: #fff;
+}
