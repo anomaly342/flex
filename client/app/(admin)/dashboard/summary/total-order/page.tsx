@@ -24,7 +24,6 @@ export default function BookingAccountPage() {
   const [selectedType, setSelectedType] = useState<"all" | "room" | "zone">(
     "all"
   );
-
   const [totalAmount, setTotalAmount] = useState<number | null>(null);
   const [selectedMonth, setSelectedMonth] = useState<string>("all");
   const [selectedDay, setSelectedDay] = useState<string>("");
@@ -35,80 +34,48 @@ export default function BookingAccountPage() {
   };
 
   const fetchData = async () => {
+    setLoading(true);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/orders/all`, {
-        method: "GET",
-        credentials: "include",
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/orders/all`,
+        {
+          method: "GET",
+          credentials: "include",
+        }
+      );
 
       if (!res.ok) throw new Error("Failed to fetch booking data");
 
       const data = await res.json();
 
-      const mappedData: OrderData[] = data
-        .filter((item: any) => item.room_id !== null || item.zone_id !== null)
-        .map((item: any) => ({
-          order_id: item.order_id,
+      const mappedData: OrderData[] = data.map((item: any) => {
+        const isRoom = item.room !== null;
+        return {
+          order_id: item.order_id.toString(),
           start_time: item.start_time,
           end_time: item.end_time,
           price: item.price,
-          room_id: item.room_id,
-          zone_id: item.zone_id,
-          type: item.room_id ? "room" : "zone",
-          no: item.room_id ?? item.zone_id,
+          room_id: isRoom ? item.room.room_id.toString() : null,
+          zone_id: !isRoom && item.zone ? item.zone.zone_id.toString() : null,
+          type: isRoom ? "room" : "zone",
+          no: isRoom
+            ? item.room.room_no.toString()
+            : item.zone?.zone_no.toString() || "",
           period: calculatePeriod(item.start_time, item.end_time),
-        }));
+        };
+      });
 
       setBookings(mappedData);
     } catch (err: any) {
-      setError(err.message);
+      console.error(err);
+      setError(err.message || "Network error");
     } finally {
       setLoading(false);
     }
   };
 
-  const demoFetchData = () => {
-    const mockData = [
-      {
-        order_id: "ORD001",
-        start_time: "2025-01-10T14:00:00Z",
-        end_time: "2025-01-12T10:00:00Z",
-        price: 1000.0,
-        room_id: "A101",
-        zone_id: null,
-      },
-      {
-        order_id: "ORD002",
-        start_time: "2025-02-05T09:00:00Z",
-        end_time: "2025-02-05T17:00:00Z",
-        price: 850.0,
-        room_id: null,
-        zone_id: "Z03",
-      },
-      {
-        order_id: "ORD003",
-        start_time: "2024-11-20T16:00:00Z",
-        end_time: "2024-11-22T10:00:00Z",
-        price: 1300.5,
-        room_id: "A205",
-        zone_id: null,
-      },
-    ];
-
-    const mapped: OrderData[] = mockData.map((item) => ({
-      ...item,
-      type: item.room_id ? "room" : "zone",
-      no: item.room_id ?? item.zone_id ?? "",
-      period: calculatePeriod(item.start_time, item.end_time),
-    }));
-
-    setBookings(mapped);
-    setLoading(false);
-  };
-
   useEffect(() => {
     fetchData();
-    // demoFetchData();
   }, []);
 
   const filteredBookings = bookings.filter((b) => {
@@ -153,15 +120,12 @@ export default function BookingAccountPage() {
 
   return (
     <section className="booking-container">
+      <h1 className="page-title">Booking Records</h1>
+
       <div className="table-controls">
         <div className="rows-select">
-          <label className="rows-select">Rows per page:</label>
-          <select
-            id="rows-select"
-            className="select-rows"
-            value={rowsPerPage}
-            onChange={handleRowsChange}
-          >
+          <label>Rows per page:</label>
+          <select value={rowsPerPage} onChange={handleRowsChange}>
             <option value={25}>25</option>
             <option value={50}>50</option>
             <option value={100}>100</option>
@@ -169,13 +133,8 @@ export default function BookingAccountPage() {
         </div>
 
         <div className="type">
-          <label className="type-select">Type:</label>
-          <select
-            id="type-select"
-            className="select-types"
-            value={selectedType}
-            onChange={handleTypeChange}
-          >
+          <label>Type:</label>
+          <select value={selectedType} onChange={handleTypeChange}>
             <option value="all">All</option>
             <option value="room">Room</option>
             <option value="zone">Zone</option>
@@ -183,10 +142,8 @@ export default function BookingAccountPage() {
         </div>
 
         <div className="month">
-          <label className="month-select">Month:</label>
+          <label>Month:</label>
           <select
-            id="month-select"
-            className="select-month"
             value={selectedMonth}
             onChange={(e) => setSelectedMonth(e.target.value)}
           >
@@ -200,13 +157,11 @@ export default function BookingAccountPage() {
         </div>
 
         <div className="date">
-          <label className="date-select">Date:</label>
+          <label>Date:</label>
           <input
-            id="date-select"
             type="date"
             value={selectedDay}
             onChange={(e) => setSelectedDay(e.target.value)}
-            className="select-day"
           />
         </div>
 
@@ -219,9 +174,7 @@ export default function BookingAccountPage() {
         </div>
 
         <div className="cal-price">
-          <button onClick={handleCalculateTotal} className="calc-btn">
-            Calculate Total
-          </button>
+          <button onClick={handleCalculateTotal}>Calculate Total</button>
           {totalAmount !== null && (
             <p className="total-amount">
               Total: ฿{totalAmount.toLocaleString()}
@@ -235,13 +188,13 @@ export default function BookingAccountPage() {
           <caption className="sr-only">Booking Records Table</caption>
           <thead>
             <tr>
-              <th scope="col">#</th>
-              <th scope="col">Type</th>
-              <th scope="col">No</th>
-              <th scope="col">Start Booking</th>
-              <th scope="col">End Booking</th>
-              <th scope="col">Period (hrs)</th>
-              <th scope="col">Price (฿)</th>
+              <th>#</th>
+              <th>Type</th>
+              <th>No</th>
+              <th>Start Booking</th>
+              <th>End Booking</th>
+              <th>Period (hrs)</th>
+              <th>Price (฿)</th>
             </tr>
           </thead>
           <tbody>
