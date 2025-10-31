@@ -43,7 +43,7 @@ const ENV = process.env.NODE_ENV;
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
       entities: [User, Room, Zone, QR, Order, Transaction, Coupon],
-      synchronize: ENV === 'development' ? true : false,
+      synchronize: process.env.SYNCHONIZE === 'yes' ? true : false,
       dropSchema: ENV === 'development' ? true : false,
       ssl: true,
     }),

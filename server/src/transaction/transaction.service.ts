@@ -311,7 +311,6 @@ export class TransactionService {
     user.point = user.point - point_amount;
 
     const updateUser = await this.usersRepository.save(user);
-
     transaction.discount_list.push(`Used ${point_amount} points`);
     transaction.point_reduction = Number(
       Number(transaction.point_reduction) + point_amount,
@@ -373,6 +372,32 @@ export class TransactionService {
     return session.url;
   }
 
+  async subscription(user_id: number) {
+    const stripe = new Stripe(process.env.STRIPE_KEY as string, {
+      apiVersion: '2025-10-29.clover',
+    });
+
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['promptpay'],
+      line_items: [
+        {
+          price_data: {
+            currency: 'thb',
+            product_data: { name: 'Membership' },
+            unit_amount: 30000,
+          },
+          quantity: 1,
+        },
+      ],
+      mode: 'payment',
+      metadata: { user_id: user_id },
+      success_url: `${process.env.FRONTEND_URL}/success_membership`,
+      cancel_url: `${process.env.FRONTEND_URL}/payment-failed`,
+    });
+
+    return session.url;
+  }
+
   async handleWebhook(body: Buffer<ArrayBufferLike>, signature: string) {
     const endpointSecret = process.env.SECRET_ENDPOINT_KEY as string;
 
@@ -388,6 +413,24 @@ export class TransactionService {
       case 'checkout.session.completed':
         const session = event.data.object as Stripe.Checkout.Session;
         const transaction_id = session.metadata?.transaction_id;
+
+        if (transaction_id === undefined) {
+          const user_id = session.metadata?.user_id;
+
+          const user = await this.usersRepository.findOne({
+            where: { user_id: user_id as any },
+          });
+
+          if (!user) {
+            return null;
+          }
+          user.exp_date = new Date(
+            new Date().setDate(new Date().getDate() + 31),
+          );
+
+          const updateUser = await this.usersRepository.save(user);
+          return true;
+        }
 
         const transaction = (await this.transactionRepository.findOne({
           where: {
@@ -408,6 +451,21 @@ export class TransactionService {
         const end_time = transaction.end_time;
         const user_id = transaction.user.user_id;
         const price = transaction.price;
+
+        const points = Math.floor(price / 100);
+
+        const user = await this.usersRepository.findOne({
+          where: { user_id: user_id },
+        });
+
+        if (user && user.exp_date !== null) {
+          if (user.exp_date > new Date()) {
+            user.point = Number(Number(user.point) + points);
+          } else {
+            user.exp_date = null;
+          }
+          await this.usersRepository.save(user);
+        }
 
         if (transaction.room) {
           const Isoverlapped = await this.ordersRepository.findOne({
