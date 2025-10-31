@@ -1,0 +1,83 @@
+@import "tailwindcss";
+@media (prefers-color-scheme: dark) {
+    :root {
+        --background: #ffff;
+        --foreground: #0000;
+    }
+}
+.maindiv {
+    color: black;
+}
+.rolename {
+    font-weight: 700;
+    color: oklch(79.5% 0.184 86.047);
+}
+
+.profile-header-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin-top: 20px;
+    column-gap: 20px;
+}
+.outer-card {
+    margin: 20px;
+}
+.subscribe-section,
+.member-section {
+    padding: 12px;
+}
+.subscribe-button {
+    border: black 1px solid;
+    background-color: #99a1af;
+    padding: 4px;
+}
+.member-table {
+    border-collapse: separate;
+    border-spacing: 16px;
+}
+.history-section {
+    display: block;
+    padding-bottom: 12px;
+}
+.title {
+    font-weight: 700;
+    font-size: large;
+}
+.history-title {
+    padding-left: 12px;
+}
+.history-table {
+    border-collapse: separate;
+    border-spacing: 16px;
+}
+.pagination-wrapper {
+    display: flex;
+    margin-top: 12px;
+    column-gap: 20px;
+}
+.pagination-btn {
+    border: black 1px solid;
+    background-color: #e5e7eb;
+    border-radius: 16px;
+    padding: 6px;
+}
+@media (min-width: 431px) {
+    .main-wrapper {
+        margin-top: 40px;
+    }
+    .outer-card {
+        margin-left: 40px;
+    }
+}
+@media (max-width: 431px) {
+    .main-wrapper {
+        margin-top: 40px;
+    }
+    .outer-card {
+        border: black 1px solid;
+    }
+    .pagination-wrapper {
+        justify-content: center;
+    }
+}
