@@ -61,6 +61,7 @@ body {
   justify-content: flex-start;
   align-items: center;
   width: 100%;
+  position: relative;
 }
 
 .input-wrapper input {
@@ -145,6 +146,36 @@ body {
 }
 
 .msg-error {
+  color: red;
+}
+
+input[type="text"].valid,
+input[type="password"].valid {
+  border: 3px solid green;
+}
+
+input[type="text"].invalid,
+input[type="password"].invalid {
+  border: 3px solid red;
+}
+
+.input-wrapper::after {
+  content: "";
+  position: absolute;
+  right: -20px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.input-wrapper.valid::after {
+  content: "✔";
+  color: green;
+}
+
+.input-wrapper.invalid::after {
+  content: "✖";
   color: red;
 }
 

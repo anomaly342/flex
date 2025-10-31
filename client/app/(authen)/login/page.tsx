@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 interface RegisterData {
@@ -8,6 +9,8 @@ interface RegisterData {
 }
 
 export default function LoginPage() {
+  const router = useRouter();
+
   const [formData, setFormData] = useState<RegisterData>({
     username: "",
     password: "",
@@ -16,12 +19,25 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
-    const handleShowPassword = () => {
-      setShowPassword((prev) => !prev);
-    };
+  const [validity, setValidity] = useState({
+    username: false,
+    password: false,
+  });
+
+  const regex = /^[0-9a-zA-Z\-_]{4,14}$/;
+
+  const handleShowPassword = () => {
+    setShowPassword((prev) => !prev);
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+
+    setValidity({
+      ...validity,
+      [name]: regex.test(value),
+    });
     setErrorMsg("");
   };
 
@@ -35,16 +51,24 @@ export default function LoginPage() {
     }
 
     try {
-      const res = await fetch("http://localhost:3000/authentication/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/authentication/login`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          credentials: "include",
+          body: new URLSearchParams({
+            username: username,
+            password: password,
+          }),
+        }
+      );
 
       if (res.ok) {
-        console.log("Register success!");
+        console.log("Login success!");
+        router.push("/home");
       } else {
-        setErrorMsg("Register failed");
+        setErrorMsg("Login failed");
       }
     } catch (err) {
       console.error("Error:", err);
@@ -67,6 +91,7 @@ export default function LoginPage() {
               name="username"
               value={formData.username}
               onChange={handleChange}
+              className={validity.username ? "valid" : "invalid"}
               placeholder="Enter username"
             />
           </div>
@@ -79,6 +104,7 @@ export default function LoginPage() {
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
+                className={validity.password ? "valid" : "invalid"}
                 placeholder="Enter password"
               />
               <button

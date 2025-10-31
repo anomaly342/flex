@@ -2,7 +2,10 @@ import {
   Body,
   ConflictException,
   Controller,
+  Get,
+  NotFoundException,
   Post,
+  Req,
   Res,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -39,11 +42,33 @@ export class AuthenticationController {
       response.cookie(
         'jwt',
         sign(result, process.env.SALT as string, { expiresIn: '7d' }),
-        { maxAge: 7 * 24 * 60 * 60 * 1000, secure: true, httpOnly: true },
+        {
+          maxAge: 7 * 24 * 60 * 60 * 1000,
+          secure: true,
+          httpOnly: true,
+          sameSite: 'none',
+        },
       );
       return response.status(200).send();
     } else {
       throw new UnauthorizedException();
+    }
+  }
+
+  @Get('logout')
+  async logout(@Res() response: express.Response) {
+    return response.clearCookie('jwt').sendStatus(200);
+  }
+
+  @Get('userInfo')
+  async userInfo(@Req() request: express.Request) {
+    const user_id = request.user.id;
+    const result = await this.authenticationService.userInfo(user_id);
+
+    if (result) {
+      return result;
+    } else {
+      throw new NotFoundException();
     }
   }
 }
