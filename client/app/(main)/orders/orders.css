@@ -9,7 +9,50 @@
     color: black;
 }
 .rolename {
-    @apply text-yellow-600 font-bold;
+    /* @apply text-yellow-600 font-bold; */
+    color: oklch(68.1% 0.162 75.834);
+    font-weight: 700;
 }
-@media (max-width: 430px) {
+.header-div {
+    /* @apply flex justify-center; */
+    display: flex;
+    justify-content: center;
+}
+.reminder-section {
+    /* @apply block pb-3 pl-3 pr-3; */
+    display: block;
+    padding-bottom: 0.75rem;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+}
+.reminder-detail {
+    /* @apply border flex flex-row justify-start p-3 space-x-5; */
+    border: black 1px solid;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    padding: 0.75rem;
+    column-gap: 1.25rem;
+}
+.text-time {
+    /* @apply text-center; */
+    text-align: center;
+}
+.text-location {
+    /* @apply text-start flex flex-col justify-center; */
+    text-align: start;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+h2 {
+    font-size: larger;
+    font-weight: 600;
+    padding-bottom: 0.25rem;
+}
+@media (min-width: 431px) {
 }
