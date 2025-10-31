@@ -1,0 +1,142 @@
+.export-container {
+  width: 100%;
+  max-width: 430px;
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 16px;
+  font-family: "Inter", sans-serif;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-sizing: border-box;
+}
+
+.export-container > header {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+header .duration,
+header .year-range {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: start;
+}
+
+header label {
+  font-size: small;
+  font-weight: 500;
+}
+
+header select {
+  width: 100%;
+  border: 1px solid gray;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: x-small;
+}
+
+fieldset.filter-group {
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 8px 10px;
+}
+
+legend {
+  font-weight: 600;
+  font-size: small;
+}
+
+.filter-checkboxes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.export-container > section.export-preview {
+  border: 2px solid #000;
+  border-radius: 8px;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  background-color: #fff;
+}
+
+.chart-wrapper,
+figure.chart-wrapper {
+  width: 100%;
+  height: 300px;
+}
+
+.export-container > footer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+footer button {
+  border: 1px solid #000;
+  border-radius: 6px;
+  padding: 6px 10px;
+  background-color: #fff;
+  transition: 0.2s;
+  font-size: small;
+}
+
+footer button:hover {
+  cursor: pointer;
+  background-color: #f0f0f0;
+}
+
+.range-text {
+  font-size: 14px;
+  text-align: center;
+  color: #444;
+}
+
+section.analysis-chart {
+  margin-top: 20px;
+}
+
+section.analysis-chart h3 {
+  font-size: medium;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+@media (min-width: 431px) {
+  .export-container {
+    min-width: 1024px;
+    max-width: 100%;
+    padding: 24px;
+    gap: 24px;
+  }
+
+  .export-container > header,
+  .export-container > footer {
+    flex-direction: row;
+    align-items: start;
+    justify-content: space-between;
+    gap: 30px;
+  }
+
+  header select {
+    font-size: medium;
+  }
+
+  footer button {
+    padding: 8px 14px;
+    font-size: 15px;
+  }
+
+  .chart-wrapper,
+  figure.chart-wrapper {
+    height: 400px;
+  }
+}

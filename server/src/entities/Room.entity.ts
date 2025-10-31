@@ -1,12 +1,15 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-export type RoomType = 'small' | 'medium' | 'large';
+export type RoomType =
+  | 'small_undecorated'
+  | 'small_decorated'
+  | 'medium_undecorated'
+  | 'medium_decorated'
+  | 'large_undecorated'
+  | 'large_decorated';
 @Entity()
 export class Room {
   @PrimaryGeneratedColumn()
-  id: number;
-
-  @Column()
-  capacity: number;
+  room_id: number;
 
   @Column()
   room_no: number;
@@ -16,10 +19,20 @@ export class Room {
 
   @Column({
     type: 'enum',
-    enum: ['small', 'medium', 'large'],
+    enum: [
+      'small_undecorated',
+      'small_decorated',
+      'medium_undecorated',
+      'medium_decorated',
+      'large_undecorated',
+      'large_decorated',
+    ],
   })
   room_type: RoomType;
 
-  @Column({})
-  room_detail: false;
+  @Column()
+  room_detail: string;
+
+  @Column()
+  room_img_url: string;
 }

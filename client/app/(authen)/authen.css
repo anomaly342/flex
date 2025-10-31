@@ -1,0 +1,34 @@
+* {
+  box-sizing: border-box;
+}
+
+.authen-container {
+  width: 100%;
+  max-width: 430px;
+  height: 100vh;
+}
+
+label,
+input,
+p {
+  font-size: small;
+}
+
+button {
+  font-size: x-small;
+}
+
+@media (min-width: 431px) {
+  .authen-container {
+    width: 100%;
+    max-width: 1024px;
+    height: 100vh;
+  }
+
+  label,
+  input,
+  p,
+  button {
+    font-size: medium;
+  }
+}
