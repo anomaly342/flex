@@ -22,12 +22,9 @@ export default function DashboardPage() {
 
   const fetchDashboardData = async () => {
     try {
-      const response = await fetch("http://localhost:3000/orders/all", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/orders/all`, {
         method: "GET",
         credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
       });
 
       if (!response.ok) {

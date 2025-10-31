@@ -42,6 +42,7 @@ export default function LoginPage() {
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/authentication/login`,
         {
           method: "POST",
+          credentials: "include",
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
           body: new URLSearchParams({
             username: username,

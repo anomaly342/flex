@@ -20,8 +20,9 @@ export default function BookingRoom() {
     const fetchRooms = async () => {
       try {
         setLoading(true); 
-        const res = await fetch("http://localhost:3000/rooms", {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/rooms`, {
           method: "GET", 
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
           credentials: "include",
         });
 

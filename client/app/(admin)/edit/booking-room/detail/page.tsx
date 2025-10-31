@@ -33,10 +33,10 @@ export default function RoomDetail() {
       try {
         setLoading(true);
         const res = await fetch(
-          `http://localhost:3000/rooms/${room_id}`,
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/rooms/${room_id}`,
           {
             method: "GET",
-            credentials: 'include',
+            credentials: "include",
           }
         );
 
@@ -87,10 +87,10 @@ export default function RoomDetail() {
 
     try {
       const res = await fetch(
-        `http://localhost:3000/rooms/${room_id}`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/rooms/${room_id}`,
         {
           method: "DELETE",
-          credentials: 'include',
+          credentials: "include",
         }
       );
 
@@ -109,18 +109,19 @@ export default function RoomDetail() {
 
   const handleConfirm = async () => {
     try {
-      const formData = new FormData();
-      formData.append("room_id", room_id || "");
-      formData.append("room_no", editData.room_no || "");
-      formData.append("room_floor", editData.room_floor || "");
-      formData.append("room_type", editData.room_type || "");
-      formData.append("room_detail", editData.room_detail || "");
-      if (imageFile) formData.append("image", imageFile);
+      const bodyData = new URLSearchParams();
+      bodyData.append("room_id", room_id || "");
+      bodyData.append("room_no", editData.room_no || "");
+      bodyData.append("room_floor", editData.room_floor || "");
+      bodyData.append("room_type", editData.room_type || "");
+      bodyData.append("room_detail", editData.room_detail || "");
+      if (imageFile) bodyData.append("room_img_url", editData.room_img_url || "");
 
-      const res = await fetch("http://localhost:3000/rooms", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/rooms`, {
         method: "PUT",
-        credentials: 'include',
-        body: formData,
+        credentials: "include",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: bodyData.toString(),
       });
 
       const json = await res.json();
