@@ -38,10 +38,12 @@ export class SeederService {
     await this.roomsRepository.save(rooms, { chunk: 100 });
     await this.zonesRepository.save(zones, { chunk: 100 });
 
-    users.map(async (e) => {
-      const user = this.usersRepository.create(e);
-      await this.usersRepository.save(user);
-    });
+    await Promise.all(
+      users.map(async (e) => {
+        const user = this.usersRepository.create(e);
+        await this.usersRepository.save(user);
+      }),
+    );
 
     await this.qrsRepository.save(qrs, { chunk: 100 });
     await this.ordersRepository.save(orders, { chunk: 100 });
