@@ -1,4 +1,5 @@
 "use client";
+import HardLink from "@/app/components/HardLink";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -69,12 +70,12 @@ export default function PaySuccessful() {
 				</div>
 			</div>
 
-			<button
+			<HardLink
+				href={"/order-detail?order_id=${data.order_id}"}
 				className="detail-link"
-				onClick={() => router.push(`/order-detail?order_id=${data.order_id}`)}
 			>
 				View Order
-			</button>
+			</HardLink>
 		</div>
 	);
 }

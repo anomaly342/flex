@@ -1,9 +1,9 @@
 import {
-  Body,
   Controller,
   Get,
   Param,
   ParseIntPipe,
+  Query,
   Req,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -17,7 +17,7 @@ export class OrdersController {
   @Get()
   async orders(
     @Req() request: express.Request,
-    @Body('page', ParseIntPipe) page: number,
+    @Query('page', ParseIntPipe) page: number,
   ) {
     const user_id = request.user.id;
     const result = await this.ordersService.orders(user_id, page);
@@ -33,6 +33,15 @@ export class OrdersController {
     }
 
     const result = await this.ordersService.allOrders();
+
+    return result;
+  }
+
+  @Get('upcoming')
+  async upcoming(@Req() request: express.Request) {
+    const user_id = request.user.id;
+
+    const result = await this.ordersService.upcoming(user_id);
 
     return result;
   }

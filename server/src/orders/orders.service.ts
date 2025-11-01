@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Order } from 'src/entities/Order.entity';
-import { Repository } from 'typeorm';
+import { Between, Repository } from 'typeorm';
 
 @Injectable()
 export class OrdersService {
@@ -35,5 +35,23 @@ export class OrdersService {
     });
 
     return order;
+  }
+
+  async upcoming(user_id: number) {
+    const now = new Date();
+    const sevenDaysLater = new Date();
+    sevenDaysLater.setDate(now.getDate() + 7);
+
+    const result = await this.ordersRepository.find({
+      where: {
+        user: { user_id },
+        start_time: Between(now, sevenDaysLater),
+      },
+      order: {
+        start_time: 'ASC', // optional: order by start_time
+      },
+    });
+
+    return result;
   }
 }

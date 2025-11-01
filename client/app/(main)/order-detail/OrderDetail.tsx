@@ -115,9 +115,6 @@ export default function OrderDetails() {
 				>
 					Go Home
 				</Link>
-				<button className="px-6 py-2 border rounded hover:bg-gray-100 transition">
-					Cancel Booking
-				</button>
 			</div>
 		</div>
 	);

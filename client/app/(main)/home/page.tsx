@@ -1,6 +1,6 @@
 "use client";
+import HardLink from "@/app/components/HardLink";
 import Image from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import "./home.css";
@@ -9,27 +9,26 @@ interface UserProfile {
 	id: number;
 	username: string;
 	role: string;
-	exp_date: null;
+	exp_date: null | string;
 	point: number;
+}
+
+interface Order {
+	order_id: number;
+	qr_url: string;
+	start_time: string;
+	end_time: string;
+	price: number;
+	createdAt: string;
 }
 
 export default function Home() {
 	const router = useRouter();
 	const [user, setUser] = useState<UserProfile | null>(null);
 	const [loading, setLoading] = useState(true);
+	const [orders, setOrders] = useState<Order[]>([]);
 
 	useEffect(() => {
-		// -------- MOCK MODE FOR UI TEST --------
-		// const mockUser: UserProfile = {
-		//     id: 1,
-		//     username: "Alice",
-		//     role: "Membership",
-		//     exp_date: null,
-		//     points: 999,
-		// };
-		// setUser(mockUser);
-		// setLoading(false);
-
 		const loadUser = async () => {
 			try {
 				const res = await fetch(
@@ -55,27 +54,79 @@ export default function Home() {
 			}
 		};
 
+		const loadOrders = async () => {
+			try {
+				const res = await fetch(
+					`${process.env.NEXT_PUBLIC_BACKEND_URL}/orders/upcoming`,
+					{
+						method: "GET",
+						credentials: "include",
+					}
+				);
+
+				if (res.ok) {
+					const data: Order[] = await res.json();
+					// Sort ascending by start_time
+					data.sort(
+						(a, b) =>
+							new Date(a.start_time).getTime() -
+							new Date(b.start_time).getTime()
+					);
+					setOrders(data);
+				}
+			} catch (err) {
+				console.error("Failed to load upcoming orders", err);
+			}
+		};
+
 		loadUser();
+		loadOrders();
 	}, [router]);
 
-	if (loading) {
-		return <p>Loading...</p>;
-	}
+	if (loading) return <p>Loading...</p>;
 
-	// let role = "Membership";
-	// let points = 999;
+	// --- Helpers ---
+	const formatTimeRange = (start: string, end: string) => {
+		const startDate = new Date(start);
+		const endDate = new Date(end);
+		const startTime = startDate.toLocaleTimeString("en-GB", {
+			hour: "2-digit",
+			minute: "2-digit",
+		});
+		const endTime = endDate.toLocaleTimeString("en-GB", {
+			hour: "2-digit",
+			minute: "2-digit",
+		});
+		return { startTime, endTime };
+	};
+
+	const formatDateToWeekday = (dateStr: string) => {
+		const date = new Date(dateStr);
+		return date.toLocaleDateString("en-GB", { weekday: "long" }); // Monday, Tuesday, ...
+	};
+
+	// --- Group orders by weekday ---
+	const ordersByWeekday: Record<string, Order[]> = {};
+	orders.forEach((order) => {
+		const weekday = formatDateToWeekday(order.start_time);
+		if (!ordersByWeekday[weekday]) {
+			ordersByWeekday[weekday] = [];
+		}
+		ordersByWeekday[weekday].push(order);
+	});
 
 	return (
 		<div className="maindiv">
 			<main>
 				<div className="link-div">
-					<Link href="/group" className="link-btn">
+					<HardLink href="/group" className="link-btn">
 						Group
-					</Link>
-					<Link href="/individual" className="link-btn">
+					</HardLink>
+					<HardLink href="/individual" className="link-btn">
 						Individual
-					</Link>
+					</HardLink>
 				</div>
+
 				<div className="outer-card">
 					<div className="welcome-section">
 						<h1>Welcome,</h1>
@@ -88,7 +139,7 @@ export default function Home() {
 							/>
 							<div className="profile-text">
 								<h3 className="text-blue underline">
-									<Link href={"/profile"}>{user?.username}</Link>
+									<HardLink href={"/profile"}>{user?.username}</HardLink>
 								</h3>
 								<h4>
 									<span className="rolename">{user?.role}</span> Points:{" "}
@@ -97,48 +148,52 @@ export default function Home() {
 							</div>
 						</div>
 					</div>
-					<div className="reminder">
-						<h1>Today</h1>
-						<div className="reminder-detail">
-							<div className="text-time">
-								<p>08:00</p>
-								<p>to</p>
-								<p>12:00</p>
-							</div>
-							<div className="text-location">
-								<p>Room 1</p>
-								<p>(Room 1 Details)</p>
-							</div>
+
+					{/* Upcoming orders grouped by weekday */}
+					{Object.keys(ordersByWeekday).length === 0 && (
+						<p>No upcoming orders in the next 7 days.</p>
+					)}
+
+					{Object.entries(ordersByWeekday).map(([weekday, orders]) => (
+						<div key={weekday} className="reminder">
+							<h1>{weekday}</h1>
+							{orders.map((order) => {
+								const { startTime, endTime } = formatTimeRange(
+									order.start_time,
+									order.end_time
+								);
+
+								return (
+									<div key={order.order_id} className="reminder-detail">
+										<div className="text-time">
+											<p>{startTime}</p>
+											<p>to</p>
+											<p>{endTime}</p>
+										</div>
+										<div className="text-location">
+											<p>Price: {order.price}</p>
+											<p>
+												<a
+													href={order.qr_url}
+													target="_blank"
+													rel="noopener noreferrer"
+												>
+													View QR
+												</a>
+											</p>
+											<p>
+												<HardLink
+													href={`/order-detail?order_id=${order.order_id}`}
+												>
+													View Details
+												</HardLink>
+											</p>
+										</div>
+									</div>
+								);
+							})}
 						</div>
-					</div>
-					<div className="reminder">
-						<h1>Friday</h1>
-						<div className="reminder-detail">
-							<div className="text-time">
-								<p>13:00</p>
-								<p>to</p>
-								<p>16:00</p>
-							</div>
-							<div className="text-location">
-								<p>Room 5</p>
-								<p>(Room 5 Details)</p>
-							</div>
-						</div>
-					</div>
-					<div className="reminder">
-						<h1>Sunday</h1>
-						<div className="reminder-detail">
-							<div className="text-time">
-								<p>09:00</p>
-								<p>to</p>
-								<p>12:00</p>
-							</div>
-							<div className="text-location">
-								<p>Room 8</p>
-								<p>(Room 8 Details)</p>
-							</div>
-						</div>
-					</div>
+					))}
 				</div>
 			</main>
 		</div>

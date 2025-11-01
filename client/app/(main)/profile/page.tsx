@@ -1,4 +1,5 @@
 "use client";
+import HardLink from "@/app/components/HardLink";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -12,11 +13,24 @@ interface UserProfile {
 	point: string;
 }
 
+interface Order {
+	order_id: number;
+	qr_url: string;
+	start_time: string;
+	end_time: string;
+	price: number;
+	createdAt: string;
+}
+
 export default function Profile() {
 	const router = useRouter();
 	const [user, setUser] = useState<UserProfile | null>(null);
+	const [orders, setOrders] = useState<Order[]>([]);
+	const [page, setPage] = useState(1);
 	const [loading, setLoading] = useState(true);
+	const [orderLoading, setOrderLoading] = useState(false);
 
+	// Fetch user info
 	useEffect(() => {
 		const loadUser = async () => {
 			try {
@@ -46,9 +60,37 @@ export default function Profile() {
 		loadUser();
 	}, [router]);
 
-	if (loading) {
-		return <p>Loading...</p>;
-	}
+	// Fetch orders (GET /orders?page=...)
+	const loadOrders = async (pageNum: number) => {
+		setOrderLoading(true);
+		try {
+			const res = await fetch(
+				`${process.env.NEXT_PUBLIC_BACKEND_URL}/orders?page=${pageNum}`,
+				{
+					method: "GET",
+					credentials: "include",
+				}
+			);
+
+			if (res.ok) {
+				const data: Order[] = await res.json();
+				setOrders(data);
+			} else {
+				setOrders([]);
+			}
+		} catch (err) {
+			console.error("Failed to load orders", err);
+			setOrders([]);
+		} finally {
+			setOrderLoading(false);
+		}
+	};
+
+	useEffect(() => {
+		loadOrders(page);
+	}, [page]);
+
+	if (loading) return <p>Loading...</p>;
 
 	const hasSubscription = user?.exp_date !== null;
 
@@ -73,7 +115,6 @@ export default function Profile() {
 							<p>Subscribe to our Membership!</p>
 							<button
 								onClick={() => {
-									// You can replace this URL with your actual subscription link
 									window.location.href =
 										"https://your-subscription-website.com";
 								}}
@@ -108,35 +149,78 @@ export default function Profile() {
 					{/* History section */}
 					<div className="history-section">
 						<p className="history-title title">History</p>
-						<table className="history-table">
-							<thead>
-								<tr>
-									<th>Date</th>
-									<th>Time</th>
-									<th>Type</th>
-									<th>Room</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td>12 Jan 25</td>
-									<td>12:00 - 17:00</td>
-									<td>Individual</td>
-									<td>Zone 10</td>
-								</tr>
-								<tr>
-									<td>14 Jan 25</td>
-									<td>14:00 - 19:00</td>
-									<td>Group</td>
-									<td>Room 1</td>
-								</tr>
-							</tbody>
-						</table>
 
+						{orderLoading ? (
+							<p>Loading orders...</p>
+						) : orders.length === 0 ? (
+							<p>No orders found.</p>
+						) : (
+							<table className="history-table">
+								<thead>
+									<tr>
+										<th>Date</th>
+										<th>Time</th>
+										<th>Price</th>
+										<th>Action</th>
+									</tr>
+								</thead>
+								<tbody>
+									{orders.map((order) => {
+										const start = new Date(order.start_time);
+										const end = new Date(order.end_time);
+
+										const dateStr = start.toLocaleDateString("en-GB", {
+											day: "2-digit",
+											month: "short",
+											year: "2-digit",
+										});
+
+										const startTime = start.toLocaleTimeString("en-GB", {
+											hour: "2-digit",
+											minute: "2-digit",
+										});
+										const endTime = end.toLocaleTimeString("en-GB", {
+											hour: "2-digit",
+											minute: "2-digit",
+										});
+
+										return (
+											<tr key={order.order_id}>
+												<td>{dateStr}</td>
+												<td>
+													{startTime} - {endTime}
+												</td>
+												<td>{order.price}</td>
+												<td>
+													<HardLink
+														href={`/order-detail?order_id=${order.order_id}`}
+													>
+														View Order
+													</HardLink>
+												</td>
+											</tr>
+										);
+									})}
+								</tbody>
+							</table>
+						)}
+
+						{/* Pagination */}
 						<div className="pagination-wrapper">
-							<button className="pagination-btn">&lt;</button>
-							<button className="pagination-btn">1</button>
-							<button className="pagination-btn">&gt;</button>
+							<button
+								className="pagination-btn"
+								onClick={() => setPage((p) => Math.max(1, p - 1))}
+								disabled={page === 1}
+							>
+								&lt;
+							</button>
+							<button className="pagination-btn active">{page}</button>
+							<button
+								className="pagination-btn"
+								onClick={() => setPage((p) => p + 1)}
+							>
+								&gt;
+							</button>
 						</div>
 					</div>
 				</div>
