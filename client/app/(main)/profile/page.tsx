@@ -24,7 +24,7 @@ interface Order {
 
 export default function Profile() {
 	const router = useRouter();
-	const [user, setUser] = useState<UserProfile>();
+	const [user, setUser] = useState<UserProfile | null>(null);
 	const [orders, setOrders] = useState<Order[]>([]);
 	const [page, setPage] = useState(1);
 	const [loading, setLoading] = useState(true);
@@ -155,8 +155,12 @@ export default function Profile() {
 								</thead>
 								<tbody>
 									<tr>
-										<td>{formatDate(user.exp_date)}</td>
-										<td>{user?.point}</td>
+										{user !== null && (
+											<>
+												<td>{formatDate(user.exp_date)}</td>
+												<td>{user.point}</td>
+											</>
+										)}
 									</tr>
 								</tbody>
 							</table>
