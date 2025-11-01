@@ -24,7 +24,7 @@ interface Order {
 
 export default function Profile() {
 	const router = useRouter();
-	const [user, setUser] = useState<UserProfile>(null);
+	const [user, setUser] = useState<UserProfile>();
 	const [orders, setOrders] = useState<Order[]>([]);
 	const [page, setPage] = useState(1);
 	const [loading, setLoading] = useState(true);
