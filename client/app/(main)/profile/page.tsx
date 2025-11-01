@@ -36,10 +36,7 @@ export default function Profile() {
 			try {
 				const res = await fetch(
 					`${process.env.NEXT_PUBLIC_BACKEND_URL}/authentication/userInfo`,
-					{
-						method: "GET",
-						credentials: "include",
-					}
+					{ method: "GET", credentials: "include" }
 				);
 
 				if (!res.ok) {
@@ -60,16 +57,13 @@ export default function Profile() {
 		loadUser();
 	}, [router]);
 
-	// Fetch orders (GET /orders?page=...)
+	// Fetch orders
 	const loadOrders = async (pageNum: number) => {
 		setOrderLoading(true);
 		try {
 			const res = await fetch(
 				`${process.env.NEXT_PUBLIC_BACKEND_URL}/orders?page=${pageNum}`,
-				{
-					method: "GET",
-					credentials: "include",
-				}
+				{ method: "GET", credentials: "include" }
 			);
 
 			if (res.ok) {
@@ -94,6 +88,17 @@ export default function Profile() {
 
 	const hasSubscription = user?.exp_date !== null;
 
+	// Format date like "23 October 2025"
+	const formatDate = (dateStr: string | null) => {
+		if (!dateStr) return "";
+		const date = new Date(dateStr);
+		return date.toLocaleDateString("en-GB", {
+			day: "2-digit",
+			month: "long",
+			year: "numeric",
+		});
+	};
+
 	return (
 		<div className="maindiv">
 			<main className="main-wrapper">
@@ -114,11 +119,23 @@ export default function Profile() {
 						<div className="subscribe-section">
 							<p>Subscribe to our Membership!</p>
 							<button
-								onClick={() => {
-									window.location.href =
-										"https://your-subscription-website.com";
-								}}
 								className="subscribe-button"
+								onClick={async () => {
+									try {
+										const res = await fetch(
+											`${process.env.NEXT_PUBLIC_BACKEND_URL}/transaction/subscription`,
+											{ method: "GET", credentials: "include" }
+										);
+										if (!res.ok)
+											throw new Error("Failed to get subscription link");
+
+										const paymentUrl = await res.text();
+										window.location.href = paymentUrl;
+									} catch (err) {
+										console.error(err);
+										alert("Failed to redirect to subscription page.");
+									}
+								}}
 							>
 								Go to Subscription Page
 							</button>
@@ -138,11 +155,18 @@ export default function Profile() {
 								</thead>
 								<tbody>
 									<tr>
-										<td>{user?.exp_date}</td>
+										<td>{formatDate(user?.exp_date)}</td>
 										<td>{user?.point}</td>
 									</tr>
 								</tbody>
 							</table>
+
+							{/* Return Home Button */}
+							<div style={{ marginTop: "1rem" }}>
+								<HardLink href="/home" className="subscribe-button">
+									Return to Home
+								</HardLink>
+							</div>
 						</div>
 					)}
 

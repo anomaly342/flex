@@ -71,7 +71,7 @@ export default function PaySuccessful() {
 			</div>
 
 			<HardLink
-				href={"/order-detail?order_id=${data.order_id}"}
+				href={`/order-detail?order_id=${data.order_id}`}
 				className="detail-link"
 			>
 				View Order

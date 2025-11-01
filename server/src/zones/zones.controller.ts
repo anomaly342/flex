@@ -8,12 +8,12 @@ import {
   Param,
   ParseIntPipe,
   Put,
+  Query,
   Req,
   Res,
   UnauthorizedException,
 } from '@nestjs/common';
 import express from 'express';
-import { RemainingQueries } from 'src/rooms/rooms.dto';
 import { EditZoneBody } from './zones.dto';
 import { ZonesService } from './zones.service';
 
@@ -60,9 +60,9 @@ export class ZonesController {
   @Get(':id/remaining')
   async remainingSlot(
     @Param('id', ParseIntPipe) id: number,
-    @Body() date: RemainingQueries,
+    @Query('date') date: Date,
   ) {
-    const _date = date.date;
+    const _date = date;
     const result = await this.zonesService.remainingSlot(id, _date);
 
     if (result) {

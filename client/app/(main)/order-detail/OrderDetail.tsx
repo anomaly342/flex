@@ -1,5 +1,5 @@
 "use client";
-import Link from "next/link";
+import HardLink from "@/app/components/HardLink";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -84,6 +84,9 @@ export default function OrderDetails() {
 					<p>
 						<span className="font-semibold">Price:</span> ${order.price}
 					</p>
+					<p>
+						<span className="font-semibold">Price:</span> ${order.price}
+					</p>
 				</div>
 
 				{/* QR Code */}
@@ -109,12 +112,12 @@ export default function OrderDetails() {
 
 			{/* Actions */}
 			<div className="mt-8 flex justify-end gap-4">
-				<Link
+				<HardLink
 					href="/home"
 					className="px-6 py-2 bg-black text-white rounded hover:bg-gray-800 transition"
 				>
 					Go Home
-				</Link>
+				</HardLink>
 			</div>
 		</div>
 	);

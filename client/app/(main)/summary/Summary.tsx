@@ -54,7 +54,7 @@ export default function OrderSummary() {
 
 	const [showModal, setShowModal] = useState(false);
 	const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
-	const [pointsRedeem, setPointsRedeem] = useState<number>(0);
+	const [pointsRedeem, setPointsRedeem] = useState<string>(""); // <-- changed to string
 
 	const startDate = startTimeParam ? new Date(startTimeParam) : null;
 	const endDate = endTimeParam ? new Date(endTimeParam) : null;
@@ -166,10 +166,11 @@ export default function OrderSummary() {
 			}
 
 			// Apply points
-			if (pointsRedeem > 0) {
+			const pointsValue = Number(pointsRedeem);
+			if (pointsValue > 0) {
 				const body = new URLSearchParams();
 				body.append("transaction_id", transaction.id.toString());
-				body.append("point_amount", pointsRedeem.toString());
+				body.append("point_amount", pointsValue.toString());
 
 				const res = await fetch(
 					`${process.env.NEXT_PUBLIC_BACKEND_URL}/transaction/addPoints`,
@@ -187,7 +188,7 @@ export default function OrderSummary() {
 
 			setShowModal(false);
 			setSelectedCoupon(null);
-			setPointsRedeem(0);
+			setPointsRedeem(""); // reset input as string
 		} catch (err) {
 			console.error(err);
 		}
@@ -230,7 +231,9 @@ export default function OrderSummary() {
 						<p>{roomType}</p>
 					</div>
 					<div className="detail-div">
-						<p className="detail-text">Room ID</p>
+						<p className="detail-text">
+							{roomType === "zone" ? "Zone ID" : "Room ID"}
+						</p>
 						<p>{roomId}</p>
 					</div>
 				</div>
@@ -302,14 +305,7 @@ export default function OrderSummary() {
 										min={0}
 										max={user?.point ?? 0}
 										value={pointsRedeem}
-										onChange={(e) =>
-											setPointsRedeem(
-												Math.min(
-													user?.point ?? 0,
-													Math.max(0, Number(e.target.value))
-												)
-											)
-										}
+										onChange={(e) => setPointsRedeem(e.target.value)} // <-- manual
 										className="points-input"
 									/>
 								</div>
@@ -324,9 +320,13 @@ export default function OrderSummary() {
 								</button>
 								<button
 									onClick={handleApply}
-									disabled={!selectedCoupon && pointsRedeem === 0}
+									disabled={
+										!selectedCoupon &&
+										(!pointsRedeem || Number(pointsRedeem) <= 0)
+									}
 									className={`px-3 py-2 rounded ${
-										!selectedCoupon && pointsRedeem === 0
+										!selectedCoupon &&
+										(!pointsRedeem || Number(pointsRedeem) <= 0)
 											? "bg-gray-200 text-gray-400 cursor-not-allowed"
 											: "bg-blue-500 text-white hover:bg-blue-600"
 									}`}

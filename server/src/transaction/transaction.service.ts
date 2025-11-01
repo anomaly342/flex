@@ -397,7 +397,7 @@ export class TransactionService {
       ],
       mode: 'payment',
       metadata: { user_id: user_id },
-      success_url: `${process.env.FRONTEND_URL}/success_membership`,
+      success_url: `${process.env.FRONTEND_URL}/profile`,
       cancel_url: `${process.env.FRONTEND_URL}/payment-failed`,
     });
 
@@ -420,23 +420,22 @@ export class TransactionService {
         const session = event.data.object as Stripe.Checkout.Session;
         const transaction_id = session.metadata?.transaction_id;
 
-        // if (transaction_id === undefined) {
-        //   const user_id = session.metadata?.user_id;
-        //   con
-        //   const user = await this.usersRepository.findOne({
-        //     where: { user_id: user_id as any },
-        //   });
+        if (transaction_id === undefined) {
+          const user_id = session.metadata?.user_id;
+          const user = await this.usersRepository.findOne({
+            where: { user_id: user_id as any },
+          });
 
-        //   if (!user) {
-        //     return null;
-        //   }
-        //   user.exp_date = new Date(
-        //     new Date().setDate(new Date().getDate() + 31),
-        //   );
+          if (!user) {
+            return null;
+          }
+          user.exp_date = new Date(
+            new Date().setDate(new Date().getDate() + 31),
+          );
 
-        //   const updateUser = await this.usersRepository.save(user);
-        //   return true;
-        // }
+          const updateUser = await this.usersRepository.save(user);
+          return true;
+        }
 
         const transaction = (await this.transactionRepository.findOne({
           where: {
