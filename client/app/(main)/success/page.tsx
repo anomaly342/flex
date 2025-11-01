@@ -1,38 +1,80 @@
 "use client";
-import { useState } from "react";
 import Image from "next/image";
-import { useSearchParams } from "next/navigation";
-import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import "./success.css";
 
-export default function PaySuccessful() {
-    const price = 500;
-    const date = "15 Jan 2025";
-    const time = "12:34";
-    return (
-        <div className="maindiv">
-            <Image
-                src="/check.svg"
-                width={100}
-                height={100}
-                alt="Payment Success"
-            />
-            <p className="head-text">Payment Successful</p>
-            <div className="amount-section">
-                <span>Amount:</span>
-                <span>{price} ฿</span>
-            </div>
+interface TransactionOrderData {
+	price: number;
+	createdAt: string;
+	order_id: number;
+}
 
-            <div className="date-section">
-                <span>Date & Time:</span>
-                <div className="date-text">
-                    <p>{date}</p>
-                    <p>{time}</p>
-                </div>
-            </div>
-            <Link href="/order-detail" className="detail-link">
-                View Order
-            </Link>
-        </div>
-    );
+export default function PaySuccessful() {
+	const searchParams = useSearchParams();
+	const router = useRouter();
+
+	const transactionId = searchParams.get("transaction_id");
+
+	const [data, setData] = useState<TransactionOrderData | null>(null);
+	const [loading, setLoading] = useState(true);
+
+	useEffect(() => {
+		if (!transactionId) return;
+
+		const fetchOrder = async () => {
+			try {
+				const res = await fetch(
+					`${process.env.NEXT_PUBLIC_BACKEND_URL}/transaction/${transactionId}/orderId`,
+					{ credentials: "include" }
+				);
+				if (!res.ok) throw new Error("Failed to fetch order data");
+				const result: TransactionOrderData = await res.json();
+				setData(result);
+			} catch (err) {
+				console.error(err);
+			} finally {
+				setLoading(false);
+			}
+		};
+
+		fetchOrder();
+	}, [transactionId]);
+
+	if (!transactionId) return <p>No transaction ID provided.</p>;
+	if (loading) return <p>Loading...</p>;
+	if (!data) return <p>Transaction not found.</p>;
+
+	const date = new Date(data.createdAt).toLocaleDateString();
+	const time = new Date(data.createdAt).toLocaleTimeString([], {
+		hour: "2-digit",
+		minute: "2-digit",
+	});
+
+	return (
+		<div className="maindiv">
+			<Image src="/check.svg" width={100} height={100} alt="Payment Success" />
+			<p className="head-text">Payment Successful</p>
+
+			<div className="amount-section">
+				<span>Amount:</span>
+				<span>{data.price.toFixed(2)} ฿</span>
+			</div>
+
+			<div className="date-section">
+				<span>Date & Time:</span>
+				<div className="date-text">
+					<p>{date}</p>
+					<p>{time}</p>
+				</div>
+			</div>
+
+			<button
+				className="detail-link"
+				onClick={() => router.push(`/order-detail?order_id=${data.order_id}`)}
+			>
+				View Order
+			</button>
+		</div>
+	);
 }

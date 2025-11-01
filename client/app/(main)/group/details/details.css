@@ -1,127 +1,129 @@
 @import "tailwindcss";
 @media (prefers-color-scheme: dark) {
-    :root {
-        --background: #ffff;
-        --foreground: #0000;
-    }
+	:root {
+		--background: #ffff;
+		--foreground: #0000;
+		padding-left: 10px;
+		padding-right: 10px;
+	}
 }
 .maindiv {
-    color: black;
+	color: black;
 }
 main {
-    @apply space-y-4;
+	@apply space-y-4;
 }
 .room-name {
-    /* @apply flex flex-col items-center; */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+	/* @apply flex flex-col items-center; */
+	display: flex;
+	flex-direction: column;
+	align-items: center;
 }
 .room-text {
-    font-weight: 700;
+	font-weight: 700;
 }
 .room-detail {
-    /* @apply flex flex-col justify-center items-center space-y-4; */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+	/* @apply flex flex-col justify-center items-center space-y-4; */
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
 }
 .pics {
-    /* @apply border; */
-    border: black 1px solid;
+	/* @apply border; */
+	border: black 1px solid;
 }
 .detail-text {
-    margin-top: 1.5rem;
+	margin-top: 1.5rem;
 }
 .detail-header {
-    /* @apply font-semibold mb-1; */
-    font-weight: 600;
-    margin-bottom: 0.25rem;
+	/* @apply font-semibold mb-1; */
+	font-weight: 600;
+	margin-bottom: 0.25rem;
 }
 .detail-list {
-    /* @apply list-disc list-inside mt-2; */
-    list-style-type: disc;
-    list-style-position: inside;
-    margin-top: 0.5rem;
+	/* @apply list-disc list-inside mt-2; */
+	list-style-type: disc;
+	list-style-position: inside;
+	margin-top: 0.5rem;
 }
 .book-btn {
-    /* @apply px-6 py-2 border rounded hover:bg-gray-100; */
-    padding-inline: 1.5rem;
-    padding-block: 0.5rem;
-    border: black 1px solid;
-    border-radius: 0.25rem;
+	/* @apply px-6 py-2 border rounded hover:bg-gray-100; */
+	padding-inline: 1.5rem;
+	padding-block: 0.5rem;
+	border: black 1px solid;
+	border-radius: 0.25rem;
 }
 .book-btn:hover {
-    background-color: #f3f4f6;
+	background-color: #f3f4f6;
 }
 .booking-section {
-    /* @apply fixed inset-0 bg-black/70 flex items-center justify-center; */
-    position: fixed;
-    inset: 0rem;
-    background-color: rgba(0, 0, 0, 0.7);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+	/* @apply fixed inset-0 bg-black/70 flex items-center justify-center; */
+	position: fixed;
+	inset: 0rem;
+	background-color: rgba(0, 0, 0, 0.7);
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 .booking-section2 {
-    /* @apply bg-white rounded-xl p-6 w-96 shadow-lg; */
-    background-color: white;
-    border-radius: 0.75rem;
-    padding: 1.5rem;
-    width: 24rem;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-        0 4px 6px -4px rgba(0, 0, 0, 0.1);
+	/* @apply bg-white rounded-xl p-6 w-96 shadow-lg; */
+	background-color: white;
+	border-radius: 0.75rem;
+	padding: 1.5rem;
+	width: 24rem;
+	box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+		0 4px 6px -4px rgba(0, 0, 0, 0.1);
 }
 .time-mapping {
-    /* @apply max-h-60 overflow-y-auto mb-4 border rounded; */
-    max-height: 15rem;
-    overflow-y: auto;
-    margin-bottom: 1rem;
-    border: black 1px solid;
-    border-radius: 0.25rem;
+	/* @apply max-h-60 overflow-y-auto mb-4 border rounded; */
+	max-height: 15rem;
+	overflow-y: auto;
+	margin-bottom: 1rem;
+	border: black 1px solid;
+	border-radius: 0.25rem;
 }
 .date-section {
-    /* @apply flex items-center justify-center gap-2 mb-4; */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
+	/* @apply flex items-center justify-center gap-2 mb-4; */
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5rem;
+	margin-bottom: 1rem;
 }
 .date-btn {
-    /* @apply px-2 py-1 border rounded; */
-    padding-inline: 0.5rem;
-    padding-block: 0.25rem;
-    border: black 1px solid;
-    border-radius: 0.25rem;
+	/* @apply px-2 py-1 border rounded; */
+	padding-inline: 0.5rem;
+	padding-block: 0.25rem;
+	border: black 1px solid;
+	border-radius: 0.25rem;
 }
 .date-text {
-    /* @apply font-semibold; */
-    font-weight: 600;
+	/* @apply font-semibold; */
+	font-weight: 600;
 }
 .button-section {
-    /* @apply flex justify-between; */
-    display: flex;
-    justify-content: space-between;
+	/* @apply flex justify-between; */
+	display: flex;
+	justify-content: space-between;
 }
 .cancel-btn {
-    /* @apply px-3 py-2 bg-gray-800 text-white rounded; */
-    padding-inline: 0.75rem;
-    padding-block: 0.5rem;
-    background-color: #1e2939;
-    color: white;
-    border-radius: 0.25rem;
+	/* @apply px-3 py-2 bg-gray-800 text-white rounded; */
+	padding-inline: 0.75rem;
+	padding-block: 0.5rem;
+	background-color: #1e2939;
+	color: white;
+	border-radius: 0.25rem;
 }
 @media (min-width: 431px) {
-    .room-text {
-        /* @apply text-3xl; */
-        font-size: 1.875rem;
-        line-height: 1.2;
-    }
-    .floor-text {
-        /* @apply text-xl; */
-        font-size: 1.25rem;
-        line-height: 1.4;
-    }
+	.room-text {
+		/* @apply text-3xl; */
+		font-size: 1.875rem;
+		line-height: 1.2;
+	}
+	.floor-text {
+		/* @apply text-xl; */
+		font-size: 1.25rem;
+		line-height: 1.4;
+	}
 }

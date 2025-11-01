@@ -87,7 +87,9 @@ export default function Home() {
 								height={50}
 							/>
 							<div className="profile-text">
-								<h3>{user?.username}</h3>
+								<h3 className="text-blue underline">
+									<Link href={"/profile"}>{user?.username}</Link>
+								</h3>
 								<h4>
 									<span className="rolename">{user?.role}</span> Points:{" "}
 									{user?.point}

@@ -1,5 +1,5 @@
 "use client";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 interface Zone {
@@ -9,10 +9,12 @@ interface Zone {
 }
 
 export default function ZoneDetail() {
-	const sp = useSearchParams();
+	const sp = useParams();
 	const router = useRouter();
-	const zone_id = sp.get("zone_id");
-	const zone_no = sp.get("zone_no");
+	const { zone_id, zone_no } = useParams<{
+		zone_id: string;
+		zone_no: string;
+	}>();
 
 	const [data, setData] = useState<Zone | null>(null);
 	const [editData, setEditData] = useState<Zone | null>(null);

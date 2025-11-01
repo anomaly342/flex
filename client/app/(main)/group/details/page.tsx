@@ -214,13 +214,7 @@ export default function Profile() {
 						</div>
 						<hr />
 						<div className="room-detail">
-							<div className="pics">
-								<img
-									src={roomData.room_img_url}
-									alt={roomData.room_type}
-									className="room-image"
-								/>
-							</div>
+							<div className="pics"></div>
 							<div className="detail-text">
 								<p className="detail-header">
 									{roomData.room_type.replace("_", " ")}

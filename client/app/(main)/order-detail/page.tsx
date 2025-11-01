@@ -1,105 +1,124 @@
 "use client";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import QRCode from "qrcode";
-import "./order-detail.css";
+
+interface OrderData {
+	order_id: number;
+	qr_url: string;
+	start_time: string;
+	end_time: string;
+	price: number;
+	createdAt: string;
+}
 
 export default function OrderDetails() {
-    const [qrUrl, setQrUrl] = useState("");
-    const room = "Room 4";
-    const theme = "Japanese";
-    const location = "Floor 5";
-    const date = "25 Aug 2025";
-    const duration = "09:00 - 15:00";
+	const searchParams = useSearchParams();
+	const orderId = searchParams.get("order_id");
 
-    useEffect(() => {
-        const data = `
-            ${room}
-            Theme: ${theme}
-            Location: ${location}
-            Date: ${date}
-            Time: ${duration}
-        `;
+	const [order, setOrder] = useState<OrderData | null>(null);
+	const [loading, setLoading] = useState(true);
 
-        QRCode.toDataURL(data, {
-            width: 250,
-            margin: 2,
-            color: {
-                dark: "#000000",
-                light: "#ffffff",
-            },
-        })
-            .then((url) => setQrUrl(url))
-            .catch(console.error);
-    }, []);
+	const replaceQrUrl = (originalUrl: string) => {
+		const baseUrl = "https://pub-58ea0d557d3a4b5ba725a068317dcdf6.r2.dev";
+		const filename = originalUrl.split("/").pop();
+		return `${baseUrl}/${filename}`;
+	};
 
-    return (
-        <div className="maindiv">
-            <main>
-                <div className="min-[431px]:flex min-[431px]:flex-row min-[431px]:justify-between min-[431px]:mt-8">
-                    <div>
-                        <p className="font-bold text-9xl">Order Details</p>
-                        <div className="space-y-2 text-sm">
-                            <p>
-                                <span className="font-semibold">Room:</span>{" "}
-                                {room}
-                            </p>
-                            <p>
-                                <span className="font-semibold">Theme:</span>{" "}
-                                {theme}
-                            </p>
-                            <p>
-                                <span className="font-semibold">Location:</span>{" "}
-                                {location}
-                            </p>
-                            <p>
-                                <span className="font-semibold">Date:</span>{" "}
-                                {date}
-                            </p>
-                            <p>
-                                <span className="font-semibold">Duration:</span>{" "}
-                                {duration}
-                            </p>
-                        </div>
-                    </div>
-                    <div className="mt-4">
-                        <p className="font-semibold">QR Code</p>
-                        <div className="flex flex-col items-center content-center mt-3">
-                            {qrUrl ? (
-                                <img
-                                    src={qrUrl}
-                                    alt="Booking QR Code"
-                                    className="border p-2 rounded-lg "
-                                />
-                            ) : (
-                                <p>Generating QR...</p>
-                            )}
-                            <button
-                                onClick={() => {
-                                    const link = document.createElement("a");
-                                    link.href = qrUrl;
-                                    link.download = "booking_qr.png";
-                                    link.click();
-                                }}
-                                className="text-gray-500 flex justify-center underline cursor-pointer mt-3"
-                            >
-                                SAVE TO DEVICE
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div className="flex justify-between mt-6">
-                    <Link
-                        href="/home"
-                        className="px-6 py-2 border rounded bg-black text-white hover:bg-gray-600"
-                    >
-                        Go Home
-                    </Link>
-                    <button className="px-6 py-2 border rounded hover:bg-gray-100">
-                        Cancel Booking
-                    </button>
-                </div>
-            </main>
-        </div>
-    );
+	useEffect(() => {
+		if (!orderId) return;
+
+		const fetchOrder = async () => {
+			try {
+				const res = await fetch(
+					`${process.env.NEXT_PUBLIC_BACKEND_URL}/orders/${orderId}`,
+					{ credentials: "include" }
+				);
+				if (!res.ok) throw new Error("Failed to fetch order");
+				const data: OrderData = await res.json();
+				data.qr_url = replaceQrUrl(data.qr_url);
+				setOrder(data);
+			} catch (err) {
+				console.error(err);
+			} finally {
+				setLoading(false);
+			}
+		};
+
+		fetchOrder();
+	}, [orderId]);
+
+	if (!orderId)
+		return <p className="text-center mt-10">No order ID provided.</p>;
+	if (loading)
+		return <p className="text-center mt-10">Loading order details...</p>;
+	if (!order) return <p className="text-center mt-10">Order not found.</p>;
+
+	const startTime = new Date(order.start_time).toLocaleTimeString([], {
+		hour: "2-digit",
+		minute: "2-digit",
+	});
+	const endTime = new Date(order.end_time).toLocaleTimeString([], {
+		hour: "2-digit",
+		minute: "2-digit",
+	});
+	const date = new Date(order.start_time).toLocaleDateString();
+
+	return (
+		<div className="max-w-4xl mx-auto my-10 p-6 bg-white shadow-lg rounded-xl">
+			<h1 className="text-4xl font-bold mb-6 text-center">Order Details</h1>
+
+			<div className="md:flex md:justify-between md:items-start gap-6">
+				{/* Order Info */}
+				<div className="flex-1 space-y-4">
+					<p>
+						<span className="font-semibold">Order ID:</span> {order.order_id}
+					</p>
+					<p>
+						<span className="font-semibold">Date:</span> {date}
+					</p>
+					<p>
+						<span className="font-semibold">Duration:</span> {startTime} -{" "}
+						{endTime}
+					</p>
+					<p>
+						<span className="font-semibold">Price:</span> ${order.price}
+					</p>
+				</div>
+
+				{/* QR Code */}
+				<div className="flex flex-col items-center mt-6 md:mt-0">
+					<img
+						src={order.qr_url}
+						alt="Booking QR Code"
+						className="border p-3 rounded-lg w-48 h-48 object-contain"
+					/>
+					<button
+						onClick={() => {
+							const link = document.createElement("a");
+							link.href = order.qr_url;
+							link.download = "booking_qr.png";
+							link.click();
+						}}
+						className="mt-4 px-4 py-2 border rounded hover:bg-gray-100 text-gray-700"
+					>
+						Save QR
+					</button>
+				</div>
+			</div>
+
+			{/* Actions */}
+			<div className="mt-8 flex justify-end gap-4">
+				<Link
+					href="/home"
+					className="px-6 py-2 bg-black text-white rounded hover:bg-gray-800 transition"
+				>
+					Go Home
+				</Link>
+				<button className="px-6 py-2 border rounded hover:bg-gray-100 transition">
+					Cancel Booking
+				</button>
+			</div>
+		</div>
+	);
 }
