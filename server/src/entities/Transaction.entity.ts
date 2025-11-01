@@ -68,4 +68,7 @@ export class Transaction {
   @ManyToOne(() => Zone, { nullable: true, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'zone_id' })
   zone: Partial<Zone> | null;
+
+  @Column({ nullable: true })
+  order_id: number;
 }

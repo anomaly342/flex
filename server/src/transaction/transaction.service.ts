@@ -371,6 +371,12 @@ export class TransactionService {
 
     return session.url;
   }
+  async getOrderId(transaction_id: number) {
+    return await this.transactionRepository.findOne({
+      where: { id: transaction_id },
+      select: ['order_id', 'price', 'createdAt'],
+    });
+  }
 
   async subscription(user_id: number) {
     const stripe = new Stripe(process.env.STRIPE_KEY as string, {
@@ -414,23 +420,23 @@ export class TransactionService {
         const session = event.data.object as Stripe.Checkout.Session;
         const transaction_id = session.metadata?.transaction_id;
 
-        if (transaction_id === undefined) {
-          const user_id = session.metadata?.user_id;
+        // if (transaction_id === undefined) {
+        //   const user_id = session.metadata?.user_id;
+        //   con
+        //   const user = await this.usersRepository.findOne({
+        //     where: { user_id: user_id as any },
+        //   });
 
-          const user = await this.usersRepository.findOne({
-            where: { user_id: user_id as any },
-          });
+        //   if (!user) {
+        //     return null;
+        //   }
+        //   user.exp_date = new Date(
+        //     new Date().setDate(new Date().getDate() + 31),
+        //   );
 
-          if (!user) {
-            return null;
-          }
-          user.exp_date = new Date(
-            new Date().setDate(new Date().getDate() + 31),
-          );
-
-          const updateUser = await this.usersRepository.save(user);
-          return true;
-        }
+        //   const updateUser = await this.usersRepository.save(user);
+        //   return true;
+        // }
 
         const transaction = (await this.transactionRepository.findOne({
           where: {
@@ -490,6 +496,12 @@ export class TransactionService {
             price: price,
             qr_url: url,
           });
+          const insertedId = result.identifiers[0].order_id;
+
+          const updateTransaction = await this.transactionRepository.update(
+            { id: transaction_id as any },
+            { order_id: insertedId },
+          );
           return result;
         } else {
           const result = await this.ordersRepository.insert({
@@ -500,6 +512,12 @@ export class TransactionService {
             price: price,
             qr_url: url,
           });
+          const insertedId = result.identifiers[0].order_id;
+
+          const updateTransaction = await this.transactionRepository.update(
+            { id: transaction_id as any },
+            { order_id: insertedId },
+          );
           return result;
         }
     }

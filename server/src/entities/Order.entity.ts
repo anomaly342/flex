@@ -35,7 +35,7 @@ export class Order {
   @Column({ type: 'timestamptz' })
   end_time: Date;
 
-  @Column()
+  @Column('float')
   price: number;
 
   @CreateDateColumn()

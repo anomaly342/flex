@@ -105,4 +105,11 @@ export class TransactionController {
 
     return result;
   }
+
+  @common.Get(':id/orderId')
+  async getOrderId(@common.Param('id') id: number) {
+    const result = await this.transactionService.getOrderId(id);
+
+    return result;
+  }
 }

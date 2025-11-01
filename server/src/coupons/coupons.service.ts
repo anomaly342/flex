@@ -12,7 +12,7 @@ export class CouponsService {
 
   async coupons(user_id: number) {
     const result = await this.couponsRepository.find({
-      where: { user: { user_id: user_id } },
+      where: { user: { user_id: user_id }, isUsed: false },
     });
 
     return result;
